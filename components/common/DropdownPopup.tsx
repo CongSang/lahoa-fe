@@ -1,0 +1,49 @@
+import { motion } from 'motion/react';
+import React from 'react'
+
+interface DropdownPopupProps {
+  children: React.ReactNode;
+	className?: string;
+}
+
+export const DropdownPopup = ({ children, className }: DropdownPopupProps) => {
+	const popupVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
+      y: -10,
+      transition: { duration: 0.15 }
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 300,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.95,
+      transition: { duration: 0.1 }
+    }
+  };
+
+  return (
+    <motion.div 
+			variants={popupVariants}
+			initial="hidden"
+			animate="visible"
+			exit="exit"
+			style={{
+				width: '240px',
+				transformOrigin: 'top right',
+			}}
+			className={`absolute shadow right-0 bg-white border border-gray-100 rounded-lg py-1 z-50 ${className}`}
+		>
+      {children}
+    </motion.div>
+  )
+}
