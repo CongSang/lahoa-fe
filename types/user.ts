@@ -16,5 +16,6 @@ export interface UserRequest {
   fullName: string;
   userImageUrl: string;
   email: string;
+  phone: string;
   password: string;
 }

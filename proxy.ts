@@ -11,9 +11,15 @@ export function proxy(request: NextRequest) {
     }
   }
 
+  if(pathname.startsWith('/login') || pathname.startsWith('/register')) {
+    if (token) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+  }
+
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/checkout/:path*', '/account/:path*'], 
+  matcher: ['/admin/:path*', '/checkout/:path*', '/account/:path*', '/login', '/register'], 
 }

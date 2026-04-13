@@ -1,9 +1,9 @@
-import React from 'react'
 import { LayoutProps } from 'types/index'
 import { Header } from '@/components/ecommerce/index'
-import { AppInitializer } from '@/components/auth'
+import { AppInitializer } from '@/components/index'
 
-const HomeLayout = ({ children } : LayoutProps) => {
+const HomeLayout = async ({ children } : LayoutProps) => {
+
   return (
     <AppInitializer>
       <Header />

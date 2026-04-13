@@ -23,6 +23,7 @@ export const Header = () => {
     })
   }
 
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-300 bg-white">
       <div className="flex h-16 items-center justify-between px-4 md:px-8 md:h-20">
@@ -38,7 +39,7 @@ export const Header = () => {
             />
           </Link>
         </div>
-
+        
         <div className="flex items-center justify-center gap-3">
           <button aria-label="Tìm kiếm" className="flex items-center justify-center gap-2 px-1 py-2 text-gray-900 transition-colors hover:text-gray-600">
             <Search className='w-5 h-5 md:w-6 md:h-6' />
@@ -61,7 +62,7 @@ export const Header = () => {
                   alt="Profile"
                   width={108}
                   height={108}
-                  className="w-6 h-6 md:w-7 md:h-7 rounded-full object-cover shadow"
+                  className="w-5.5 h-5.5 md:w-6.5 md:h-6.5 rounded-full object-cover shadow"
                 />
               </button>
             ) : (
@@ -69,7 +70,7 @@ export const Header = () => {
                 onClick={() => setShowUserMenu(!showUserMenu)}
                 className="hover:bg-gray-100 size-9 rounded-full transition-colors flex items-center justify-center"
               >
-                <CircleUserRound className="w-5 h-5 md:w-6 md:h-6" />
+                <CircleUserRound className="w-5.5 h-5.5 md:w-6.5 md:h-6.5" />
               </button>
             )}
 

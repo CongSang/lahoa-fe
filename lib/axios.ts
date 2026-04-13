@@ -8,6 +8,7 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
+    
   },
 });
 
@@ -22,7 +23,7 @@ axiosInstance.interceptors.request.use(async (config) => {
   if (typeof window === 'undefined') {
     const { cookies } = await import('next/headers');
     const cookieStore = cookies();
-    token = (await cookieStore).get('auth-token')?.value ?? '';
+    token = (await cookieStore).get('access_token')?.value ?? '';
   } else {
     token = Cookies.get('access_token') ?? '';
   }

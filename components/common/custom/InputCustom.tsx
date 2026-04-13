@@ -3,6 +3,7 @@
 import { useState, ChangeEvent, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { cleanAmount, formatDisplay } from '@/lib/index';
+import { Input } from "@/components/common/ui"
 
 interface InputProps {
   name?: string;
@@ -18,7 +19,7 @@ interface InputProps {
   onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
 
-export const Input = ({ name, label, value, placeholder, type = "text", disabled, isSelect, options, inputClass, onChange }: InputProps) => {
+export const InputCustom = ({ name, label, value, placeholder, type = "text", disabled, isSelect, options, onChange }: InputProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [displayValue, setDisplayValue] = useState("");
 
@@ -52,9 +53,11 @@ export const Input = ({ name, label, value, placeholder, type = "text", disabled
 
   return (
     <div className='w-full'>
-        <label className="block text-sm max-sm:text-xs font-semibold mb-1">
+        {label && (
+          <label className="block text-sm max-sm:text-xs font-semibold mb-1">
             {label}
-        </label>
+          </label>
+        )}
 
         <div className="relative">
             {isSelect ? (
@@ -71,7 +74,7 @@ export const Input = ({ name, label, value, placeholder, type = "text", disabled
                   ))}
                 </select>
             ) : (type === "number") ? (
-                <input
+                <Input
                   name={name}
                   disabled={disabled}
                   type="text"
@@ -79,17 +82,17 @@ export const Input = ({ name, label, value, placeholder, type = "text", disabled
                   onChange={(e) => handleNumberChange(e)}
                   placeholder={placeholder}
                   min={0}
-                  className="w-full px-3 py-2 bg-white text-sm max-sm:text-xs rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition-all placeholder:text-gray-300"
+                  className="bg-white px-3 py-2 h-auto"
                 />
             ) : (
-                <input
+                <Input
                   name={name}
                   disabled={disabled}
                   type={type === "password" ? (showPassword ? "text" : "password") : type}
                   value={value ?? ""}
                   onChange={(e) => onChange(e)}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 bg-white text-sm max-sm:text-xs rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-300 transition-all placeholder:text-gray-300"
+                  className="bg-white px-3 py-2 h-auto"
                 />
             )}
 

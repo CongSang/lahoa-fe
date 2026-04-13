@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/lib/index';
 import { AuthRequest, UserRequest } from '@/types/index';
+import axios from 'axios';
 
 export const loginApi = async (request: AuthRequest) => {
   const response = await axiosInstance.post('/auth/login', request);
@@ -26,13 +27,13 @@ export const logoutApi = async () => {
   return response.data;
 };
 
-// export const uploadImageApi = async (formData: FormData) => {
-//   const response = await axios.post(
-//     `https://api.cloudinary.com/v1_1/dkzk9w83t/image/upload`, formData, 
-//     {
-//       headers: {
-//         'Content-Type': 'multipart/form-data',
-//       },
-//     });
-//   return response.data;
-// }
+export const uploadImageApi = async (formData: FormData) => {
+  const response = await axios.post(
+    `https://api.cloudinary.com/v1_1/dkzk9w83t/image/upload`, formData, 
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  return response.data;
+}

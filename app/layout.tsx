@@ -3,11 +3,9 @@ import { Inter, Lora } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { LayoutProps } from '@/types/index'
 import "./globals.css";
+import { cn } from "@/components/lib/utils";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
+const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
 const lora = Lora({
   variable: "--font-lora",
@@ -23,7 +21,7 @@ export default function RootLayout({ children }: LayoutProps) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${lora.variable} h-full antialiased`}
+      className={cn("h-full", "antialiased", lora.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">
         <Toaster position="top-right" />

@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { AuthResponse, User } from '@/types/index';
 import Cookies from 'js-cookie';
 import { getAccountInfoApi } from '@/services/index';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface UserState {
   user: User | null;
@@ -13,19 +14,22 @@ interface UserState {
   fetchCurrentUser: () => Promise<void>;
 }
 
-export const useUserStore = create<UserState>((set,) => ({
+export const useUserStore = create<UserState>()(persist((set, get) => ({
   user: null,
   isLoading: true,
 
   setUser: (user) => set({ user: user }),
 
   fetchCurrentUser: async () => {
-    const token = Cookies.get('access_token'); 
+    const token = Cookies.get('access_token');
+    const user = get().user
 
     if (!token) {
       set({ user: null, isLoading: false });
-      return; // Dừng lại luôn, không gọi API phí request
+      return;
     }
+
+    if (user) return;
 
     set({ isLoading: true });
     try {
@@ -48,4 +52,7 @@ export const useUserStore = create<UserState>((set,) => ({
     Cookies.remove('access_token', { path: '/' });
     Cookies.remove('refresh_token', { path: '/' });
   },
+}), { 
+  name: 'user-storage',
+  storage: createJSONStorage(() => localStorage),
 }));
