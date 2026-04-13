@@ -14,7 +14,7 @@ const Login = async ({ searchParams } : LoginProps) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans bg-third">
       <div
-        className="w-full max-w-125 bg-white rounded-3xl shadow-md px-8 md:px-10 pb-8 md:pb-10"
+        className="w-full max-w-125 bg-white rounded-3xl shadow-md p-6 md:p-10"
       >
         <div className="flex flex-col items-center text-center">
           <Image 
@@ -23,7 +23,7 @@ const Login = async ({ searchParams } : LoginProps) => {
             alt="Logo" 
             width={200} 
             height={200}
-            className='w-60 h-30 object-cover my-8' 
+            className='w-38 md:w-45 h-16 md:h-20 object-cover mb-12' 
           />
 
           <LoginForm searchParams={params} />

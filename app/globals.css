@@ -5,6 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --primary-ec: #F2D4E5;
+  --secondary-ec: #AB886D;
+  --third-ec: #faf7f6;
 
   --primary: oklch(0.5 0.134 242.749);
   --secondary: oklch(0.967 0.001 286.375);
@@ -42,6 +45,9 @@
 }
 
 @theme inline {
+  --color-primary-ec: var(--primary-ec);
+  --color-secondary-ec: var(--secondary-ec);
+  --color-third-ec: var(--third-ec);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -118,7 +124,7 @@ body {
 
 @layer components {
   .btn-ec {
-    @apply bg-secondary-ec text-white font-semibold px-4 py-3 rounded-md hover:bg-secondary-ec/90 transition-colors shadow-lg focus:scale-[0.98] disabled:pointer-events-none disabled:opacity-90 text-base md:text-sm;
+    @apply bg-secondary-ec text-white font-semibold px-4 py-2.5 rounded-lg hover:bg-secondary-ec/90 transition-colors shadow-lg focus:scale-[0.98] disabled:pointer-events-none disabled:opacity-90 text-sm max-sm:text-xs;
   }
 }
 

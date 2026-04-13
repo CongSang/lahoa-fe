@@ -114,7 +114,7 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
         onClick={handleLoginWithGoogle}
         type="button"
         disabled={loading}
-        className="w-full uppercase text-sm max-sm:text-xs flex items-center justify-center gap-3 py-3 px-4 bg-white border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-gray-900 shadow active:scale-[0.98]"
+        className="w-full uppercase text-sm max-sm:text-xs flex items-center justify-center gap-3 py-2.5 px-4 bg-white border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-gray-900 shadow active:scale-[0.98]"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

@@ -53,7 +53,7 @@ export const UploadImage = ({ image, setImage }: UploadImageProps) => {
 						<div className="w-20 h-20 rounded-full border-2 border-dashed border-gray-200 flex items-center justify-center bg-[#F9FAFB] transition-colors group-hover:border-[#9CA3AF]">
 							<User size={40} className="text-gray-200" />
 						</div>
-						<div className="absolute bottom-0 right-0 bg-primary text-white rounded-full p-1 border border-white">
+						<div className="absolute bottom-0 right-0 bg-gray-900 text-white rounded-full p-1 border border-white">
 							<Plus size={14} strokeWidth={3} />
 						</div>
 					</button>

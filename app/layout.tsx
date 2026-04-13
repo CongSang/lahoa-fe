@@ -3,7 +3,7 @@ import { Inter, Lora } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { LayoutProps } from '@/types/index'
 import "./globals.css";
-import { cn } from "@/components/lib/utils";
+import { cn } from "@/lib/utils";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
