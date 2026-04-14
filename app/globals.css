@@ -99,7 +99,6 @@ body {
 
 @layer base {
   html {
-    scroll-behavior: smooth;
     @apply font-sans;
   };
   h1 {

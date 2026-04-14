@@ -4,6 +4,7 @@ import { AuthResponse, User } from '@/types/index';
 import Cookies from 'js-cookie';
 import { getAccountInfoApi } from '@/services/index';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { decodeToken } from '../lib';
 
 interface UserState {
   user: User | null;
