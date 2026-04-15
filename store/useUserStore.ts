@@ -1,10 +1,8 @@
-// store/useUserStore.ts
 import { create } from 'zustand';
 import { AuthResponse, User } from '@/types/index';
 import Cookies from 'js-cookie';
 import { getAccountInfoApi } from '@/services/index';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { decodeToken } from '../lib';
 
 interface UserState {
   user: User | null;
@@ -52,6 +50,8 @@ export const useUserStore = create<UserState>()(persist((set, get) => ({
     set({ user: null })
     Cookies.remove('access_token', { path: '/' });
     Cookies.remove('refresh_token', { path: '/' });
+
+    window.location.href = "/"
   },
 }), { 
   name: 'user-storage',

@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from "@/components/index"
+
 export default function GlobalError({
   error,
   reset,
@@ -15,15 +17,16 @@ export default function GlobalError({
 
       <p className="my-4">
         Chúng tôi rất tiếc vì sự gián đoạn này. Vui lòng thử lại.
+        <br/><br/>
+        {error.message}
       </p>
       
-      {/* Sử dụng class .btn của bạn tại đây */}
-      <button 
+      <Button 
         onClick={() => reset()}
-        className="btn-ec"
+        variant="destructive"
       >
         Khởi động lại ứng dụng
-      </button>
+      </Button>
     </div>
   )
 }

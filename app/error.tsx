@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { Button } from '@/components/index'
 
 export default function Error({
   error,
@@ -15,15 +16,15 @@ export default function Error({
 
   return (
     <div className='flex flex-col items-center justify-center h-screen gap-3 p-5'>
-      <h2 className='text-black'>Đã có lỗi xảy ra!</h2>
+      <h2>Đã có lỗi xảy ra!</h2>
       <p className='mb-3'>{error.message || "Chúng tôi đang khắc phục sự cố này."}</p>
       
-      <button
+      <Button
         onClick={() => reset()} // Re-render error segment
-        className='btn-ec'
+        variant="outline"
       >
-        Vui lòng thử lại
-      </button>
+        Thử lại
+      </Button>
     </div>
   )
 }

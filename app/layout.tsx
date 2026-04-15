@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { LayoutProps } from '@/types/index'
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { TooltipProvider, ThemeProvider } from "@/components/index";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -20,12 +21,20 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps) {
   return (
     <html
+      suppressHydrationWarning
       lang="en"
       className={cn("h-full", "antialiased", lora.variable, "font-sans", inter.variable)}
     >
       <body className="min-h-full flex flex-col">
         <Toaster position="top-right" />
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TooltipProvider>{children}</TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
