@@ -5,13 +5,13 @@ import { decodeToken } from './lib/auth'
 export function proxy(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value
   const { pathname } = request.nextUrl
-  const adminRoles = ['ROLE_ADMIN', 'ROLE_STAFF'];
+  const adminRoles = ['ADMIN', 'STAFF'];
 
   if (pathname === '/') {
     if (token) {
       const decoded = decodeToken(token);
 
-      if (decoded?.role?.some(r => adminRoles.includes(r))) {
+      if (decoded?.roles?.some(r => adminRoles.includes(r))) {
         return NextResponse.redirect(new URL('/admin', request.url));
       }
     }
@@ -35,7 +35,7 @@ export function proxy(request: NextRequest) {
     }
 
     const decoded = decodeToken(token);
-    if (!decoded?.role?.some(r => adminRoles.includes(r))) {
+    if (!decoded?.roles?.some(r => adminRoles.includes(r))) {
       return NextResponse.redirect(new URL('/', request.url));
     }
   }

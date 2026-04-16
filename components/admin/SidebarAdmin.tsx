@@ -19,8 +19,7 @@ export const SidebarAdmin = ({ ...props }: React.ComponentProps<typeof Sidebar>)
                 <FlowerIcon className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">LA HOA</span>
-                <span className="truncate text-xs">Art from soul</span>
+                <span className="truncate font-medium font-mono text-2xl">LA HOA</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -28,8 +27,7 @@ export const SidebarAdmin = ({ ...props }: React.ComponentProps<typeof Sidebar>)
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={dataNavbar.navMain} label='Quản lý' />
-        <NavMain items={dataNavbar.navSetting} label='Cấu hình' />
+        <NavMain items={dataNavbar.navMain} />
       </SidebarContent>
 
       <SidebarFooter>

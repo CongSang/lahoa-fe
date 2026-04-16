@@ -21,14 +21,11 @@ export const useUserStore = create<UserState>()(persist((set, get) => ({
 
   fetchCurrentUser: async () => {
     const token = Cookies.get('access_token');
-    const user = get().user
 
     if (!token) {
       set({ user: null, isLoading: false });
       return;
     }
-
-    if (user) return;
 
     set({ isLoading: true });
     try {

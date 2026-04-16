@@ -13,7 +13,7 @@ export const dataNavbar = {
       icon: Rows2,
     },
     {
-      title: "Nguyên liệu (tồn kho)",
+      title: "Nguyên vật liệu - tồn kho",
       url: "/admin/materials",
       icon: Package,
     },
@@ -37,23 +37,17 @@ export const dataNavbar = {
       url: "/admin/authorize",
       icon: ScanFace,
     },
-  ],
-  navSetting: [
     {
       title: "Trang thông tin",
       url: "/admin/settings/about",
       icon: FileCog,
       items: [
         {
-          title: "Trang giới thiệu",
+          title: "Giới thiệu",
           url: "/admin/settings/about",
         },
         {
-          title: "Trang liên hệ",
-          url: "/admin/settings/contact",
-        },
-        {
-          title: "Trang chính sách",
+          title: "Chính sách",
           url: "/admin/settings/policy",
         },
       ],
@@ -64,7 +58,7 @@ export const dataNavbar = {
       icon: Settings,
       items: [
         {
-          title: "Thông tin cửa hàng",
+          title: "Cửa hàng",
           url: "/admin/settings/shop",
         },
         {
@@ -81,7 +75,7 @@ export const dataNavbar = {
         },
       ],
     },
-  ]
+  ],
 }
 
 export const breadcrumbLabels: Record<string, string> = {

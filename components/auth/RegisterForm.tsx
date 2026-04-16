@@ -68,6 +68,7 @@ export const RegisterForm = () => {
       {/* Form */}
       <form className="w-full space-y-4 text-left">
         <InputCustom 
+          name="fullName"
           value={userRequest.fullName}
           disabled={loading}
           onChange={(e) => handleInputChange(e)}
@@ -76,6 +77,7 @@ export const RegisterForm = () => {
         />
 
         <InputCustom 
+          name="email"
           value={userRequest.email}
           disabled={loading}
           onChange={(e) => handleInputChange(e)}
@@ -84,6 +86,7 @@ export const RegisterForm = () => {
         />
 
         <InputCustom 
+          name="phone"
           value={userRequest.phone}
           disabled={loading}
           onChange={(e) => handleInputChange(e)}
@@ -92,6 +95,7 @@ export const RegisterForm = () => {
         />
 
         <InputCustom
+          name="password"
           value={userRequest.password}
           disabled={loading}
           onChange={(e) => handleInputChange(e)}
