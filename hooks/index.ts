@@ -1,2 +1,4 @@
 export * from './useOutsideClick'
-export * from './use-mobile'
+export * from './useMobile'
+export * from './useDataTable'
+export * from './useDebounce'

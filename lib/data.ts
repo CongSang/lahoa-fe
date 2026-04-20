@@ -1,4 +1,5 @@
-import { FileCog, LayoutDashboard, Package, Rows2, ScanFace, Settings, ShoppingCart, Tickets, Users } from "lucide-react";
+import { ChartLine, FileCog, Flower, LayoutDashboard, Package, Rows2, ScanFace, Settings, ShoppingCart, Tickets, Users } from "lucide-react";
+import { StatusCommon } from "../types";
 
 export const dataNavbar = {
   navMain: [
@@ -11,6 +12,11 @@ export const dataNavbar = {
       title: "Danh mục",
       url: "/admin/categories",
       icon: Rows2,
+    },
+    {
+      title: "Sản phẩm",
+      url: "/admin/products",
+      icon: Flower,
     },
     {
       title: "Nguyên vật liệu - tồn kho",
@@ -31,6 +37,11 @@ export const dataNavbar = {
       title: "Khuyến mãi",
       url: "/admin/promotions",
       icon: Tickets,
+    },
+    {
+      title: "Báo cáo",
+      url: "/admin/report",
+      icon: ChartLine,
     },
     {
       title: "Phân quyền",
@@ -90,3 +101,9 @@ export const breadcrumbLabels: Record<string, string> = {
   authorize: "Phân quyền",
   profile: "Trang cá nhân",
 };
+
+export const statusDropdown = [
+  { value: "ALL", label: "Tất cả" },
+  { value: StatusCommon.ACTIVE, label: "Hoạt động" },
+  { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
+]

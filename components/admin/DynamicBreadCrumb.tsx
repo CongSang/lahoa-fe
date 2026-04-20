@@ -17,7 +17,7 @@ export function DynamicBreadcrumb() {
   const pathSegments = pathname.split("/").filter((item) => item !== "")
 
   return (
-    <Breadcrumb>
+    <Breadcrumb className="hidden sm:block">
       <BreadcrumbList>
         {pathSegments.map((segment, index) => {
           const href = `/${pathSegments.slice(0, index + 1).join("/")}`
@@ -27,7 +27,7 @@ export function DynamicBreadcrumb() {
           return (
             <React.Fragment key={href}>
               {index > 0 && (<BreadcrumbSeparator />)}
-              <BreadcrumbItem>
+              <BreadcrumbItem className="text-sm">
                 {isLast ? (
                   <BreadcrumbPage className="capitalize">
                     {label}

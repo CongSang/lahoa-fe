@@ -1,5 +1,5 @@
 'use client'
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DynamicBreadcrumb, SidebarTrigger } from '@/components/index'
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DynamicBreadcrumb, SidebarTrigger } from '@/components/index'
 import { Bell, LogOut, Moon, Settings2, Shield, Sun } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/index'
 import { useTheme } from 'next-themes'
@@ -30,10 +30,10 @@ export const HeaderAdmin = () => {
   }
 
   return (
-    <header className="h-16 border-b shrink-0 bg-background flex items-center justify-between px-6 sticky top-0 z-10">
+    <header className="h-14 border-b shrink-0 bg-background flex items-center justify-between px-4 sticky top-0 z-10">
       <div className='flex items-center shrink-0 justify-center'>
         <SidebarTrigger className="-ml-1" />
-        <div className="h-4 w-px bg-gray-200 mr-2"></div>
+        <div className="hidden sm:block h-4 w-px bg-gray-200 mr-2"></div>
         <DynamicBreadcrumb />
       </div>
 
@@ -54,16 +54,28 @@ export const HeaderAdmin = () => {
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar>
                 <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
-                <AvatarFallback>A</AvatarFallback>
+                <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent 
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-48 rounded-lg"
+            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
             side={"bottom"}
             align="end"
             sideOffset={4}
           >
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
+                  <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">{user?.fullName}</span>
+                  <span className="truncate text-xs">{user?.email}</span>
+                </div>
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={toggleTheme} className='flex md:hidden'>
                 {theme === 'light' ? (

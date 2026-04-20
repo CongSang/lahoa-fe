@@ -1,6 +1,12 @@
+export * from './table/index'
+
 export * from './HeaderAdmin'
 export * from './SidebarAdmin'
 export * from './NavMain'
 export * from './NavUser'
 export * from './ThemeProvider'
 export * from './DynamicBreadCrumb'
+export * from './TooltipRender'
+export * from './BadgeCustom'
+export * from './QueryProvider'
+export * from './DropdownStatus'

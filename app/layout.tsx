@@ -5,6 +5,7 @@ import { LayoutProps } from '@/types/index'
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider, ThemeProvider } from "@/components/index";
+import QueryProvider from "@/components/admin/QueryProvider";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -33,7 +34,11 @@ export default function RootLayout({ children }: LayoutProps) {
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>{children}</TooltipProvider>
+          <QueryProvider>
+            <TooltipProvider>
+              <main className="transition-opacity duration-300 ease-in-out overflow-hidden">{children}</main>
+            </TooltipProvider>
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

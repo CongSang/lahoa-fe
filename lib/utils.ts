@@ -28,9 +28,11 @@ export const toastApiError = (error: unknown, errorMsg: string) => {
 }
 
 export const uploadToCloudinary = async (file: File) => {
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_NAME as string
+
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', 'LaHoa2604');
+  formData.append('upload_preset', uploadPreset);
 
   try {
     const response = await uploadImageApi(formData);
@@ -38,4 +40,42 @@ export const uploadToCloudinary = async (file: File) => {
   } catch (error) {
     console.error("Upload failed", error);
   }
+};
+
+export function cleanObject<T extends object>(obj: T): Partial<T> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = {};
+  (Object.keys(obj) as Array<keyof T>).forEach((key) => {
+    const value = obj[key];
+    if (value !== null && value !== undefined && value !== "") {
+      result[key] = value;
+    }
+  });
+  return result;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isObjectChange = (current: Record<string, any>, initial: Record<string, any>): boolean => {
+  const result = Object.keys(initial).every((key) => {
+    const currentValue = current[key];
+
+    return currentValue === null ||
+           currentValue === undefined ||
+           currentValue === "";
+  });
+
+  return !result
+};
+
+
+export const objectToQueryParams = (obj: Record<string, string | number | null>) => {
+  const params = new URLSearchParams();
+
+  Object.entries(obj).forEach(([key, value]) => {
+    if (value !== null && value !== undefined && value !== "") {
+      params.set(key, value.toString());
+    }
+  });
+
+  return params.toString();
 };
