@@ -1,5 +1,5 @@
 'use client'
-import { InputCustom, UploadImage } from "@/components/index"
+import { InputCustom } from "@/components/index"
 import { toastApiError, uploadToCloudinary, validateEmail, validatePassword } from "@/lib/index";
 import { registerApi } from "@/services/index";
 import { UserRequest } from "@/types/index";
@@ -62,8 +62,8 @@ export const RegisterForm = () => {
 
   return (
     <>
-     {/* Profile Photo Upload */}
-      <UploadImage image={avatar} setImage={setAvatar} />
+      {/* Profile Photo Upload */}
+      {/* <UploadImage image={avatar} setImage={setAvatar} /> */}
 
       {/* Form */}
       <form className="w-full space-y-4 text-left">

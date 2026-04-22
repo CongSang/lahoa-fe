@@ -26,6 +26,7 @@
       "@/services/*": ["services/*"],
       "@/lib/*": ["lib/*"],
       "@/store/*": ["store/*"],
+      "@/schema/*": ["schema/*"],
     }
   },
   "include": [

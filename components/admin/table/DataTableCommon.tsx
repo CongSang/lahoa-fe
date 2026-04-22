@@ -1,6 +1,7 @@
 import { ColumnDef, flexRender, Table as TableType } from '@tanstack/react-table'
 import { Button, DataTableSkeleton, Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/index'
 import { Download, Folder, Plus, SearchX } from 'lucide-react'
+import { CategoryFormInput } from '@/schema/index'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -9,6 +10,7 @@ interface DataTableProps<TData, TValue> {
   emptyLabel: string
   isFiltering: () => boolean
   onReset: () => void
+  handleOpenDialog: (data?: Partial<CategoryFormInput>) => void
 }
 
 export function DataTableCommon<TData, TValue> ({ 
@@ -17,7 +19,8 @@ export function DataTableCommon<TData, TValue> ({
   isLoading, 
   isFiltering, 
   emptyLabel,
-  onReset 
+  onReset,
+  handleOpenDialog
 }: DataTableProps<TData, TValue>) {
   return (
     <div className="overflow-hidden rounded-sm border">
@@ -74,7 +77,7 @@ export function DataTableCommon<TData, TValue> ({
                       <EmptyTitle>{emptyLabel}</EmptyTitle>
                     </EmptyHeader>
                     <EmptyContent className="flex-row justify-center gap-2">
-                      <Button><Plus />Tạo mới</Button>
+                      <Button onClick={() => handleOpenDialog()}><Plus />Tạo mới</Button>
                       <Button variant="outline"><Download />Nhập excel</Button>
                     </EmptyContent>
                   </Empty>

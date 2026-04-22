@@ -27,6 +27,7 @@ export const DropdownStatus = ({ items, value, onChange }: DropdownStatusProps) 
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
+          <SelectItem value="ALL">Tất cả</SelectItem>
           {items.map((item) => (
             <SelectItem key={item.value} value={item.value}>
               {item.label}

@@ -9,16 +9,8 @@ export interface Category {
   displayOrder?: number
   productCount?: number
   status?: StatusCommon
+  parent?: Category 
   children?: Category[]
-}
-
-export interface CategoryRequest {
-  id?: string
-  name?: string
-  description?: string
-  imageUrl?: string
-  displayOrder?: number
-  status?: StatusCommon
 }
 
 export interface CategoryFilterRequest {
@@ -36,4 +28,5 @@ export const CATEGORY_FIELD: Record<string, string> = {
   displayOrder: "TT hiển thị",
   productCount: "Sản phẩm",
   status: "Trạng thái",
+  parent: "Danh mục cha"
 }

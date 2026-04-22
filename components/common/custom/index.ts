@@ -1,3 +1,6 @@
 export * from './DropdownPopup'
 export * from './InputCustom'
 export * from './Loading'
+export * from './ImageUpload'
+export * from './GroupSelect'
+export * from './InputNumber'

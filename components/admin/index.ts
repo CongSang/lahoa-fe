@@ -1,4 +1,5 @@
 export * from './table/index'
+export * from './category/index'
 
 export * from './HeaderAdmin'
 export * from './SidebarAdmin'

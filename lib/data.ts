@@ -103,7 +103,6 @@ export const breadcrumbLabels: Record<string, string> = {
 };
 
 export const statusDropdown = [
-  { value: "ALL", label: "Tất cả" },
   { value: StatusCommon.ACTIVE, label: "Hoạt động" },
   { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
 ]

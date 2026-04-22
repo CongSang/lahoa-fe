@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import toast from "react-hot-toast";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { uploadImageApi } from "@/services/index";
+
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET!;
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -27,23 +31,20 @@ export const toastApiError = (error: unknown, errorMsg: string) => {
   toast.error(errorMessage);
 }
 
-export const uploadToCloudinary = async (file: File) => {
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_NAME as string
-
+export async function uploadToCloudinary(file: File): Promise<string> {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('upload_preset', uploadPreset);
+  formData.append('upload_preset', UPLOAD_PRESET);
 
   try {
     const response = await uploadImageApi(formData);
-    return response.secure_url;
-  } catch (error) {
-    console.error("Upload failed", error);
+    return response.secure_url as string;
+  } catch {
+    throw new Error("Upload image failed");
   }
 };
 
 export function cleanObject<T extends object>(obj: T): Partial<T> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = {};
   (Object.keys(obj) as Array<keyof T>).forEach((key) => {
     const value = obj[key];
@@ -54,7 +55,6 @@ export function cleanObject<T extends object>(obj: T): Partial<T> {
   return result;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isObjectChange = (current: Record<string, any>, initial: Record<string, any>): boolean => {
   const result = Object.keys(initial).every((key) => {
     const currentValue = current[key];
@@ -79,3 +79,12 @@ export const objectToQueryParams = (obj: Record<string, string | number | null>)
 
   return params.toString();
 };
+
+export function getCaretPosition(
+  oldValue: string,
+  newValue: string,
+  caret: number
+) {
+  const diff = newValue.length - oldValue.length;
+  return caret + diff;
+}

@@ -2,6 +2,8 @@ import { axiosInstance } from '@/lib/index';
 import { AuthRequest, UserRequest } from '@/types/index';
 import axios from 'axios';
 
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD!;
+
 export const loginApi = async (request: AuthRequest) => {
   const response = await axiosInstance.post('/auth/login', request);
   return response.data;
@@ -29,7 +31,7 @@ export const logoutApi = async () => {
 
 export const uploadImageApi = async (formData: FormData) => {
   const response = await axios.post(
-    `https://api.cloudinary.com/v1_1/dkzk9w83t/image/upload`, formData, 
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, formData, 
     {
       headers: {
         'Content-Type': 'multipart/form-data',

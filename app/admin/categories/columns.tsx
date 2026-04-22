@@ -1,12 +1,14 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback } from "@/components/index"
+import { APP_URL } from "@/lib/index"
 import { updateCategoryStatusApi } from "@/services/index"
 import { Category, CATEGORY_FIELD } from "@/types/category"
 import { StatusCommon } from "@/types/common"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
-import { Pencil, Trash2 } from "lucide-react"
+import { ImageIcon, Pencil, Trash2 } from "lucide-react"
+import Link from "next/link"
 import toast from "react-hot-toast"
 
 export const getColumns = (
@@ -42,6 +44,24 @@ export const getColumns = (
     ),
   },
   {
+    accessorKey: "imageUrl",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => {  
+      const category = row.original
+      return(
+        <Avatar>
+          <AvatarImage
+            src={category.imageUrl}
+            alt={category.name}
+          />
+          <AvatarFallback><ImageIcon size={18} /></AvatarFallback>
+        </Avatar>
+      )
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
@@ -67,9 +87,27 @@ export const getColumns = (
     ),
   },
   {
+    accessorKey: "parent",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => <>{row.original.parent?.name}</>,
+  },
+  {
     accessorKey: "slug",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => (
+      <Button variant="link" className="px-0">
+        <Link 
+          href={`${APP_URL}/${row.original.slug}`} 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          {row.original.slug}
+        </Link>
+      </Button>
     ),
   },
   {
