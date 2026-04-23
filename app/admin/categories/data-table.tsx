@@ -24,19 +24,19 @@ import {
   DropdownStatus, 
   DataTableViewOptions, 
   DataTablePagination,
-  UpsertCategoryDialog
+  UpsertCategoryDialog,
+  AlertDialogDelete
 } from "@/components/index"
 import { useMemo, useState } from "react"
-import { Download, ListFilter, Search, Upload } from "lucide-react"
+import { Download, ListFilter, RefreshCcw, Search, Upload } from "lucide-react"
 import { Category, CategoryFilterRequest, SelectType, StatusCommon } from "@/types/index"
-import { statusDropdown, toastApiError } from "@/lib/index"
+import { statusFilterDropdown } from "@/lib/index"
 import { useQuery } from "@tanstack/react-query"
 import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
-import { useCategoryMutation, useDataTable } from "@/hooks/index"
+import { useCategoryCrud, useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
 import { CategoryFormInput, CategoryFormOutput } from "@/schema/index"
-import toast from "react-hot-toast"
 
 interface DataTableProps {
   initialData?: Partial<CategoryFormInput>
@@ -49,6 +49,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [alert, setAlert] = useState<{ item: Category | null, open: boolean }>({
+    item: null,
+    open: false
+  });
 
   const { data: apiResponse, tableState, form, isLoading } = useDataTable<Category, CategoryFilterRequest>(
     "categories", 
@@ -62,9 +66,71 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     }
   )
 
+  const mutation = useCategoryCrud();
+
+  const onSubmit = async (formData: CategoryFormOutput) => {
+    if(!formData.id) {
+      mutation.mutate({ 
+        action: "create", 
+        data: formData,
+        meta: {
+          successMessage: "Tạo danh mục thành công",
+          errorMessage: "Tạo danh mục thất bại"
+        }
+      },
+      {
+        onSuccess: () => {
+          setTimeout(() => setOpenDialog(false), 300);
+        },
+        onError: () => {
+          setOpenDialog(true);
+        },
+      })
+    } else {
+      mutation.mutate({ 
+        action: "update", 
+        id: formData.id, 
+        data: formData,
+        meta: {
+          successMessage: "Cập nhật danh mục thành công",
+          errorMessage: "Cập nhật danh mục thất bại"
+        }
+      },{
+        onSuccess: () => {
+          setTimeout(() => setOpenDialog(false), 300);
+        },
+        onError: () => {
+          setOpenDialog(true);
+        },
+      })
+    }
+  };
+
+  const onDelete = async (id: number | string) => {
+    mutation.mutate({ 
+      action: "delete", 
+      id: id, 
+      meta: {
+        successMessage: "Xóa danh mục thành công",
+        errorMessage: "Xóa danh mục thất bại"
+      }
+    },{
+      onSuccess: () => {
+        setAlert({ open: false, item: null })
+      },
+      onError: () => {
+        setAlert({ open: false, item: null })
+      },
+    })
+  }
+
+  const handleDelete = (cat: Category) => {
+    setAlert({ open: true, item: cat })
+  }
+
   const columns = useMemo(() => getColumns(
     (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormInput),
-    (cat) => console.log("Delete", cat)
+    (cat) => handleDelete(cat)
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -109,19 +175,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     }, 210)
   }
 
-  const mutation = useCategoryMutation();
-
-  const onSubmit = async (formData: CategoryFormOutput) => {
-    try {
-      await mutation.mutateAsync(formData);
-      toast.success("Lưu danh mục thành công");
-    } catch (error) {
-      toastApiError(error, "Có lỗi xảy ra khi lưu danh mục");
-    } finally {
-      setOpenDialog(false)
-    }
-  };
-
   return (
     <>
       <Card className="shadow p-4 gap-3">
@@ -147,6 +200,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               <ListFilter />
               Bộ lọc
             </Button>
+            <TooltipRender tooltip="Làm mới">
+              <Button variant="outline" size="icon" onClick={handleReset}>
+                <RefreshCcw />
+              </Button>
+            </TooltipRender>
           </div>
 
           <div className="flex items-center gap-2">
@@ -177,7 +235,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               name="status"
               render={({ field }) => (
                 <DropdownStatus 
-                  items={statusDropdown} 
+                  items={statusFilterDropdown} 
                   value={field.value ?? StatusCommon.ALL}
                   onChange={(val) => field.onChange(
                     val === StatusCommon.ALL ? null : val
@@ -231,7 +289,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         <div className="flex-1 text-sm text-muted-foreground">
           Đã chọn <span className="font-semibold text-accent-foreground">
             {table.getFilteredSelectedRowModel().rows.length}/{" "}
-            {apiResponse?.totalElements || 0}
+            {table.getFilteredRowModel().rows.length}
           </span> danh mục.
         </div>
 
@@ -243,8 +301,19 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         open={openDialog}
         onOpenChange={setOpenDialog}
         initialData={initialData}
-        parents={parents}
+        parents={[ { value: "-1", label: "Không danh mục cha" }, ...parents || [] ]}
         onSubmit={onSubmit}
+      />
+
+      <AlertDialogDelete
+        isLoading={mutation.isPending}
+        open={alert.open} 
+        setOpen={(open) => setAlert({ ...alert, open })} 
+        onDelete={() => {
+          if(alert.item) onDelete(alert.item?.id)
+        }}
+        feature="Danh mục"
+        item={alert.item}
       />
     </>
   )

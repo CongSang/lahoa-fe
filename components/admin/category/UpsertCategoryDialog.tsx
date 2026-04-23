@@ -84,7 +84,7 @@ export function UpsertCategoryDialog({
           <DialogTitle>
             {initialData ? "Cập nhật danh mục" : "Tạo danh mục"}
           </DialogTitle>
-          <DialogDescription>
+          <DialogDescription className={initialData ? "sr-only" : ""}>
             Id: {initialData?.id}
           </DialogDescription>
         </DialogHeader>

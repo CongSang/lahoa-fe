@@ -1,19 +1,20 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback, TooltipRender } from "@/components/index"
 import { APP_URL } from "@/lib/index"
 import { updateCategoryStatusApi } from "@/services/index"
 import { Category, CATEGORY_FIELD } from "@/types/category"
 import { StatusCommon } from "@/types/common"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
-import { ImageIcon, Pencil, Trash2 } from "lucide-react"
+import { ArchiveRestore, ImageIcon, Pencil, Trash2 } from "lucide-react"
 import Link from "next/link"
 import toast from "react-hot-toast"
 
 export const getColumns = (
   onEdit?: (category: Category) => void,
-  onDelete?: (category: Category) => void
+  onDelete?: (category: Category) => void,
+  onRestore?: (category: Category) => void
 ): ColumnDef<Category>[] => [
   {
     id: "select",
@@ -116,24 +117,43 @@ export const getColumns = (
       const category = row.original
  
       return (
-        <div className="flex items-center justify-end gap-2">
-          <Button 
-            variant="ghost" 
-            size="icon-sm" 
-            className="text-gray-500"
-            onClick={() => onEdit?.(category)}
-          >
-            <Pencil />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon-sm" 
-            className="text-gray-500 hover:text-red-600 dark:hover:text-red-400"
-            onClick={() => onDelete?.(category)}
-          >
-            <Trash2 />
-          </Button>
-        </div>
+        <>
+          {category.status !== StatusCommon.DELETED ? (
+            <div className="flex items-center justify-end gap-2">
+              <TooltipRender tooltip="Chỉnh sửa">
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm" 
+                  className="text-gray-500"
+                  onClick={() => onEdit?.(category)}
+                >
+                  <Pencil />
+                </Button>
+              </TooltipRender>
+              <TooltipRender tooltip="Xóa">
+                <Button 
+                  variant="ghost" 
+                  size="icon-sm" 
+                  className="text-gray-500 hover:text-red-600 dark:hover:text-red-400"
+                  onClick={() => onDelete?.(category)}
+                >
+                  <Trash2 />
+                </Button>
+              </TooltipRender>
+            </div>
+          ) : (
+            <TooltipRender tooltip="Khôi phục">
+              <Button 
+                variant="ghost" 
+                size="icon-sm" 
+                className="text-gray-500"
+                onClick={() => onRestore?.(category)}
+              >
+                <ArchiveRestore />
+              </Button>
+            </TooltipRender>
+          )}
+        </>
       )
     },
   }

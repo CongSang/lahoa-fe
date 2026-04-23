@@ -8,6 +8,7 @@ export enum StatusCommon {
   ALL = "ALL",
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
+  DELETED = 'DELETED',
 }
 export interface Status {
   label: string;
@@ -25,6 +26,10 @@ export const STATUS_MAP: Record<StatusCommon, Status> = {
   },
   [StatusCommon.INACTIVE]: {
     label: 'Tạm ngưng',
+    className: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
+  },
+  [StatusCommon.DELETED]: {
+    label: 'Đã xóa',
     className: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
   },
 };

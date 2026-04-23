@@ -26,9 +26,9 @@ export const formatDisplay = (val: string) => {
 export const toastApiError = (error: unknown, errorMsg: string) => {
   let errorMessage = errorMsg;
   if (axios.isAxiosError(error)) {
-    errorMessage = error.response?.data?.message || errorMsg;
+    errorMessage = errorMsg + ": " + error.response?.data?.message;
   }
-  toast.error(errorMessage);
+  toast.error(errorMessage, { duration: 5000 });
 }
 
 export async function uploadToCloudinary(file: File): Promise<string> {

@@ -1,8 +1,7 @@
 import { parseNumber, uploadToCloudinary } from "@/lib/index";
 import { CategoryFormOutput } from "@/schema/category";
-import { createCategoryApi, updateCategoryApi } from "@/services/index";
-import { Category, PageResponse } from "@/types/index";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createCategoryApi, deleteCategoryApi, updateCategoryApi } from "@/services/index";
+import { useCrudMutation } from "@/hooks/index";
 
 export async function handleCategorySubmit(data: CategoryFormOutput): Promise<CategoryFormOutput> {
   let imageUrl = data.imageUrl;
@@ -14,7 +13,7 @@ export async function handleCategorySubmit(data: CategoryFormOutput): Promise<Ca
   const payload = {
     ...data,
     imageUrl,
-    parentId: data.parentId ?? undefined,
+    parentId: data.parentId !== -1 ? data.parentId : null,
     displayOrder:
       data.displayOrder !== undefined
         ? parseNumber(String(data.displayOrder))
@@ -24,39 +23,27 @@ export async function handleCategorySubmit(data: CategoryFormOutput): Promise<Ca
   return payload;
 }
 
-export function useCategoryMutation() {
-  const queryClient = useQueryClient();
+export function useCategoryCrud() {
+  return useCrudMutation<CategoryFormOutput>({
+    queryKey: ["categories"],
 
-  return useMutation({
-    mutationFn: async (formData: CategoryFormOutput) => {
-      const payload = await handleCategorySubmit(formData);
-      const res = await (!payload.id 
-        ? createCategoryApi(payload) 
-        : updateCategoryApi(payload.id, payload)
-      )
+    mutationFn: async (vars) => {
+      const { action, data, id } = vars;
 
-      return res
-    },
+      switch (action) {
+        case "create": {
+          const payload = await handleCategorySubmit(data as CategoryFormOutput);
+          return createCategoryApi(payload) 
+        };
 
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["categories"] });
+        case "update": {
+          const payload = await handleCategorySubmit(data as CategoryFormOutput);
+          return updateCategoryApi(payload.id!, payload)
+        };
 
-      const prev = queryClient.getQueryData(["categories"]);
-
-      queryClient.setQueryData(["categories"], (old: PageResponse<Category>) => ({
-        ...old,
-        content: [newData, ...(old?.content || [])],
-      }));
-
-      return { prev };
-    },
-
-    onError: (_err, _newData, context) => {
-      queryClient.setQueryData(["categories"], context?.prev);
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+        case "delete":
+          return deleteCategoryApi(id!);
+      }
     },
   });
 }

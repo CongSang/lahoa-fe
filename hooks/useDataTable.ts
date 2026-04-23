@@ -35,7 +35,7 @@ export function useDataTable<T, TFilter extends Record<string, any>>(
     const page = Number(searchParams.get("page")) || 0;
     const size = Number(searchParams.get("size")) || defaultPageSize;
     const sortField = searchParams.get("sortField") || "id";
-    const sortOrder = searchParams.get("sortOrder") || "asc";
+    const sortOrder = searchParams.get("sortOrder") || "desc";
 
     const extra: Record<string, any> = { ...defaultFilter };
 

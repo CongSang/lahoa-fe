@@ -29,7 +29,7 @@ export const updateCategoryApi = async (id: number, request: CategoryFormOutput)
   return response.data;
 };
 
-export const deleteCategoryApi = async (id: number) => {
+export const deleteCategoryApi = async (id: number | string) => {
   const response = await axiosInstance.delete(`/categories/${id}`);
   return response.data;
 };

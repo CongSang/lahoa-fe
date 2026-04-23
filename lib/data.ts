@@ -1,4 +1,4 @@
-import { ChartLine, FileCog, Flower, LayoutDashboard, Package, Rows2, ScanFace, Settings, ShoppingCart, Tickets, Users } from "lucide-react";
+import { ChartLine, FileCog, Flower, LayoutDashboard, Notebook, Package, Rows2, ScanFace, Settings, ShoppingCart, Tickets, Users } from "lucide-react";
 import { StatusCommon } from "../types";
 
 export const dataNavbar = {
@@ -47,6 +47,11 @@ export const dataNavbar = {
       title: "Phân quyền",
       url: "/admin/authorize",
       icon: ScanFace,
+    },
+    {
+      title: "Nhật kí thay đổi",
+      url: "/admin/audit-log",
+      icon: Notebook,
     },
     {
       title: "Trang thông tin",
@@ -105,4 +110,10 @@ export const breadcrumbLabels: Record<string, string> = {
 export const statusDropdown = [
   { value: StatusCommon.ACTIVE, label: "Hoạt động" },
   { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
+]
+
+export const statusFilterDropdown = [
+  { value: StatusCommon.ACTIVE, label: "Hoạt động" },
+  { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
+  { value: StatusCommon.DELETED, label: "Đã xóa" },
 ]
