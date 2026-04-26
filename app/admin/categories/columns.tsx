@@ -54,7 +54,7 @@ export const getColumns = (
       return(
         <Avatar>
           <AvatarImage
-            src={category.imageUrl}
+            src={category.imageUrl || undefined}
             alt={category.name}
           />
           <AvatarFallback><ImageIcon size={18} /></AvatarFallback>
@@ -95,18 +95,18 @@ export const getColumns = (
     cell: ({ row }) => <>{row.original.parent?.name}</>,
   },
   {
-    accessorKey: "slug",
+    accessorKey: "path",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0">
         <Link 
-          href={`${APP_URL}/${row.original.slug}`} 
+          href={`${APP_URL}/${row.original.path}`} 
           target="_blank" 
           rel="noopener noreferrer"
         >
-          {row.original.slug}
+          {row.original.path}
         </Link>
       </Button>
     ),

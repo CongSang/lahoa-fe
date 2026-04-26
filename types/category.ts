@@ -5,6 +5,7 @@ export interface Category {
   name: string
   description?: string
   slug: string
+  path: string
   imageUrl: string
   displayOrder?: number
   productCount?: number
@@ -23,7 +24,7 @@ export const CATEGORY_FIELD: Record<string, string> = {
   id: "Id",
   name: "Tên danh mục",
   description: "Mô tả",
-  slug: "Đường dẫn",
+  path: "Đường dẫn",
   imageUrl: "Ảnh đại diện",
   displayOrder: "TT hiển thị",
   productCount: "Sản phẩm",

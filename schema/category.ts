@@ -20,7 +20,7 @@ export const categorySchema = z.object({
   parentId: z.number().nullable().optional(),
   status: z.string().optional(),
   description: z.string().optional(),
-  slug: z.string().optional(),
+  path: z.string().optional(),
 
   displayOrder: z
     .string()

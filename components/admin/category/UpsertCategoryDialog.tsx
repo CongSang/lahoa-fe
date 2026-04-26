@@ -59,7 +59,7 @@ export function UpsertCategoryDialog({
     { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents },
     { name: "displayOrder", label: "TT hiển thị", type: "number", className: "col-span-6" },
     { name: "status", label: "Trạng thái", type: "select", className: "col-span-6", options: statusDropdown },
-    { name: "slug", label: "Đường dẫn", type: "text", disabled: true },
+    { name: "path", label: "Đường dẫn", type: "text", disabled: true },
     { name: "description", label: "Mô tả", type: "textarea", placeholder: "Mô tả danh mục" },
   ];
 
@@ -68,11 +68,11 @@ export function UpsertCategoryDialog({
       reset({
         name: "",
         imageUrl: "",
-        parentId: null,
         description: "",
         status: StatusCommon.ACTIVE,
         ...initialData,
         displayOrder: initialData?.displayOrder ? String(initialData?.displayOrder) : undefined,
+        parentId: initialData?.parentId ? initialData.parentId : -1 ,
       });
     }
   }, [open, initialData, reset]);

@@ -19,6 +19,7 @@ import {
 } from "@/components/index";
 import { SelectType } from "@/types/index";
 import { FieldConfig } from "@/schema/index";
+import { parseValueSelect } from "@/lib/index";
 
 export interface RenderFieldProps<TFieldValues extends FieldValues = FieldValues> {
   form: UseFormReturn<TFieldValues>;
@@ -116,7 +117,7 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                     <Select
                       {...field}
                       value={String(field.value) ?? undefined}
-                      onValueChange={(val) => field.onChange(isNaN(Number(val)) ? val : Number(val))}
+                      onValueChange={(val) => field.onChange(parseValueSelect(val))}
                       disabled={disabled || disabledAll}
                     >
                       <SelectTrigger>

@@ -88,3 +88,8 @@ export function getCaretPosition(
   const diff = newValue.length - oldValue.length;
   return caret + diff;
 }
+
+export const parseValueSelect = (value: string) => {
+  if (isNaN(Number(value))) return value
+  return Number(value)
+}

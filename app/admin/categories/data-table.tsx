@@ -25,11 +25,11 @@ import {
   DataTableViewOptions, 
   DataTablePagination,
   UpsertCategoryDialog,
-  AlertDialogDelete
+  AlertDialogConfirm
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, Search, Upload } from "lucide-react"
-import { Category, CategoryFilterRequest, SelectType, StatusCommon } from "@/types/index"
+import { AlertDialog, Category, CategoryFilterRequest, SelectType, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery } from "@tanstack/react-query"
 import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
@@ -49,9 +49,12 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [alert, setAlert] = useState<{ item: Category | null, open: boolean }>({
-    item: null,
-    open: false
+  const [alert, setAlert] = useState<AlertDialog<Category>>({
+    type: "delete",
+    open: false,
+    title: "",
+    description: "",
+    item: null
   });
 
   const { data: apiResponse, tableState, form, isLoading } = useDataTable<Category, CategoryFilterRequest>(
@@ -116,21 +119,57 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       }
     },{
       onSuccess: () => {
-        setAlert({ open: false, item: null })
+        setAlert({ ...alert, open: false })
       },
-      onError: () => {
-        setAlert({ open: false, item: null })
+      onError: () => {       
+        setAlert({ ...alert, open: false })
+      },
+    })
+  }
+
+  const onRestore = async (id: number | string) => {
+    mutation.mutate({ 
+      action: "restore", 
+      id: id, 
+      meta: {
+        successMessage: "Khôi phục danh mục thành công",
+        errorMessage: "Khôi phục danh mục thất bại"
+      }
+    },{
+      onSuccess: () => {
+        setAlert({ ...alert, open: false })
+      },
+      onError: () => {       
+        setAlert({ ...alert, open: false })
       },
     })
   }
 
   const handleDelete = (cat: Category) => {
-    setAlert({ open: true, item: cat })
+    setAlert({ 
+      type: "delete", 
+      item: cat, 
+      title: "Xóa danh mục?", 
+      description: `Bạn có chắc chắn xóa danh mục ${cat.name}.${" "}
+      Hãy chắc chắn rằng đã chuyển tất cả danh mục con và sản phẩm sang danh mục mới!`,
+      open: true, 
+    })
+  }
+
+  const handleRestore = (cat: Category) => {
+    setAlert({ 
+      type: "info", 
+      item: cat, 
+      title: "Khôi phục danh mục?", 
+      description: `Bạn có chắc chắn khôi phục danh mục ${cat.name}.`,
+      open: true, 
+    })
   }
 
   const columns = useMemo(() => getColumns(
     (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormInput),
-    (cat) => handleDelete(cat)
+    (cat) => handleDelete(cat),
+    (cat) => handleRestore(cat)
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -305,15 +344,19 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         onSubmit={onSubmit}
       />
 
-      <AlertDialogDelete
+      <AlertDialogConfirm
+        type={alert.type}
         isLoading={mutation.isPending}
         open={alert.open} 
         setOpen={(open) => setAlert({ ...alert, open })} 
-        onDelete={() => {
-          if(alert.item) onDelete(alert.item?.id)
+        onConfirm={() => {
+          if (alert.item) {
+            if (alert.type === "delete") onDelete(alert.item.id)
+            else onRestore(alert.item.id)
+          }
         }}
-        feature="Danh mục"
-        item={alert.item}
+        title={alert.title}
+        description={alert.description}
       />
     </>
   )

@@ -4,7 +4,7 @@ import { PageResponse } from "@/types/index";
 import toast from "react-hot-toast";
 import { toastApiError } from "@/lib/index";
 
-type CrudAction = "create" | "update" | "delete" | "bulk-delete";
+type CrudAction = "create" | "update" | "delete" | "bulk-delete" | "restore";
 
 type Id = number | string;
 
@@ -88,6 +88,7 @@ export function useCrudMutation<T extends { id?: Id }>({
             };
 
           // DELETE
+          case "restore":
           case "delete":
             return {
               ...old,

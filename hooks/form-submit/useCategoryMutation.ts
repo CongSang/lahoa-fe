@@ -1,6 +1,6 @@
 import { parseNumber, uploadToCloudinary } from "@/lib/index";
 import { CategoryFormOutput } from "@/schema/category";
-import { createCategoryApi, deleteCategoryApi, updateCategoryApi } from "@/services/index";
+import { createCategoryApi, deleteCategoryApi, restoreCategoryApi, updateCategoryApi } from "@/services/index";
 import { useCrudMutation } from "@/hooks/index";
 
 export async function handleCategorySubmit(data: CategoryFormOutput): Promise<CategoryFormOutput> {
@@ -12,6 +12,7 @@ export async function handleCategorySubmit(data: CategoryFormOutput): Promise<Ca
 
   const payload = {
     ...data,
+    name: data.name.trim(),
     imageUrl,
     parentId: data.parentId !== -1 ? data.parentId : null,
     displayOrder:
@@ -43,6 +44,9 @@ export function useCategoryCrud() {
 
         case "delete":
           return deleteCategoryApi(id!);
+
+        case "restore":
+          return restoreCategoryApi(id!);
       }
     },
   });

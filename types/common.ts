@@ -43,3 +43,13 @@ export interface SelectType {
   label: string;
   value: string | number; 
 }
+
+export type AlertDialogType = "info" | "warning" | "delete";
+
+export interface AlertDialog<T> {
+  type: AlertDialogType;
+  open: boolean
+  title: string
+  description?: string 
+  item: T | null
+}
