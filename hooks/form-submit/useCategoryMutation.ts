@@ -1,19 +1,24 @@
 import { parseNumber, uploadToCloudinary } from "@/lib/index";
-import { CategoryFormOutput } from "@/schema/category";
-import { createCategoryApi, deleteCategoryApi, restoreCategoryApi, updateCategoryApi } from "@/services/index";
+import { CategoryFormOutput } from "@/schema/index";
+import { createCategoryApi, deleteCategoryApi, getCategoryUploadSignatureApi, restoreCategoryApi, updateCategoryApi } from "@/services/index";
 import { useCrudMutation } from "@/hooks/index";
 
 export async function handleCategorySubmit(data: CategoryFormOutput): Promise<CategoryFormOutput> {
   let imageUrl = data.imageUrl;
+  let imagePublicId = data.imagePublicId;
 
   if (data.imageUrl instanceof File) {
-    imageUrl = await uploadToCloudinary(data.imageUrl);
+    const uploaded = await uploadToCloudinary(data.imageUrl, getCategoryUploadSignatureApi);
+
+    imageUrl = uploaded.url
+    imagePublicId = uploaded.publicId
   }
 
   const payload = {
     ...data,
     name: data.name.trim(),
     imageUrl,
+    imagePublicId,
     parentId: data.parentId !== -1 ? data.parentId : null,
     displayOrder:
       data.displayOrder !== undefined

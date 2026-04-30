@@ -13,45 +13,37 @@ import {
   DataTableFilterSheet,
   Field,
   FieldLabel,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Input,
   TooltipRender, 
   DropdownStatus, 
   DataTableViewOptions, 
   DataTablePagination,
-  UpsertCategoryDialog,
-  AlertDialogConfirm,
-  InputGroup,
-  InputGroupInput,
-  InputGroupAddon
+  AlertDialogConfirm
 } from "@/components/index"
 import { useMemo, useState } from "react"
-import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Category, CategoryFilterRequest, SelectType, StatusCommon } from "@/types/index"
+import { Download, ListFilter, RefreshCcw, Search, Upload } from "lucide-react"
+import { AlertDialog, Product, ProductFilterRequest, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
-import { useCategoryCrud, useDataTable } from "@/hooks/index"
+import { getProductsApi } from "@/services/index"
+import { useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
-import { CategoryFormInput, CategoryFormOutput } from "@/schema/index"
+import { ProductFormInput, ProductFormOutput } from "@/schema/index"
+import { useProductCrud } from "@/hooks/form-submit/useProductMutation"
 
 interface DataTableProps {
-  initialData?: Partial<CategoryFormInput>
+  initialData?: Partial<ProductFormInput>
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<CategoryFormInput>) => void
+  handleOpenDialog: (data?: Partial<Product>) => void
 }
 
 export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [alert, setAlert] = useState<AlertDialog<Category>>({
+  const [alert, setAlert] = useState<AlertDialog<Product>>({
     type: "delete",
     open: false,
     title: "",
@@ -60,33 +52,35 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   });
   const queryClient = useQueryClient();
 
-  const { data: apiResponse, tableState, form, isLoading } = useDataTable<Category, CategoryFilterRequest>(
-    "categories", 
-    getCategoriesApi, 
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<Product, ProductFilterRequest>(
+    "products", 
+    getProductsApi, 
     {
       defaultFilter: { 
         keyword: "",
         status: null,
-        parentId: null,
+        categoryId: null,
+        minPrice: 0,
+        maxPrice: 0,
+        propertyValueIds: {},
       }
     }
   )
 
-  const mutation = useCategoryCrud();
+  const mutation = useProductCrud();
 
-  const onSubmit = async (formData: CategoryFormOutput) => {
+  const onSubmit = async (formData: ProductFormOutput) => {
     if(!formData.id) {
       mutation.mutate({ 
         action: "create", 
         data: formData,
         meta: {
-          successMessage: "Tạo danh mục thành công",
-          errorMessage: "Tạo danh mục thất bại"
+          successMessage: "Tạo sản phẩm thành công",
+          errorMessage: "Tạo sản phẩm thất bại"
         }
       },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["category-parents"] });
           setTimeout(() => setOpenDialog(false), 300);
         },
         onError: () => {
@@ -99,12 +93,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         id: formData.id, 
         data: formData,
         meta: {
-          successMessage: "Cập nhật danh mục thành công",
-          errorMessage: "Cập nhật danh mục thất bại"
+          successMessage: "Cập nhật sản phẩm thành công",
+          errorMessage: "Cập nhật sản phẩm thất bại"
         }
       },{
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ["category-parents"] });
           setTimeout(() => setOpenDialog(false), 300);
         },
         onError: () => {
@@ -119,12 +112,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "delete", 
       id: id, 
       meta: {
-        successMessage: "Xóa danh mục thành công",
-        errorMessage: "Xóa danh mục thất bại"
+        successMessage: "Xóa sản phẩm thành công",
+        errorMessage: "Xóa sản phẩm thất bại"
       }
     },{
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["category-parents"] });
         setAlert({ ...alert, open: false })
       },
       onError: () => {       
@@ -138,12 +130,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "restore", 
       id: id, 
       meta: {
-        successMessage: "Khôi phục danh mục thành công",
-        errorMessage: "Khôi phục danh mục thất bại"
+        successMessage: "Khôi phục sản phẩm thành công",
+        errorMessage: "Khôi phục sản phẩm thất bại"
       }
     },{
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["category-parents"] });
         setAlert({ ...alert, open: false })
       },
       onError: () => {       
@@ -152,31 +143,31 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     })
   }
 
-  const handleDelete = (cat: Category) => {
+  const handleDelete = (product: Product) => {
     setAlert({ 
       type: "delete", 
-      item: cat, 
-      title: "Xóa danh mục?", 
-      description: `Bạn có chắc chắn xóa danh mục ${cat.name}.${" "}
-      Hãy chắc chắn rằng đã chuyển tất cả danh mục con và sản phẩm sang danh mục mới!`,
+      item: product, 
+      title: "Xóa sản phẩm?", 
+      description: `Bạn có chắc chắn xóa sản phẩm ${product.name}.${" "}
+      Khi bạn xóa sản phẩm này các biến thể của sản phẩm cũng sẽ bị xóa.`,
       open: true, 
     })
   }
 
-  const handleRestore = (cat: Category) => {
+  const handleRestore = (product: Product) => {
     setAlert({ 
       type: "info", 
-      item: cat, 
-      title: "Khôi phục danh mục?", 
-      description: `Bạn có chắc chắn khôi phục danh mục ${cat.name}.`,
+      item: product, 
+      title: "Khôi phục sản phẩm?", 
+      description: `Bạn có chắc chắn khôi phục sản phẩm ${product.name}.`,
       open: true, 
     })
   }
 
   const columns = useMemo(() => getColumns(
-    (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormInput),
-    (cat) => handleDelete(cat),
-    (cat) => handleRestore(cat)
+    (product) => handleOpenDialog(product),
+    (product) => handleDelete(product),
+    (product) => handleRestore(product)
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -202,10 +193,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     },
   })
 
-  const { data: parents } = useQuery({
-    queryKey: ["category-parents"],
-    queryFn: getDropdownParentApi,
-  });
+  // const { data: parents } = useQuery({
+  //   queryKey: ["category-parents"],
+  //   queryFn: getDropdownParentApi,
+  // });
 
   const handleSearch = () => {
     setIsFilterOpen(false)
@@ -226,8 +217,9 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       <Card className="shadow p-4 gap-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-2 max-w-2xl">
-            <InputGroup className="max-w-sm">
-              <InputGroupInput
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
                 {...form.register("keyword")}
                 name="keyword"
                 placeholder="Nhập từ khóa..."
@@ -237,10 +229,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 className="pl-7.5"
                 autoComplete="off"
               />
-              <InputGroupAddon align="inline-start">
-                <SearchIcon className="text-muted-foreground" />
-              </InputGroupAddon>
-            </InputGroup>
+            </div>
 
             <Button 
               variant="outline" 
@@ -293,43 +282,13 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               )}
           />
           </Field>
-          <Field>
-            <FieldLabel>Danh mục cha</FieldLabel>
-            <Controller
-              control={form.control}
-              name="parentId"
-              render={({ field }) => (
-                <Select
-                  value={field.value?.toString() ?? "ALL"}
-                  onValueChange={(val) => field.onChange(
-                    val === "ALL" ? null : Number(val)
-                  )}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Tất cả" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="ALL">Tất cả</SelectItem>
-                      <SelectItem value="-1">Danh mục gốc</SelectItem>
-                      {parents?.map((p: SelectType) => (
-                        <SelectItem key={p.value} value={p.value.toString()}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </Field>
         </DataTableFilterSheet>
 
         <DataTableCommon 
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có Danh mục nào"
+          emptyLabel="Chưa có sản phẩm nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}
@@ -339,20 +298,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           Đã chọn <span className="font-semibold text-accent-foreground">
             {table.getFilteredSelectedRowModel().rows.length}/{" "}
             {table.getFilteredRowModel().rows.length}
-          </span> danh mục.
+          </span> sản phẩm.
         </div>
 
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />
       </Card>
-
-      <UpsertCategoryDialog
-        isLoading={mutation.isPending}
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        initialData={initialData}
-        parents={[ { value: "-1", label: "Không danh mục cha" }, ...parents || [] ]}
-        onSubmit={onSubmit}
-      />
 
       <AlertDialogConfirm
         type={alert.type}

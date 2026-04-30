@@ -2,9 +2,8 @@
 
 import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback, TooltipRender } from "@/components/index"
 import { APP_URL } from "@/lib/index"
-import { updateCategoryStatusApi } from "@/services/index"
-import { Category, CATEGORY_FIELD } from "@/types/category"
-import { StatusCommon } from "@/types/common"
+import { updateProductStatusApi } from "@/services/index"
+import { Product, PRODUCT_FIELD, StatusCommon } from "@/types/index"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArchiveRestore, ImageIcon, Pencil, Trash2 } from "lucide-react"
@@ -12,10 +11,10 @@ import Link from "next/link"
 import toast from "react-hot-toast"
 
 export const getColumns = (
-  onEdit?: (category: Category) => void,
-  onDelete?: (category: Category) => void,
-  onRestore?: (category: Category) => void
-): ColumnDef<Category>[] => [
+  onEdit?: (product: Product) => void,
+  onDelete?: (product: Product) => void,
+  onRestore?: (product: Product) => void
+): ColumnDef<Product>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -41,20 +40,20 @@ export const getColumns = (
   {
     accessorKey: "id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
   },
   {
-    accessorKey: "imageUrl",
+    accessorKey: "mainImage",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
     cell: ({ row }) => {  
       const category = row.original
       return(
         <Avatar>
           <AvatarImage
-            src={category.imageUrl || undefined}
+            src={category.mainImage || undefined}
             alt={category.name}
           />
           <AvatarFallback><ImageIcon size={18} /></AvatarFallback>
@@ -65,48 +64,48 @@ export const getColumns = (
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
   },
   {
-    accessorKey: "productCount",
+    accessorKey: "price",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <StatusCell category={row.original} />,
+    cell: ({ row }) => <StatusCell product={row.original} />,
   },
   {
-    accessorKey: "displayOrder",
+    accessorKey: "primaryCategory",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
   },
   {
-    accessorKey: "parent",
+    accessorKey: "categories",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <>{row.original.parent?.name}</>,
+    cell: ({ row }) => <>{row.original.categories[0].name}</>,
   },
   {
-    accessorKey: "path",
+    accessorKey: "slug",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
     cell: ({ row }) => (
       <Button variant="link" className="px-0">
         <Link 
-          href={`${APP_URL}/${row.original.path}`} 
+          href={`${APP_URL}/${row.original.primaryCategory.slug}/${row.original.slug}`} 
           target="_blank" 
           rel="noopener noreferrer"
         >
-          {row.original.path}
+          {row.original.primaryCategory.slug + "/" + row.original.slug}
         </Link>
       </Button>
     ),
@@ -114,7 +113,19 @@ export const getColumns = (
   {
     accessorKey: "seoTitle",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+  },
+  {
+    accessorKey: "seoDescription",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+  },
+  {
+    accessorKey: "seoKeywords",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
   },
   {
@@ -165,11 +176,11 @@ export const getColumns = (
   }
 ]
 
-const StatusCell = ({ category }: { category: Category }) => {
+const StatusCell = ({ product }: { product: Product }) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: (newStatus: string) => updateCategoryStatusApi(category.id, newStatus),
+    mutationFn: (newStatus: string) => updateProductStatusApi(product.id, newStatus),
     onSuccess: () => {
       toast.success("Cập nhật trạng thái thành công");
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -179,23 +190,23 @@ const StatusCell = ({ category }: { category: Category }) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={category.status === StatusCommon.DELETED}>
+      <DropdownMenuTrigger asChild disabled={product.status === StatusCommon.DELETED}>
         {mutation.isPending ? 
           <div className="w-16 flex items-center justify-center "><Spinner /></div>
         : <button disabled={mutation.isPending} className="focus:outline-none">
-            <BadgeCustom status={category.status!} />
+            <BadgeCustom status={product.status!} />
           </button>
         }
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem 
-          disabled={category.status === StatusCommon.ACTIVE} 
+          disabled={product.status === StatusCommon.ACTIVE} 
           onClick={() => mutation.mutate(StatusCommon.ACTIVE)}
         >
           Hoạt động
         </DropdownMenuItem>
         <DropdownMenuItem 
-          disabled={category.status === StatusCommon.INACTIVE} 
+          disabled={product.status === StatusCommon.INACTIVE} 
           onClick={() => mutation.mutate(StatusCommon.INACTIVE)}
         > 
           Tạm ngưng

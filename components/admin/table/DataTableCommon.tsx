@@ -1,7 +1,6 @@
 import { ColumnDef, flexRender, Table as TableType } from '@tanstack/react-table'
 import { Button, DataTableSkeleton, Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/index'
 import { Download, Folder, Plus, SearchX } from 'lucide-react'
-import { CategoryFormInput } from '@/schema/index'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -10,7 +9,7 @@ interface DataTableProps<TData, TValue> {
   emptyLabel: string
   isFiltering: () => boolean
   onReset: () => void
-  handleOpenDialog: (data?: Partial<CategoryFormInput>) => void
+  handleOpenDialog: (data?: Partial<TValue>) => void
 }
 
 export function DataTableCommon<TData, TValue> ({ 

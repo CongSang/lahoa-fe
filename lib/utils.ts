@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { uploadImageApi } from "@/services/index";
+import { UploadSignatureResponse } from "@/types/index";
 
-const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET!;
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL!;
 
 export function cn(...inputs: ClassValue[]) {
@@ -31,14 +31,29 @@ export const toastApiError = (error: unknown, errorMsg: string) => {
   toast.error(errorMessage, { duration: 5000 });
 }
 
-export async function uploadToCloudinary(file: File): Promise<string> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-
+export async function uploadToCloudinary(
+  file: File, 
+  getSignature: () => Promise<UploadSignatureResponse>
+) : Promise<{ 
+  url: string, 
+  publicId: string 
+}> {
   try {
-    const response = await uploadImageApi(formData);
-    return response.secure_url as string;
+    const signature = await getSignature();
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("api_key", signature.apiKey);
+    formData.append("timestamp", signature.timestamp.toString());
+    formData.append("signature", signature.signature);
+    formData.append("folder", signature.folder);
+
+    const response = await uploadImageApi(formData, signature.cloudName);
+
+    return {
+      url: response.secure_url as string,
+      publicId: response.public_id as string
+    };
   } catch {
     throw new Error("Upload image failed");
   }

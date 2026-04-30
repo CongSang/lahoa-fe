@@ -7,7 +7,6 @@ import {
   FieldLabel,
   ImageUpload,
   Input,
-  Textarea,
   GroupSelect,
   Select,
   SelectTrigger,
@@ -15,7 +14,11 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  InputNumber
+  InputNumber,
+  InputGroup,
+  InputGroupTextarea,
+  InputGroupAddon,
+  InputGroupText
 } from "@/components/index";
 import { SelectType } from "@/types/index";
 import { FieldConfig } from "@/schema/index";
@@ -50,6 +53,7 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                       aria-invalid={fieldState.invalid}
                       autoComplete="off"
                       disabled={disabled || disabledAll}
+                      placeholder={placeholder}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -61,14 +65,19 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                 return (
                   <>
                     <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
-                    <Textarea
-                      {...field}
-                      id={field.name}
-                      aria-invalid={fieldState.invalid}
-                      placeholder={placeholder}
-                      rows={4}
-                      disabled={disabled || disabledAll}
-                    />
+                    <InputGroup>
+                      <InputGroupTextarea
+                        {...field}
+                        id={field.name}
+                        aria-invalid={fieldState.invalid}
+                        placeholder={placeholder}
+                        rows={3}
+                        disabled={disabled || disabledAll}
+                      />
+                      <InputGroupAddon align="block-end">
+                        <InputGroupText>{field.value?.length || 0}/500</InputGroupText>
+                      </InputGroupAddon>
+                    </InputGroup>
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
@@ -139,9 +148,9 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
               case "group-select":
                 return (
                   <>
-                    <FieldLabel>{fieldConfig.label}</FieldLabel>
+                    <FieldLabel>{label}</FieldLabel>
                     <GroupSelect
-                      placeholder={fieldConfig.placeholder}
+                      placeholder={placeholder}
                       data={[]}
                       value={field.value}
                       onChange={field.onChange}

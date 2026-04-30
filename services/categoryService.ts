@@ -24,7 +24,7 @@ export const createCategoryApi = async (request: CategoryFormOutput) => {
   return response.data;
 };
 
-export const updateCategoryApi = async (id: number, request: CategoryFormOutput) => {
+export const updateCategoryApi = async (id: number | string, request: CategoryFormOutput) => {
   const response = await axiosInstance.put(`/categories/${id}`, request);
   return response.data;
 };
@@ -39,7 +39,12 @@ export const deleteCategoryApi = async (id: number | string) => {
   return response.data;
 };
 
-export const updateCategoryStatusApi = async (id: number, status: string) => {
+export const updateCategoryStatusApi = async (id: number | string, status: string) => {
   const response = await axiosInstance.patch(`/categories/${id}/status`, { status });
+  return response.data;
+};
+
+export const getCategoryUploadSignatureApi = async () => {
+  const response = await axiosInstance.get(`/categories/upload-signature`);
   return response.data;
 };

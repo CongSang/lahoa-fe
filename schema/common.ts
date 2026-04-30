@@ -1,4 +1,5 @@
 import { SelectType } from "@/types/index";
+import z from "zod";
 
 export type FieldType =
   | "text"
@@ -25,3 +26,5 @@ export type SectionConfig<T> = {
   columns?: number;
   className?: string;
 };
+
+export const statusEnum = z.enum(["ACTIVE", "INACTIVE", "DELETED"]);

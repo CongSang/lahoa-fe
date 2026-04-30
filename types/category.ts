@@ -11,7 +11,10 @@ export interface Category {
   productCount?: number
   status?: StatusCommon
   parent?: Category 
-  children?: Category[]
+  children?: Category[]  
+  seoTitle?: string
+  seoDescription?: string
+  seoKeywords?: string
 }
 
 export interface CategoryFilterRequest {
@@ -21,13 +24,16 @@ export interface CategoryFilterRequest {
 }
 
 export const CATEGORY_FIELD: Record<string, string> = {
-  id: "Id",
-  name: "Tên danh mục",
+  id: "ID",
+  name: "Tên",
   description: "Mô tả",
   path: "Đường dẫn",
-  imageUrl: "Ảnh đại diện",
+  imageUrl: "Ảnh",
   displayOrder: "TT hiển thị",
   productCount: "Sản phẩm",
   status: "Trạng thái",
-  parent: "Danh mục cha"
+  parent: "Danh mục cha",
+  seoTitle: "Tiêu đề SEO",
+  seoDescription: "Mô tả SEO",
+  seoKeywords: "Từ khóa SEO",
 }

@@ -14,12 +14,14 @@ import {
   DialogClose,
   AutoForm,
   DialogDescription,
-  Spinner
+  Spinner,
+  Separator
 } from "@/components/index";
 
 import { categorySchema, CategoryFormInput, CategoryFormOutput, FieldConfig } from "@/schema/index";
 import { SelectType, StatusCommon } from "@/types/index";
 import { statusDropdown } from "@/lib/data";
+import { WandSparkles } from "lucide-react";
 
 type UpsertCategoryDialogProps = {
   isLoading: boolean;
@@ -53,15 +55,21 @@ export function UpsertCategoryDialog({
 
   const { handleSubmit, reset } = form;
 
-  const categoryFormConfig: FieldConfig<CategoryFormInput>[] = [
+  const sectionFormConfig: FieldConfig<CategoryFormInput>[] = [
     { name: "imageUrl", label: "Ảnh", type: "image" },
-    { name: "name", label: "Tên danh mục", type: "text" },
-    { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents },
+    { name: "name", label: "Tên danh mục", type: "text", className: "col-span-6" },
+    { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents, className: "col-span-6" },
     { name: "displayOrder", label: "TT hiển thị", type: "number", className: "col-span-6" },
     { name: "status", label: "Trạng thái", type: "select", className: "col-span-6", options: statusDropdown },
     { name: "path", label: "Đường dẫn", type: "text", disabled: true },
     { name: "description", label: "Mô tả", type: "textarea", placeholder: "Mô tả danh mục" },
   ];
+
+  const sectionFormSEOConfig: FieldConfig<CategoryFormInput>[] = [
+    { name: "seoTitle", label: "Tiêu đề", type: "text", placeholder: "Tiêu đề SEO", className: "col-span-6" },
+    { name: "seoKeywords", label: "Từ khóa", type: "text", placeholder: "Từ khóa SEO", className: "col-span-6" },
+    { name: "seoDescription", label: "Mô tả", type: "textarea", placeholder: "Mô tả SEO" },
+  ]
 
   useEffect(() => {
     if (open) {
@@ -79,13 +87,13 @@ export function UpsertCategoryDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
             {initialData ? "Cập nhật danh mục" : "Tạo danh mục"}
           </DialogTitle>
-          <DialogDescription className={initialData ? "sr-only" : ""}>
-            Id: {initialData?.id}
+          <DialogDescription className={!initialData ? "sr-only" : ""}>
+            ID: {initialData?.id}
           </DialogDescription>
         </DialogHeader>
 
@@ -96,11 +104,29 @@ export function UpsertCategoryDialog({
           })}
           className="space-y-2"
         >
-          <AutoForm<CategoryFormInput>
-            form={form}
-            config={categoryFormConfig}
-            disabledAll={isLoading}
-          />
+          <div className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 py-1 flex flex-col gap-2">
+            <AutoForm<CategoryFormInput>
+              form={form}
+              config={sectionFormConfig}
+              disabledAll={isLoading}
+            />
+
+            <Separator className="mt-2" />
+
+            <div className="flex justify-between items-center">
+              <div className="font-semibold">Thông tin SEO</div>
+              <Button variant="ghost" size="xs" type="button" className="text-violet-600 hover:text-violet-700 dark:text-violet-400 dark:hover:text-violet-300">
+                <WandSparkles />
+                Tự động điền
+              </Button>
+            </div>
+
+            <AutoForm<CategoryFormInput>
+              form={form}
+              config={sectionFormSEOConfig}
+              disabledAll={isLoading}
+            />
+          </div>
 
           <DialogFooter>
             <DialogClose asChild disabled={isLoading}>

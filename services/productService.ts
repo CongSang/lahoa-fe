@@ -1,0 +1,40 @@
+import { axiosInstance, cleanObject } from "@/lib/index";
+import { PageRequest, ProductFilterRequest } from "@/types/index";
+import { ProductFormOutput } from "@/schema/index";
+
+export const getProductsApi = async (filter: ProductFilterRequest & PageRequest) => {
+  const params = cleanObject(filter)
+
+  const response = await axiosInstance.get('/products', { params });
+  return response.data;
+};
+
+export const createProductApi = async (request: ProductFormOutput) => {
+  const response = await axiosInstance.post('/products', request);
+  return response.data;
+};
+
+export const updateProductApi = async (id: number | string, request: ProductFormOutput) => {
+  const response = await axiosInstance.put(`/products/${id}`, request);
+  return response.data;
+};
+
+export const restoreProductApi = async (id: number | string) => {
+  const response = await axiosInstance.put(`/products/${id}/restore`);
+  return response.data;
+};
+
+export const deleteProductApi = async (id: number | string) => {
+  const response = await axiosInstance.delete(`/products/${id}`);
+  return response.data;
+};
+
+export const updateProductStatusApi = async (id: number | string, status: string) => {
+  const response = await axiosInstance.patch(`/products/${id}/status`, { status });
+  return response.data;
+};
+
+export const getProductUploadSignatureApi = async () => {
+  const response = await axiosInstance.get(`/products/upload-signature`);
+  return response.data;
+};

@@ -53,3 +53,11 @@ export interface AlertDialog<T> {
   description?: string 
   item: T | null
 }
+
+export interface UploadSignatureResponse {
+  timestamp: number;
+  signature: string;
+  apiKey: string;
+  cloudName: string;
+  folder: string;
+}

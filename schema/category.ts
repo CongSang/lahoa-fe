@@ -1,8 +1,11 @@
 import { z } from "zod";
+import { statusEnum } from "./common";
 
 export const categorySchema = z.object({
   id: z.number().optional(),
+
   name: z.string().min(1, "Tên danh mục không được để trống"),
+
   imageUrl: z
     .union([
       z.instanceof(File),
@@ -17,9 +20,14 @@ export const categorySchema = z.object({
       return true;
     }, "File quá lớn"),
 
+  imagePublicId: z.string().optional(),
+
   parentId: z.number().nullable().optional(),
-  status: z.string().optional(),
+
+  status: statusEnum.default("ACTIVE"),
+
   description: z.string().optional(),
+
   path: z.string().optional(),
 
   displayOrder: z
@@ -28,6 +36,13 @@ export const categorySchema = z.object({
     .transform((val) =>
       val ? Number(val.replace(/[.,]/g, "")) : undefined
     ),
+  
+  
+  seoTitle: z.string().optional(),
+
+  seoDescription: z.string().optional(),
+
+  seoKeywords: z.string().optional(),
 });
 
 export type CategoryFormInput = z.input<typeof categorySchema>;
