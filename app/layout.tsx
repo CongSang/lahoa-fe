@@ -17,6 +17,9 @@ const lora = Lora({
 export const metadata: Metadata = {
   title: "LA HOA | Hoa tươi",
   description: "Tiệm hoa online tại TP.HCM 🌸\nMỗi bó hoa là một thiết kế riêng - mời bạn ghé trải nghiệm nha.",
+  icons: {
+    icon: "/images/logo.svg",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps) {

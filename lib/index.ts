@@ -1,6 +1,6 @@
 export * from './utils'
 export * from './axios'
-export * from './validation'
+export * from './regex'
 export * from './auth'
 export * from './data'
 export * from './number-format'

@@ -1,7 +1,7 @@
 "use client"
 
 import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback, TooltipRender } from "@/components/index"
-import { APP_URL } from "@/lib/index"
+import { APP_URL, formatNumber } from "@/lib/index"
 import { updateProductStatusApi } from "@/services/index"
 import { Product, PRODUCT_FIELD, StatusCommon } from "@/types/index"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -70,8 +70,9 @@ export const getColumns = (
   {
     accessorKey: "price",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} side="right" />
     ),
+    cell: ({ row }) => <div className="text-right">{formatNumber(row.original.price, { style: "currency", currency: "VND" })}</div>,
   },
   {
     accessorKey: "status",
@@ -91,39 +92,31 @@ export const getColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <>{row.original.categories[0].name}</>,
+    cell: ({ row }) => <>{row.original.categories?.[0]?.name || ""}</>,
   },
   {
     accessorKey: "slug",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
-    cell: ({ row }) => (
-      <Button variant="link" className="px-0">
-        <Link 
-          href={`${APP_URL}/${row.original.primaryCategory.slug}/${row.original.slug}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          {row.original.primaryCategory.slug + "/" + row.original.slug}
-        </Link>
-      </Button>
-    ),
+    cell: ({ row }) => {
+      const path = row.original.primaryCategory?.slug ? `${row.original.primaryCategory.slug}/${row.original.slug}` : row.original.slug;
+
+      return (
+        <Button variant="link" className="px-0" asChild>
+          <Link 
+            href={`${APP_URL}/${path}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            {path}
+          </Link>
+        </Button>
+      )
+    },
   },
   {
     accessorKey: "seoTitle",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
-    ),
-  },
-  {
-    accessorKey: "seoDescription",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
-    ),
-  },
-  {
-    accessorKey: "seoKeywords",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),

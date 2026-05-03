@@ -1,13 +1,17 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
-import { InputCustom } from '@/components/index'
+import { useEffect } from 'react'
+import { AutoForm, Button, Spinner } from '@/components/index'
 import { AuthRequest } from '@/types/index';
-import { toastApiError, validateEmail } from '@/lib/index';
+import { toastApiError } from '@/lib/index';
 import toast from 'react-hot-toast';
 import { useUserStore } from 'store/useUserStore';
 import { useRouter } from 'next/navigation';
 import { loginApi } from '@/services/index';
+import { useForm } from 'react-hook-form';
+import { AuthFormValues, authSchema, FieldConfig } from '@/schema/index';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 
 interface LoginFormProps {
   searchParams?: {
@@ -16,42 +20,35 @@ interface LoginFormProps {
 }
 
 export const LoginForm = ({ searchParams } : LoginFormProps) => {
-  const [authRequest, setAuthRequest] = useState<AuthRequest>({
-    email: '',
-    password: '',
-  });
-  const [loading, setIsLoading] = useState(false);
   const { login } = useUserStore();
   const router = useRouter()
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setAuthRequest(prev => ({ ...prev, [name]: value }));
-  }
+  const form = useForm<AuthFormValues>({
+    resolver: zodResolver(authSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const handleLogin = async () => {
-    if (!validateEmail(authRequest.email)) {
-        toast.error('Vui lòng nhập email hợp lệ.');
-        return;
-    }
+  const { handleSubmit } = form;
+  
+  const sectionFormConfig: FieldConfig<AuthFormValues>[] = [
+    { name: "email", type: "text", placeholder: "Địa chỉ email" },
+    { name: "password", type: "password", placeholder: "Mật khẩu" },
+  ];
 
-    if (!authRequest.password.trim()) {
-        toast.error('Vui lòng nhập mật khẩu.');
-        return;
-    }
-
-    setIsLoading(true);
-    try {
-      const data = await loginApi(authRequest);
+  const mutation = useMutation({
+    mutationFn: (request: AuthRequest) => loginApi(request),
+    onSuccess: (data) => {
       login(data);
       router.replace('/');
-    } catch (error: unknown) {
+    },
+    onError: (error) => {
       console.error('Login failed', error);
-      toastApiError(error, 'Login failed. Please check your credentials and try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      toastApiError(error, 'Đăng nhập thất bại. Vui lòng thử lại.');
+    },
+  });
 
   const handleLoginWithGoogle = () => {
     router.push(`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`);
@@ -59,7 +56,7 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
 
   useEffect(() => {
     if (searchParams?.error === 'oauth2_cancelled') {
-      toast.error('Bạn đã hủy đăng nhập bằng Google.');
+      toast.error('Bạn đã hủy đăng nhập với Google.');
       router.replace('/login');
     } else if (searchParams?.error === 'oauth2_failed') {
       toast.error('Đăng nhập Google thất bại. Vui lòng thử lại.');
@@ -70,33 +67,25 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
 
   return (
     <>
-      <form className="w-full space-y-4 text-left">
-        <InputCustom
-          name='email'
-          disabled={loading}
-          value={authRequest.email}
-          placeholder="Địa chỉ email"
-          type="email" 
-          onChange={(e) => handleInputChange(e)}
+      <form 
+        id='form-login' 
+        className="w-full space-y-2 text-left"
+        onSubmit={handleSubmit((data) => mutation.mutate(data))}
+      >
+        <AutoForm<AuthFormValues>
+          form={form}
+          config={sectionFormConfig}
+          disabledAll={mutation.isPending}
         />
 
-        <InputCustom 
-          name='password'
-          disabled={loading}
-          value={authRequest.password}
-          placeholder="Mật khẩu" 
-          type="password" 
-          onChange={(e) => handleInputChange(e)}
-        />
-
-        <button 
-          onClick={handleLogin}
-          type="button"
-          disabled={loading}
+        <Button
+          type="submit"
+          disabled={mutation.isPending}
           className="w-full btn-ec uppercase"
+          size="lg"
         >
-          Đăng nhập
-        </button>
+          {mutation.isPending ? <Spinner /> : 'Đăng nhập'}
+        </Button>
       </form>
 
       {/* Separator */}
@@ -110,11 +99,13 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
       </div>
 
       {/* Social Provider */}
-      <button 
+      <Button 
         onClick={handleLoginWithGoogle}
         type="button"
-        disabled={loading}
-        className="w-full uppercase text-sm max-sm:text-xs flex items-center justify-center gap-3 py-2.5 px-4 bg-white border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors font-semibold text-gray-900 shadow active:scale-[0.98]"
+        disabled={mutation.isPending}
+        size="lg"
+        variant="outline"
+        className="w-full uppercase font-semibold text-gray-800 shadow-sm"
       >
         <svg className="w-5 h-5" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -123,7 +114,7 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
           <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
         </svg>
         Đăng nhập với Google
-      </button>
+      </Button>
     </>
   )
 }

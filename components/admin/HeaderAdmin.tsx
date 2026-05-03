@@ -53,7 +53,7 @@ export const HeaderAdmin = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar>
-                <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
+                <AvatarImage src={user?.userImageUrl || ""} alt={user?.fullName} />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>
@@ -66,9 +66,9 @@ export const HeaderAdmin = () => {
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
-                  <AvatarFallback className="rounded-lg">AD</AvatarFallback>
+                <Avatar>
+                  <AvatarImage src={user?.userImageUrl || ""} alt={user?.fullName} />
+                  <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user?.fullName}</span>

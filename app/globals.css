@@ -121,9 +121,9 @@ body {
   }
 }
 
-@layer components {
+@layer utilities {
   .btn-ec {
-    @apply bg-secondary-ec text-white font-semibold px-4 py-2.5 rounded-lg hover:bg-secondary-ec/90 transition-colors shadow-lg focus:scale-[0.98] disabled:pointer-events-none disabled:opacity-90 text-sm max-sm:text-xs;
+    @apply bg-secondary-ec! font-semibold! hover:bg-secondary-ec/90!;
   }
 }
 

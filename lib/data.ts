@@ -1,4 +1,4 @@
-import { ChartLine, FileCog, Flower, LayoutDashboard, Notebook, Package, Rows2, ScanFace, Settings, ShoppingCart, Tickets, Users } from "lucide-react";
+import { ChartLine, FileCog, Flower, LayoutDashboard, Notebook, Package, Rows2, Settings, ShoppingCart, Tickets, UserKey, Users } from "lucide-react";
 import { StatusCommon } from "../types";
 
 export const dataNavbar = {
@@ -46,7 +46,7 @@ export const dataNavbar = {
     {
       title: "Phân quyền",
       url: "/admin/authorize",
-      icon: ScanFace,
+      icon: UserKey,
     },
     {
       title: "Nhật kí thay đổi",

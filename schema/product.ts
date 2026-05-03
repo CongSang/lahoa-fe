@@ -6,7 +6,7 @@ export const productPropertyValueSchema = z.object({
 });
 
 export const variantSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
   sku: z.string().min(1, "SKU is required"),
   price: z.number().min(0, "Price must be >= 0"),
   stock: z.number().int().min(0).optional(),
@@ -18,7 +18,7 @@ export const variantSchema = z.object({
 });
 
 export const productSchema = z.object({
-  id: z.string().optional(),
+  id: z.number().optional(),
 
   name: z.string().min(1, "Name is required"),
 
@@ -68,5 +68,4 @@ export const productSchema = z.object({
     .optional(),
 });
 
-export type ProductFormInput = z.input<typeof productSchema>;
-export type ProductFormOutput = z.output<typeof productSchema>;
+export type ProductFormValues = z.infer<typeof productSchema>;

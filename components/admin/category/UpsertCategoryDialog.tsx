@@ -18,8 +18,8 @@ import {
   Separator
 } from "@/components/index";
 
-import { categorySchema, CategoryFormInput, CategoryFormOutput, FieldConfig } from "@/schema/index";
-import { SelectType, StatusCommon } from "@/types/index";
+import { categorySchema, CategoryFormValues, FieldConfig } from "@/schema/index";
+import { SelectItemOption, StatusCommon } from "@/types/index";
 import { statusDropdown } from "@/lib/data";
 import { WandSparkles } from "lucide-react";
 
@@ -27,9 +27,9 @@ type UpsertCategoryDialogProps = {
   isLoading: boolean;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  initialData?: Partial<CategoryFormInput>;
-  parents?: SelectType[];
-  onSubmit: (data: CategoryFormOutput) => void;
+  initialData?: Partial<CategoryFormValues>;
+  parents?: SelectItemOption[];
+  onSubmit: (data: CategoryFormValues) => void;
 };
 
 export function UpsertCategoryDialog({
@@ -40,8 +40,8 @@ export function UpsertCategoryDialog({
   parents = [],
   onSubmit,
 }: UpsertCategoryDialogProps) {
-  const form = useForm<CategoryFormInput>({
-    resolver: zodResolver(categorySchema) as Resolver<CategoryFormInput>,
+  const form = useForm<CategoryFormValues>({
+    resolver: zodResolver(categorySchema) as Resolver<CategoryFormValues>,
     defaultValues: {
       name: "",
       imageUrl: "",
@@ -55,8 +55,8 @@ export function UpsertCategoryDialog({
 
   const { handleSubmit, reset } = form;
 
-  const sectionFormConfig: FieldConfig<CategoryFormInput>[] = [
-    { name: "imageUrl", label: "Ảnh", type: "image" },
+  const sectionFormConfig: FieldConfig<CategoryFormValues>[] = [
+    { name: "imageUrl", type: "image" },
     { name: "name", label: "Tên danh mục", type: "text", className: "col-span-6" },
     { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents, className: "col-span-6" },
     { name: "displayOrder", label: "TT hiển thị", type: "number", className: "col-span-6" },
@@ -65,7 +65,7 @@ export function UpsertCategoryDialog({
     { name: "description", label: "Mô tả", type: "textarea", placeholder: "Mô tả danh mục" },
   ];
 
-  const sectionFormSEOConfig: FieldConfig<CategoryFormInput>[] = [
+  const sectionFormSEOConfig: FieldConfig<CategoryFormValues>[] = [
     { name: "seoTitle", label: "Tiêu đề", type: "text", placeholder: "Tiêu đề SEO", className: "col-span-6" },
     { name: "seoKeywords", label: "Từ khóa", type: "text", placeholder: "Từ khóa SEO", className: "col-span-6" },
     { name: "seoDescription", label: "Mô tả", type: "textarea", placeholder: "Mô tả SEO" },
@@ -81,7 +81,7 @@ export function UpsertCategoryDialog({
         ...initialData,
         displayOrder: initialData?.displayOrder ? String(initialData?.displayOrder) : undefined,
         parentId: initialData?.parentId ? initialData.parentId : -1 ,
-      });
+      } as CategoryFormValues);
     }
   }, [open, initialData, reset]);
 
@@ -100,12 +100,13 @@ export function UpsertCategoryDialog({
         <form
           id="form-category"
           onSubmit={handleSubmit((data) => {
-            onSubmit(data as CategoryFormOutput);
+            
+            onSubmit(data as CategoryFormValues);
           })}
           className="space-y-2"
         >
           <div className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 py-1 flex flex-col gap-2">
-            <AutoForm<CategoryFormInput>
+            <AutoForm<CategoryFormValues>
               form={form}
               config={sectionFormConfig}
               disabledAll={isLoading}
@@ -121,7 +122,7 @@ export function UpsertCategoryDialog({
               </Button>
             </div>
 
-            <AutoForm<CategoryFormInput>
+            <AutoForm<CategoryFormValues>
               form={form}
               config={sectionFormSEOConfig}
               disabledAll={isLoading}

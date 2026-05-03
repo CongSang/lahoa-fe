@@ -39,9 +39,10 @@ export interface ExtraParams {
   [key: string]: any;
 }
 
-export interface SelectType {
+export interface SelectItemOption {
+  id?: number
   label: string;
-  value: string | number; 
+  value: string; 
 }
 
 export type AlertDialogType = "info" | "warning" | "delete";

@@ -4,13 +4,13 @@ import { Button, Spinner } from "@/components/index"
 import { DataTable } from "./data-table"
 import { Suspense, useState } from "react"
 import { Plus } from "lucide-react"
-import { CategoryFormInput } from "@/schema/category"
+import { CategoryFormValues } from "@/schema/category"
 
 const Categories = () => {
   const [open, setOpen] = useState(false);
-  const [initialData, setInitialData] = useState<Partial<CategoryFormInput> | undefined>(undefined);
+  const [initialData, setInitialData] = useState<Partial<CategoryFormValues> | undefined>(undefined);
 
-  const handleOpenDialog = (data?: Partial<CategoryFormInput>) => {
+  const handleOpenDialog = (data?: Partial<CategoryFormValues>) => {
     setInitialData(data)
     setOpen(true)
   }

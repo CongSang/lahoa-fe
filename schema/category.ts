@@ -20,7 +20,7 @@ export const categorySchema = z.object({
       return true;
     }, "File quá lớn"),
 
-  imagePublicId: z.string().optional(),
+  imagePublicId: z.string().nullable().optional(),
 
   parentId: z.number().nullable().optional(),
 
@@ -45,5 +45,4 @@ export const categorySchema = z.object({
   seoKeywords: z.string().optional(),
 });
 
-export type CategoryFormInput = z.input<typeof categorySchema>;
-export type CategoryFormOutput = z.output<typeof categorySchema>;
+export type CategoryFormValues = z.infer<typeof categorySchema>;

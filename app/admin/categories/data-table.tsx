@@ -31,20 +31,20 @@ import {
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Category, CategoryFilterRequest, SelectType, StatusCommon } from "@/types/index"
+import { AlertDialog, Category, CategoryFilterRequest, SelectItemOption, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
 import { useCategoryCrud, useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
-import { CategoryFormInput, CategoryFormOutput } from "@/schema/index"
+import { CategoryFormValues } from "@/schema/index"
 
 interface DataTableProps {
-  initialData?: Partial<CategoryFormInput>
+  initialData?: Partial<CategoryFormValues>
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<CategoryFormInput>) => void
+  handleOpenDialog: (data?: Partial<CategoryFormValues>) => void
 }
 
 export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
@@ -74,7 +74,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
   const mutation = useCategoryCrud();
 
-  const onSubmit = async (formData: CategoryFormOutput) => {
+  const onSubmit = async (formData: CategoryFormValues) => {
     if(!formData.id) {
       mutation.mutate({ 
         action: "create", 
@@ -174,7 +174,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   }
 
   const columns = useMemo(() => getColumns(
-    (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormInput),
+    (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormValues),
     (cat) => handleDelete(cat),
     (cat) => handleRestore(cat)
   ), [handleOpenDialog]);
@@ -312,7 +312,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                     <SelectGroup>
                       <SelectItem value="ALL">Tất cả</SelectItem>
                       <SelectItem value="-1">Danh mục gốc</SelectItem>
-                      {parents?.map((p: SelectType) => (
+                      {parents?.map((p: SelectItemOption) => (
                         <SelectItem key={p.value} value={p.value.toString()}>
                           {p.label}
                         </SelectItem>

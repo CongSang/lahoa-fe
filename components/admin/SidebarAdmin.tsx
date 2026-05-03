@@ -24,10 +24,10 @@ export const SidebarAdmin = ({ ...props }: React.ComponentProps<typeof Sidebar>)
                 <div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-white opacity-60"></div>
               </div>
               <div className="flex flex-col">
-                <span className="text-lg font-bold tracking-tight font-mono leading-none">
+                <span className="text-lg font-bold tracking-tight font-mono leading-none truncate">
                   LA HOA
                 </span>
-                <span className="text-[10px] font-medium font-mono tracking-[0.2em] text-rose-400 mt-1">
+                <span className="text-[10px] font-medium font-mono tracking-[0.2em] text-rose-400 mt-1 truncate">
                   Art from soul
                 </span>
               </div>

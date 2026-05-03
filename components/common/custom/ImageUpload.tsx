@@ -75,7 +75,7 @@ export const ImageUpload = ({ insideDialog = true, disabled, value, onChange }: 
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
       onDrop={onDrop}
-      className={cn('w-min flex justify-center items-center', isDragOver ? 'border-dashed border-2 p-4 rounded-xl text-center h-30 animate-pulse bg-muted' : '')}
+      className={cn('w-min flex justify-center items-center mb-4', isDragOver ? 'border-dashed border-2 p-4 rounded-xl text-center h-30 animate-pulse bg-muted' : '')}
     >
 			<input disabled={disabled} ref={inputRef} type="file" accept="image/*" className='hidden' onChange={handleFileChange} />
 

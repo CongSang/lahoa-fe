@@ -7,7 +7,6 @@ import {
   FieldLabel,
   ImageUpload,
   Input,
-  GroupSelect,
   Select,
   SelectTrigger,
   SelectValue,
@@ -18,9 +17,11 @@ import {
   InputGroup,
   InputGroupTextarea,
   InputGroupAddon,
-  InputGroupText
+  InputGroupText,
+  InputPassword,
+  ComboboxSelect
 } from "@/components/index";
-import { SelectType } from "@/types/index";
+import { SelectItemOption } from "@/types/index";
 import { FieldConfig } from "@/schema/index";
 import { parseValueSelect } from "@/lib/index";
 
@@ -32,7 +33,7 @@ export interface RenderFieldProps<TFieldValues extends FieldValues = FieldValues
 
 export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfig, disabledAll }: RenderFieldProps<TFieldValues>) {
   const { control } = form;
-  const { name, label, type, placeholder, disabled, options } = fieldConfig;
+  const { name, label, type, placeholder, disabled, options, selection } = fieldConfig;
 
   return (
     <Controller
@@ -40,14 +41,31 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
       name={name as Path<TFieldValues>}
       render={({ field, fieldState }) => (
         <Field data-invalid={fieldState.invalid}>
+          {label && <FieldLabel htmlFor={field.name}>{label}</FieldLabel>}
           {(() => {
             switch (type) {
               case "text":
                 return (
                   <>
-                    <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
                     <Input
                       type="text"
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                      disabled={disabled || disabledAll}
+                      placeholder={placeholder}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </>
+                );
+
+              case "password":
+                return (
+                  <>
+                    <InputPassword
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
@@ -64,7 +82,6 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
               case "textarea":
                 return (
                   <>
-                    <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
                     <InputGroup>
                       <InputGroupTextarea
                         {...field}
@@ -87,7 +104,6 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
               case "number":
                 return (
                   <>
-                    <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
                     <InputNumber
                       {...field}
                       value={field.value}
@@ -122,7 +138,6 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
               case "select":
                 return (
                   <>
-                    <FieldLabel>{fieldConfig.label}</FieldLabel>
                     <Select
                       {...field}
                       value={String(field.value) ?? undefined}
@@ -134,7 +149,7 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {options?.length && options?.map((p: SelectType) => (
+                          {options?.length && options?.map((p: SelectItemOption) => (
                             <SelectItem key={p.value} value={p.value.toString()}>
                               {p.label}
                             </SelectItem>
@@ -148,12 +163,56 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
               case "group-select":
                 return (
                   <>
-                    <FieldLabel>{label}</FieldLabel>
-                    <GroupSelect
+                    <ComboboxSelect
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      selection={selection}
                       placeholder={placeholder}
-                      data={[]}
+                      groupItems={options}
                       value={field.value}
                       onChange={field.onChange}
+                      disabled={disabled || disabledAll}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError className="text-center" errors={[fieldState.error]} />
+                    )}
+                  </>
+                );
+              
+              case "combobox":
+                return (
+                  <>
+                    <ComboboxSelect
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      placeholder={placeholder}
+                      items={options}
+                      selection="single"
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={disabled || disabledAll}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError className="text-center" errors={[fieldState.error]} />
+                    )}
+                  </>
+                );
+              
+              case "multi-combobox":
+                return (
+                  <>
+                    <ComboboxSelect
+                      {...field}
+                      id={field.name}
+                      aria-invalid={fieldState.invalid}
+                      selection="multiple"
+                      placeholder={placeholder}
+                      items={options}
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={disabled || disabledAll}
                     />
                     {fieldState.invalid && (
                       <FieldError className="text-center" errors={[fieldState.error]} />

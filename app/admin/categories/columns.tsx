@@ -100,7 +100,7 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
     cell: ({ row }) => (
-      <Button variant="link" className="px-0">
+      <Button variant="link" className="px-0" asChild>
         <Link 
           href={`${APP_URL}/${row.original.path}`} 
           target="_blank" 

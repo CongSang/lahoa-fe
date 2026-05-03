@@ -1,22 +1,28 @@
-import { SelectType } from "@/types/index";
+import { SelectItemOption } from "@/types/index";
 import z from "zod";
 
 export type FieldType =
   | "text"
+  | "password"
   | "textarea"
   | "number"
   | "image"
   | "select"
-  | "group-select";
+  | "group-select"
+  | "combobox"
+  | "multi-combobox";
+
+export type Selection = "single" | "multiple"
 
 export type FieldConfig<T> = {
   name: keyof T;
-  label: string;
+  label?: string;
   type: FieldType;
   placeholder?: string;
   disabled?: boolean;
   className?: string; 
-  options?: SelectType[]
+  options?: SelectItemOption[]
+  selection?: Selection
 };
 
 export type SectionConfig<T> = {

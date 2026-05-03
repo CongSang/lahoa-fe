@@ -51,6 +51,7 @@ export function NavMain({
                     isActive={isActive(item.url)} 
                     tooltip={item.title}
                     className={isActive(item.url) ? "bg-ring/20! font-semibold!" : ""}
+                    asChild
                   >
                     <Link href={item.url} className="flex items-center gap-2 w-full">
                       {item.icon && <item.icon />}
@@ -71,10 +72,10 @@ export function NavMain({
                 <SidebarMenuItem  className="my-0.75">
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.title}>
-                      <Link href={item.url} className="flex items-center gap-2 w-full">
+                      <div className="flex items-center gap-2 w-full">
                         {item.icon && <item.icon />}
-                        <span>{item.title}</span>
-                      </Link>
+                        <span className="truncate">{item.title}</span>
+                      </div>
                       <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>

@@ -1,6 +1,6 @@
 import { axiosInstance, cleanObject } from "@/lib/index";
 import { CategoryFilterRequest, PageRequest } from "@/types/index";
-import { CategoryFormOutput } from "@/schema/index";
+import { CategoryFormValues } from "@/schema/index";
 
 export const getCategoriesApi = async (filter: CategoryFilterRequest & PageRequest) => {
   const params = cleanObject(filter)
@@ -19,12 +19,12 @@ export const getCategoryTreeApi = async () => {
   return response.data;
 };
 
-export const createCategoryApi = async (request: CategoryFormOutput) => {
+export const createCategoryApi = async (request: CategoryFormValues) => {
   const response = await axiosInstance.post('/categories', request);
   return response.data;
 };
 
-export const updateCategoryApi = async (id: number | string, request: CategoryFormOutput) => {
+export const updateCategoryApi = async (id: number | string, request: CategoryFormValues) => {
   const response = await axiosInstance.put(`/categories/${id}`, request);
   return response.data;
 };

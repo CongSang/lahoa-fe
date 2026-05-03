@@ -29,14 +29,15 @@ import { getProductsApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
-import { ProductFormInput, ProductFormOutput } from "@/schema/index"
+import { ProductFormValues } from "@/schema/index"
 import { useProductCrud } from "@/hooks/form-submit/useProductMutation"
+import { getPropertiesApi } from "@/services/index"
 
 interface DataTableProps {
-  initialData?: Partial<ProductFormInput>
+  initialData?: Partial<ProductFormValues>
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<Product>) => void
+  handleOpenDialog: (data?: Partial<ProductFormValues>) => void
 }
 
 export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
@@ -60,16 +61,16 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         keyword: "",
         status: null,
         categoryId: null,
-        minPrice: 0,
-        maxPrice: 0,
-        propertyValueIds: {},
+        minPrice: null,
+        maxPrice: null,
+        propertyValueIds: null,
       }
     }
   )
 
   const mutation = useProductCrud();
 
-  const onSubmit = async (formData: ProductFormOutput) => {
+  const onSubmit = async (formData: ProductFormValues) => {
     if(!formData.id) {
       mutation.mutate({ 
         action: "create", 
@@ -165,7 +166,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   }
 
   const columns = useMemo(() => getColumns(
-    (product) => handleOpenDialog(product),
+    (product) => handleOpenDialog(product as ProductFormValues),
     (product) => handleDelete(product),
     (product) => handleRestore(product)
   ), [handleOpenDialog]);
@@ -193,10 +194,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     },
   })
 
-  // const { data: parents } = useQuery({
-  //   queryKey: ["category-parents"],
-  //   queryFn: getDropdownParentApi,
-  // });
+  const { data: properties } = useQuery({
+    queryKey: ["properties"],
+    queryFn: getPropertiesApi,
+  });
 
   const handleSearch = () => {
     setIsFilterOpen(false)

@@ -1,116 +1,71 @@
 'use client'
-import { InputCustom } from "@/components/index"
-import { toastApiError, uploadToCloudinary, validateEmail, validatePassword } from "@/lib/index";
+
+import { toastApiError } from "@/lib/index";
 import { registerApi } from "@/services/index";
 import { UserRequest } from "@/types/index";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, MouseEvent, useState } from "react";
 import toast from "react-hot-toast";
+import { AutoForm, Button, Spinner } from "@/components/index";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FieldConfig, RegisterFormValues, registerSchema } from "@/schema/index";
+import { useMutation } from "@tanstack/react-query";
 
 export const RegisterForm = () => {
   const router = useRouter();
-  const [avatar, setAvatar] = useState<File | null>(null)
-  const [userRequest, setUserRequest] = useState<UserRequest>({
-    fullName: '',
-    email: '',
-    phone: '',
-    password: '',
-    userImageUrl: '',
-  })
-  const [loading, setLoading] = useState(false)
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setUserRequest(prev => ({ ...prev, [name]: value }));
-  }
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      fullName: '',
+      email: '',
+      phone: '',
+      password: '',
+    },
+  });
 
-  const handleSubmit = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
+  const { handleSubmit } = form;
+  
+  const sectionFormConfig: FieldConfig<RegisterFormValues>[] = [
+    { name: "fullName", type: "text", placeholder: "Họ & tên" },
+    { name: "email", type: "text", placeholder: "Địa chỉ email" },
+    { name: "phone", type: "text", placeholder: "Số điện thoại" },
+    { name: "password", type: "password", placeholder: "Mật khẩu" },
+  ];
 
-    const validations = [
-      { cond: !userRequest.fullName.trim(), msg: "Vui lòng nhập Họ và tên" },
-      { cond: !validateEmail(userRequest.email), msg: "Vui lòng nhập đúng định dạng email" },
-      { cond: !validatePassword(userRequest.password), msg: "Mật khẩu phải có ít nhất 8 ký tự, 1 chữ cái, 1 số" }
-    ];
-
-    const error = validations.find(v => v.cond);
-    if (error) return toast.error(error.msg);
-
-    setLoading(true)
-    let avatarUrl = '';
-
-    try {
-      if (avatar) {
-        const imageUrl = await uploadToCloudinary(avatar);
-        avatarUrl = imageUrl || "";
-      }
-
-      await registerApi({ 
-        ...userRequest,
-        userImageUrl: avatarUrl
-      });
-
+  const mutation = useMutation({
+    mutationFn: (request: UserRequest) => registerApi(request),
+    onSuccess: () => {
       toast.success("Đăng kí thành công! Vui lòng kiểm tra email để kích hoạt tài khoản.")
       router.push('/login');
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Registration failed:", error)
       toastApiError(error, "Đang kí thất bại. Vui lòng thử lại.")
-    } finally {
-      setLoading(false)
-    }
-  }
+    },
+  });
 
   return (
     <>
-      {/* Profile Photo Upload */}
-      {/* <UploadImage image={avatar} setImage={setAvatar} /> */}
-
-      {/* Form */}
-      <form className="w-full space-y-4 text-left">
-        <InputCustom 
-          name="fullName"
-          value={userRequest.fullName}
-          disabled={loading}
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Họ & tên" 
-          type="text" 
+      <form 
+        id='form-register' 
+        className="w-full space-y-2 text-left"
+        onSubmit={handleSubmit((data) => mutation.mutate(data))}
+      >
+        <AutoForm<RegisterFormValues>
+          form={form}
+          config={sectionFormConfig}
+          disabledAll={mutation.isPending}
         />
 
-        <InputCustom 
-          name="email"
-          value={userRequest.email}
-          disabled={loading}
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Địa chỉ email" 
-          type="email" 
-        />
-
-        <InputCustom 
-          name="phone"
-          value={userRequest.phone}
-          disabled={loading}
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Số điện thoại" 
-          type="phone" 
-        />
-
-        <InputCustom
-          name="password"
-          value={userRequest.password}
-          disabled={loading}
-          onChange={(e) => handleInputChange(e)}
-          placeholder="Mật khẩu" 
-          type="password" 
-        />
-
-        <button 
+        <Button 
           type="submit"
-          onClick={handleSubmit}
-          disabled={loading}
+          disabled={mutation.isPending}
           className="w-full btn-ec uppercase"
+          size="lg"
         >
-          Tạo tài khoản
-        </button>
+          {mutation.isPending ? <Spinner /> : 'Tạo tài khoản'}  
+        </Button>
       </form> 
     </>
   )

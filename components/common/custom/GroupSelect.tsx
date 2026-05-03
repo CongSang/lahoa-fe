@@ -22,6 +22,7 @@ interface TreeSelectProps {
   placeholder?: string
   data: Category[]
   value: number | string
+  disabled?: boolean
   onChange: (value: number | string) => void
 }
 
@@ -29,6 +30,7 @@ export function GroupSelect({
   placeholder,
   data,
   value,
+  disabled,
   onChange,
 }: TreeSelectProps) {
   const [open, setOpen] = useState(false);
@@ -46,7 +48,7 @@ export function GroupSelect({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className={cn("w-full justify-between", value ?? "text-muted-foreground!")}>
+        <Button variant="outline" className={cn("w-full justify-between", value ?? "text-muted-foreground!")} disabled={disabled}>
           {value ? findLabel(data) : placeholder}
           <ChevronDown className="w-4 h-4" />
         </Button>
@@ -54,7 +56,7 @@ export function GroupSelect({
 
       <PopoverContent className="w-88 p-0">
         <Command>
-          <CommandInput placeholder={`Tìm kiếm...`} />
+          <CommandInput placeholder={`Tìm kiếm...`} disabled={disabled} />
 
           <CommandList>
             {data.map(({ id, name, children }) => (

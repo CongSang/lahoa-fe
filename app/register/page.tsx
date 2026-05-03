@@ -1,22 +1,14 @@
-import { RegisterForm } from '@/components/index'
-import Image from 'next/image'
+import { Logo, RegisterForm } from '@/components/index'
 import Link from 'next/link'
 
 const Register = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 font-sans bg-third">
       <div
-        className="w-full max-w-125 bg-white rounded-3xl shadow-md p-6 md:p-10"
+        className="w-full max-w-120 bg-white rounded-3xl shadow-md p-6 md:p-8"
       >
         <div className="flex flex-col items-center text-center">
-          <Image
-            loading='eager'
-            src="/images/logo.png" 
-            alt="Logo" 
-            width={200} 
-            height={200}
-            className='w-38 md:w-45 h-16 md:h-20 object-cover mb-8' 
-          />
+          <Logo className="w-38 md:w-45 h-16 md:h-20 mb-12" />
 
           <RegisterForm />
 

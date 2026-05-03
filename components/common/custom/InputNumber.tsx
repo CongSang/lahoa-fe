@@ -36,10 +36,8 @@ export function InputNumber({
       currency,
     });
 
-    // 🔥 update value
     onChange?.(cleaned);
 
-    // 🔥 giữ caret
     requestAnimationFrame(() => {
       if (!inputRef.current) return;
 

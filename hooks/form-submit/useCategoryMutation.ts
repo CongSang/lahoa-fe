@@ -1,9 +1,9 @@
 import { parseNumber, uploadToCloudinary } from "@/lib/index";
-import { CategoryFormOutput } from "@/schema/index";
+import { CategoryFormValues } from "@/schema/index";
 import { createCategoryApi, deleteCategoryApi, getCategoryUploadSignatureApi, restoreCategoryApi, updateCategoryApi } from "@/services/index";
 import { useCrudMutation } from "@/hooks/index";
 
-export async function handleCategorySubmit(data: CategoryFormOutput): Promise<CategoryFormOutput> {
+export async function handleCategorySubmit(data: CategoryFormValues): Promise<CategoryFormValues> {
   let imageUrl = data.imageUrl;
   let imagePublicId = data.imagePublicId;
 
@@ -30,7 +30,7 @@ export async function handleCategorySubmit(data: CategoryFormOutput): Promise<Ca
 }
 
 export function useCategoryCrud() {
-  return useCrudMutation<CategoryFormOutput>({
+  return useCrudMutation<CategoryFormValues>({
     queryKey: ["categories"],
 
     mutationFn: async (vars) => {
@@ -38,12 +38,12 @@ export function useCategoryCrud() {
 
       switch (action) {
         case "create": {
-          const payload = await handleCategorySubmit(data as CategoryFormOutput);
+          const payload = await handleCategorySubmit(data as CategoryFormValues);
           return createCategoryApi(payload) 
         };
 
         case "update": {
-          const payload = await handleCategorySubmit(data as CategoryFormOutput);
+          const payload = await handleCategorySubmit(data as CategoryFormValues);
           return updateCategoryApi(payload.id!, payload)
         };
 

@@ -22,7 +22,7 @@ export interface ProductFilterRequest {
   categoryId: number | null
   minPrice: number | null
   maxPrice: number | null
-  propertyValueIds: Record<number, number[]>
+  propertyValueIds: Record<number, number[]> | null
 }
 
 export const PRODUCT_FIELD: Record<string, string> = {

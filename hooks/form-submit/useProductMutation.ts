@@ -2,9 +2,9 @@ import { getProductUploadSignatureApi } from '@/services/index';
 import { parseNumber, uploadToCloudinary } from "@/lib/index";
 import { createProductApi, deleteProductApi, restoreProductApi, updateProductApi } from "@/services/index";
 import { useCrudMutation } from "@/hooks/index";
-import { ProductFormOutput } from "@/schema/product";
+import { ProductFormValues } from "@/schema/product";
 
-export async function handleProductSubmit(data: ProductFormOutput): Promise<ProductFormOutput> {
+export async function handleProductSubmit(data: ProductFormValues): Promise<ProductFormValues> {
   let mainImage = data.mainImage;
   let imagePublicId = data.imagePublicId;
 
@@ -15,7 +15,7 @@ export async function handleProductSubmit(data: ProductFormOutput): Promise<Prod
     imagePublicId = uploaded.publicId
   }
 
-  const payload: ProductFormOutput = {
+  const payload: ProductFormValues = {
     ...data,
     name: data.name.trim(),
     mainImage,
@@ -30,7 +30,7 @@ export async function handleProductSubmit(data: ProductFormOutput): Promise<Prod
 }
 
 export function useProductCrud() {
-  return useCrudMutation<ProductFormOutput>({
+  return useCrudMutation<ProductFormValues>({
     queryKey: ["products"],
 
     mutationFn: async (vars) => {
@@ -38,12 +38,12 @@ export function useProductCrud() {
 
       switch (action) {
         case "create": {
-          const payload = await handleProductSubmit(data as ProductFormOutput);
+          const payload = await handleProductSubmit(data as ProductFormValues);
           return createProductApi(payload) 
         };
 
         case "update": {
-          const payload = await handleProductSubmit(data as ProductFormOutput);
+          const payload = await handleProductSubmit(data as ProductFormValues);
           return updateProductApi(payload.id!, payload)
         };
 

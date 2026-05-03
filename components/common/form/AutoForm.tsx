@@ -9,11 +9,12 @@ export interface AutoFormProps<TFieldValues extends FieldValues = FieldValues> {
   form: UseFormReturn<TFieldValues>;
   config: FieldConfig<TFieldValues>[]
   disabledAll?: boolean
+  gap?: string
 }
 
-export function AutoForm<TFieldValues extends FieldValues>({ form, config, disabledAll }: AutoFormProps<TFieldValues>) {
+export function AutoForm<TFieldValues extends FieldValues>({ form, config, disabledAll, gap = "gap-2" }: AutoFormProps<TFieldValues>) {
   return (
-    <div className="grid grid-cols-12 gap-2">
+    <div className={cn("grid grid-cols-12", gap)}>
       {config.map((field: FieldConfig<TFieldValues>, index) => (
         <div key={index} className={cn("col-span-12", field.className)}>
           <RenderField

@@ -1,6 +1,6 @@
 import { axiosInstance, cleanObject } from "@/lib/index";
 import { PageRequest, ProductFilterRequest } from "@/types/index";
-import { ProductFormOutput } from "@/schema/index";
+import { ProductFormValues } from "@/schema/index";
 
 export const getProductsApi = async (filter: ProductFilterRequest & PageRequest) => {
   const params = cleanObject(filter)
@@ -9,12 +9,12 @@ export const getProductsApi = async (filter: ProductFilterRequest & PageRequest)
   return response.data;
 };
 
-export const createProductApi = async (request: ProductFormOutput) => {
+export const createProductApi = async (request: ProductFormValues) => {
   const response = await axiosInstance.post('/products', request);
   return response.data;
 };
 
-export const updateProductApi = async (id: number | string, request: ProductFormOutput) => {
+export const updateProductApi = async (id: number | string, request: ProductFormValues) => {
   const response = await axiosInstance.put(`/products/${id}`, request);
   return response.data;
 };
