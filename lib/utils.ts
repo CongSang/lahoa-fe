@@ -87,6 +87,22 @@ export const objectToQueryParams = (obj: Record<string, string | number | null>)
   const params = new URLSearchParams();
 
   Object.entries(obj).forEach(([key, value]) => {
+    // property for product
+    if (key === "propertyValueIds" && value) {
+      Object.entries(value as unknown as Record<string, number[] | null>).forEach(
+        ([k, values]) => {
+          if (!k.startsWith("p_")) return;
+
+          if (!values || values.length === 0) {
+            params.delete(k);
+          } else {
+            params.set(k, values.join(","));
+          }
+        }
+      );
+      return;
+    }
+
     if (value !== null && value !== undefined && value !== "") {
       params.set(key, value.toString());
     }
@@ -108,3 +124,49 @@ export const parseValueSelect = (value: string) => {
   if (isNaN(Number(value))) return value
   return Number(value)
 }
+
+export const transformProperty = (
+  data?: Record<string, string[] | null>
+) => {
+  if (!data) return {}
+
+  return Object.entries(data).reduce<Record<number, string[]>>(
+    (acc, [key, value]) => {
+      if (!Array.isArray(value) || value.length === 0) return acc
+
+      const id = Number(key.replace("p_", ""))
+      if (Number.isNaN(id)) return acc
+
+      acc[id] = value
+      return acc
+    },
+    {}
+  )
+}
+
+export const buildApiParams = (params: Record<string, any>) => {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value == null) return;
+
+    if (key === "propertyValueIds") {
+      Object.entries(value).forEach(([propId, arr]) => {
+        if (!Array.isArray(arr)) return;
+
+        arr.forEach((v) => {
+          searchParams.append(`propertyValueIds[${propId}]`, String(v));
+        });
+      });
+      return;
+    }
+
+    if (Array.isArray(value)) {
+      value.forEach((v) => searchParams.append(key, String(v)));
+    } else {
+      searchParams.append(key, String(value));
+    }
+  });
+
+  return searchParams;
+};

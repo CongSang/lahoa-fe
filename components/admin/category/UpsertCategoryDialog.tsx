@@ -19,8 +19,8 @@ import {
 } from "@/components/index";
 
 import { categorySchema, CategoryFormValues, FieldConfig } from "@/schema/index";
-import { SelectItemOption, StatusCommon } from "@/types/index";
-import { statusDropdown } from "@/lib/data";
+import { Option, StatusCommon } from "@/types/index";
+import { statusDropdown } from "@/lib/index";
 import { WandSparkles } from "lucide-react";
 
 type UpsertCategoryDialogProps = {
@@ -28,7 +28,7 @@ type UpsertCategoryDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initialData?: Partial<CategoryFormValues>;
-  parents?: SelectItemOption[];
+  parents?: Option[];
   onSubmit: (data: CategoryFormValues) => void;
 };
 
@@ -136,7 +136,7 @@ export function UpsertCategoryDialog({
               </Button>
             </DialogClose>
             <Button type="submit" disabled={isLoading} className="sm:w-20">
-              {isLoading ? <div className="flex items-center justify-center "><Spinner /></div> :
+              {isLoading ? <Spinner /> :
               initialData ? "Cập nhật" : "Tạo mới"}
             </Button>
           </DialogFooter>

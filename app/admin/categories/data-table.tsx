@@ -31,7 +31,7 @@ import {
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Category, CategoryFilterRequest, SelectItemOption, StatusCommon } from "@/types/index"
+import { AlertDialog, Category, CategoryFilterRequest, Option, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
@@ -234,7 +234,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSearch();
                 }}
-                className="pl-7.5"
                 autoComplete="off"
               />
               <InputGroupAddon align="inline-start">
@@ -312,7 +311,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                     <SelectGroup>
                       <SelectItem value="ALL">Tất cả</SelectItem>
                       <SelectItem value="-1">Danh mục gốc</SelectItem>
-                      {parents?.map((p: SelectItemOption) => (
+                      {parents?.map((p: Option) => (
                         <SelectItem key={p.value} value={p.value.toString()}>
                           {p.label}
                         </SelectItem>

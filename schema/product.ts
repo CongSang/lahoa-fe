@@ -18,7 +18,7 @@ export const variantSchema = z.object({
 });
 
 export const productSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
 
   name: z.string().min(1, "Name is required"),
 

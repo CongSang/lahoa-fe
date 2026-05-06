@@ -2,10 +2,10 @@
 
 import { cleanNumber, formatNumber, getCaretPosition, parseNumber } from "@/lib/index";
 import { useRef } from "react";
-import { Input } from "@/components/index";
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/index";
 
 type InputNumberProps = {
-  value?: string;
+  value?: string | number;
   onChange?: (val: string) => void;
 
   format?: "currency" | "percent" | "decimal";
@@ -32,11 +32,11 @@ export function InputNumber({
     const numeric = parseNumber(cleaned);
 
     const formatted = formatNumber(numeric || "", {
-      style: format,
+      style: "decimal",
       currency,
     });
-
-    onChange?.(cleaned);
+    
+    onChange?.(String(numeric));
 
     requestAnimationFrame(() => {
       if (!inputRef.current) return;
@@ -47,16 +47,23 @@ export function InputNumber({
   };
 
   const display = formatNumber(value, {
-    style: format,
+    style: "decimal",
     currency,
   });
 
   return (
-    <Input
-      ref={inputRef}
-      value={display}
-      onChange={handleChange}
-      {...props}
-    />
+    <InputGroup>
+      <InputGroupInput
+        ref={inputRef}
+        value={display}
+        onChange={handleChange}
+        {...props}
+      />
+      {format !== "decimal" && (
+        <InputGroupAddon align="inline-end">
+          <InputGroupText>{format === "currency" ? currency : "%"}</InputGroupText>
+        </InputGroupAddon>
+      )}
+    </InputGroup>
   );
 }

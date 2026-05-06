@@ -49,12 +49,12 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
     cell: ({ row }) => {  
-      const category = row.original
+      const product = row.original
       return(
         <Avatar>
           <AvatarImage
-            src={category.mainImage || undefined}
-            alt={category.name}
+            src={product.mainImage || undefined}
+            alt={product.name}
           />
           <AvatarFallback><ImageIcon size={18} /></AvatarFallback>
         </Avatar>
@@ -124,18 +124,18 @@ export const getColumns = (
   {
     id: "actions",
     cell: ({ row }) => {
-      const category = row.original
+      const product = row.original
  
       return (
         <>
-          {category.status !== StatusCommon.DELETED ? (
+          {product.status !== StatusCommon.DELETED ? (
             <div className="flex items-center justify-end gap-2">
               <TooltipRender tooltip="Chỉnh sửa">
                 <Button 
                   variant="ghost" 
                   size="icon-sm" 
                   className="text-gray-500"
-                  onClick={() => onEdit?.(category)}
+                  onClick={() => onEdit?.(product)}
                 >
                   <Pencil />
                 </Button>
@@ -145,7 +145,7 @@ export const getColumns = (
                   variant="ghost" 
                   size="icon-sm" 
                   className="text-gray-500 hover:text-red-600 dark:hover:text-red-400"
-                  onClick={() => onDelete?.(category)}
+                  onClick={() => onDelete?.(product)}
                 >
                   <Trash2 />
                 </Button>
@@ -157,7 +157,7 @@ export const getColumns = (
                 variant="ghost" 
                 size="icon-sm" 
                 className="text-gray-500"
-                onClick={() => onRestore?.(category)}
+                onClick={() => onRestore?.(product)}
               >
                 <ArchiveRestore />
               </Button>
@@ -187,11 +187,17 @@ const StatusCell = ({ product }: { product: Product }) => {
         {mutation.isPending ? 
           <div className="w-16 flex items-center justify-center "><Spinner /></div>
         : <button disabled={mutation.isPending} className="focus:outline-none">
-            <BadgeCustom status={product.status!} />
+            <BadgeCustom status={product.status! as StatusCommon} />
           </button>
         }
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
+        <DropdownMenuItem 
+          disabled={product.status === StatusCommon.DRAFT} 
+          onClick={() => mutation.mutate(StatusCommon.DRAFT)}
+        >
+          Bản nháp
+        </DropdownMenuItem>
         <DropdownMenuItem 
           disabled={product.status === StatusCommon.ACTIVE} 
           onClick={() => mutation.mutate(StatusCommon.ACTIVE)}

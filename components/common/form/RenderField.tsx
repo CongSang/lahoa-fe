@@ -19,9 +19,9 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputPassword,
-  ComboboxSelect
+  SelectCustom,
 } from "@/components/index";
-import { SelectItemOption } from "@/types/index";
+import { Option } from "@/types/index";
 import { FieldConfig } from "@/schema/index";
 import { parseValueSelect } from "@/lib/index";
 
@@ -149,7 +149,7 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {options?.length && options?.map((p: SelectItemOption) => (
+                          {options?.length && options?.map((p: Option) => (
                             <SelectItem key={p.value} value={p.value.toString()}>
                               {p.label}
                             </SelectItem>
@@ -160,62 +160,63 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
                   </>
                 );
 
-              case "group-select":
+              case "group-select-command":
                 return (
                   <>
-                    <ComboboxSelect
+                    <SelectCustom
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       selection={selection}
                       placeholder={placeholder}
-                      groupItems={options}
+                      groupOptions={[]}
                       value={field.value}
                       onChange={field.onChange}
                       disabled={disabled || disabledAll}
+                      hasGroups
                     />
                     {fieldState.invalid && (
-                      <FieldError className="text-center" errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} />
                     )}
                   </>
                 );
               
-              case "combobox":
+              case "select-command":
                 return (
                   <>
-                    <ComboboxSelect
+                    <SelectCustom
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       placeholder={placeholder}
-                      items={options}
+                      options={options}
                       selection="single"
                       value={field.value}
                       onChange={field.onChange}
                       disabled={disabled || disabledAll}
                     />
                     {fieldState.invalid && (
-                      <FieldError className="text-center" errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} />
                     )}
                   </>
                 );
               
-              case "multi-combobox":
+              case "multi-select-command":
                 return (
                   <>
-                    <ComboboxSelect
+                    <SelectCustom
                       {...field}
                       id={field.name}
                       aria-invalid={fieldState.invalid}
                       selection="multiple"
                       placeholder={placeholder}
-                      items={options}
+                      options={options}
                       value={field.value}
                       onChange={field.onChange}
                       disabled={disabled || disabledAll}
                     />
                     {fieldState.invalid && (
-                      <FieldError className="text-center" errors={[fieldState.error]} />
+                      <FieldError errors={[fieldState.error]} />
                     )}
                   </>
                 );

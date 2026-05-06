@@ -1,15 +1,20 @@
-import { axiosInstance, cleanObject } from "@/lib/index";
+import { axiosInstance, cleanObject, buildApiParams } from "@/lib/index";
 import { CategoryFilterRequest, PageRequest } from "@/types/index";
 import { CategoryFormValues } from "@/schema/index";
 
 export const getCategoriesApi = async (filter: CategoryFilterRequest & PageRequest) => {
-  const params = cleanObject(filter)
+  const params = buildApiParams(cleanObject(filter))
 
   const response = await axiosInstance.get('/categories', { params });
   return response.data;
 };
 
 export const getDropdownParentApi = async () => {
+  const response = await axiosInstance.get('/categories/dropdown-parent');
+  return response.data;
+};
+
+export const getDropdownCategoryApi = async () => {
   const response = await axiosInstance.get('/categories/dropdown');
   return response.data;
 };

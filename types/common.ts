@@ -6,10 +6,13 @@ export interface LayoutProps {
 
 export enum StatusCommon {
   ALL = "ALL",
+  DRAFT = "DRAFT",
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   DELETED = 'DELETED',
+  OUT_OF_STOCK = 'OUT_OF_STOCK',
 }
+
 export interface Status {
   label: string;
   className: string; 
@@ -19,6 +22,10 @@ export const STATUS_MAP: Record<StatusCommon, Status> = {
   [StatusCommon.ALL]: {
     label: 'Tất cả',
     className: '',
+  },
+  [StatusCommon.DRAFT]: {
+    label: 'Bản nháp',
+    className: 'bg-secondary text-secondary-foreground',
   },
   [StatusCommon.ACTIVE]: {
     label: 'Hoạt động',
@@ -32,6 +39,10 @@ export const STATUS_MAP: Record<StatusCommon, Status> = {
     label: 'Đã xóa',
     className: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
   },
+  [StatusCommon.OUT_OF_STOCK]: {
+    label: 'Hết hàng',
+    className: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
+  },
 };
 
 export interface ExtraParams {
@@ -39,7 +50,7 @@ export interface ExtraParams {
   [key: string]: any;
 }
 
-export interface SelectItemOption {
+export interface Option {
   id?: number
   label: string;
   value: string; 

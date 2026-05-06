@@ -40,6 +40,16 @@ export function useDataTable<T, TFilter extends Record<string, any>>(
     const extra: Record<string, any> = { ...defaultFilter };
 
     searchParams.forEach((value, key) => {
+      // Property for product
+      if (key.startsWith("p_")) {
+        extra.propertyValueIds = extra.propertyValueIds || {};
+        extra.propertyValueIds[key] = value
+          ? value.split(",").map(String)
+          : null;
+
+        return;
+      }
+      
       if (!["page", "size", "sortField", "sortOrder"].includes(key)) {
         extra[key] = value;
       }

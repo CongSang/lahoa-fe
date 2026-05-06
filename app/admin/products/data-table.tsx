@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import {
@@ -13,19 +14,23 @@ import {
   DataTableFilterSheet,
   Field,
   FieldLabel,
-  Input,
   TooltipRender, 
   DropdownStatus, 
   DataTableViewOptions, 
   DataTablePagination,
-  AlertDialogConfirm
+  AlertDialogConfirm,
+  SelectCustom,
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  InputNumber,
 } from "@/components/index"
 import { useMemo, useState } from "react"
-import { Download, ListFilter, RefreshCcw, Search, Upload } from "lucide-react"
-import { AlertDialog, Product, ProductFilterRequest, StatusCommon } from "@/types/index"
+import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
+import { AlertDialog, Product, ProductFilterRequest, Property, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getProductsApi } from "@/services/index"
+import { getDropdownCategoryApi, getProductsApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
@@ -63,7 +68,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         categoryId: null,
         minPrice: null,
         maxPrice: null,
-        propertyValueIds: null,
+        propertyValueIds: {},
       }
     }
   )
@@ -194,9 +199,14 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     },
   })
 
-  const { data: properties } = useQuery({
-    queryKey: ["properties"],
-    queryFn: getPropertiesApi,
+  const { data: productProperties } = useQuery({
+    queryKey: ["properties-dropdown"],
+    queryFn: () => getPropertiesApi(true),
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories-dropdown"],
+    queryFn: getDropdownCategoryApi,
   });
 
   const handleSearch = () => {
@@ -218,9 +228,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       <Card className="shadow p-4 gap-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-2 max-w-2xl">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
+            <InputGroup className="max-w-sm">
+              <InputGroupInput
                 {...form.register("keyword")}
                 name="keyword"
                 placeholder="Nhập từ khóa..."
@@ -230,7 +239,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 className="pl-7.5"
                 autoComplete="off"
               />
-            </div>
+              <InputGroupAddon align="inline-start">
+                <SearchIcon className="text-muted-foreground" />
+              </InputGroupAddon>
+            </InputGroup>
 
             <Button 
               variant="outline" 
@@ -283,6 +295,94 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               )}
           />
           </Field>
+
+          <Field>
+            <FieldLabel>Danh mục</FieldLabel>
+            <Controller
+              control={form.control}
+              name="categoryId"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  hasGroups
+                  groupOptions={categories}
+                  value={String(field.value)}
+                  fieldValue="id"
+                  onChange={(val) => {
+                    field.onChange(val)
+                  }}
+                />
+              )}
+            />
+          </Field>
+
+          <div className="flex items-center justify-start gap-2">
+            <Field>
+              <FieldLabel>Giá tối thiểu</FieldLabel>
+              <Controller
+                control={form.control}
+                name="minPrice"
+                render={({ field }) => (
+                  <InputNumber
+                    {...field}
+                    value={String(field.value)}
+                    onChange={field.onChange}
+                    format="currency"
+                    id={field.name}
+                    autoComplete="off"
+                    placeholder="0"
+                  />
+                )}
+              />
+            </Field>
+
+            <span className="mt-6">-</span>
+
+            <Field>
+              <FieldLabel>Giá tối đa</FieldLabel>
+              <Controller
+                control={form.control}
+                name="maxPrice"
+                render={({ field }) => (
+                  <InputNumber
+                    {...field}
+                    value={String(field.value)}
+                    onChange={field.onChange}
+                    format="currency"
+                    id={field.name}
+                    autoComplete="off"
+                    placeholder="0"
+                  />
+                )}
+              />
+            </Field>
+          </div>
+
+          {productProperties && productProperties.length > 0 && productProperties.map((property: Property) => (
+            <Field key={property.id}>
+              <FieldLabel>{property.name}</FieldLabel>
+              <Controller
+                control={form.control}
+                name={`propertyValueIds.p_${property.id}` as any}
+                render={({ field }) => (
+                  <SelectCustom
+                    selection="multiple"
+                    options={property.values}
+                    value={field.value}
+                    fieldValue="id"
+                    onChange={(val) => {
+                      const current = form.getValues("propertyValueIds") || {}
+
+                      form.setValue("propertyValueIds", {
+                        ...current,
+                        [`p_${property.id}`]: val
+                      } as Record<string, string[]>)
+                    }}
+                  />
+                )}
+              />
+            </Field>
+          ))}
         </DataTableFilterSheet>
 
         <DataTableCommon 

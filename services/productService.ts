@@ -1,9 +1,13 @@
-import { axiosInstance, cleanObject } from "@/lib/index";
+import { axiosInstance, cleanObject, buildApiParams, transformProperty } from "@/lib/index";
 import { PageRequest, ProductFilterRequest } from "@/types/index";
 import { ProductFormValues } from "@/schema/index";
 
 export const getProductsApi = async (filter: ProductFilterRequest & PageRequest) => {
-  const params = cleanObject(filter)
+  const cleanParams = cleanObject({
+    ...filter,
+    propertyValueIds: transformProperty(filter.propertyValueIds)
+  })
+  const params = buildApiParams(cleanParams)
 
   const response = await axiosInstance.get('/products', { params });
   return response.data;

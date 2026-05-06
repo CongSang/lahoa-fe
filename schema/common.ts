@@ -1,4 +1,4 @@
-import { SelectItemOption } from "@/types/index";
+import { Option } from "@/types/index";
 import z from "zod";
 
 export type FieldType =
@@ -8,9 +8,9 @@ export type FieldType =
   | "number"
   | "image"
   | "select"
-  | "group-select"
-  | "combobox"
-  | "multi-combobox";
+  | "group-select-command"
+  | "multi-select-command"
+  | "select-command"
 
 export type Selection = "single" | "multiple"
 
@@ -21,7 +21,7 @@ export type FieldConfig<T> = {
   placeholder?: string;
   disabled?: boolean;
   className?: string; 
-  options?: SelectItemOption[]
+  options?: Option[]
   selection?: Selection
 };
 

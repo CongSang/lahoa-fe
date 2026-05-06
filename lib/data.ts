@@ -106,14 +106,3 @@ export const breadcrumbLabels: Record<string, string> = {
   authorize: "Phân quyền",
   profile: "Trang cá nhân",
 };
-
-export const statusDropdown = [
-  { value: StatusCommon.ACTIVE, label: "Hoạt động" },
-  { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
-]
-
-export const statusFilterDropdown = [
-  { value: StatusCommon.ACTIVE, label: "Hoạt động" },
-  { value: StatusCommon.INACTIVE, label: "Tạm ngưng" },
-  { value: StatusCommon.DELETED, label: "Đã xóa" },
-]
