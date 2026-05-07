@@ -2,7 +2,7 @@ import { z } from "zod";
 import { statusEnum } from "./common";
 
 export const categorySchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
 
   name: z.string().min(1, "Tên danh mục không được để trống"),
 

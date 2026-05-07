@@ -6,7 +6,7 @@ export interface Product {
   description?: string
   slug: string
   mainImage: string
-  price: number
+  price: string
   displayOrder?: number
   status: StatusCommon
   primaryCategory: Category
@@ -19,9 +19,9 @@ export interface Product {
 export interface ProductFilterRequest {
   keyword: string
   status: StatusCommon | null
-  categoryId: number | null
-  minPrice: number | null
-  maxPrice: number | null
+  categoryId: string | null
+  minPrice: string | null
+  maxPrice: string | null
   propertyValueIds: Record<string, string[]>
 }
 

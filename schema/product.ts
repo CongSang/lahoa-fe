@@ -6,9 +6,16 @@ export const productPropertyValueSchema = z.object({
 });
 
 export const variantSchema = z.object({
-  id: z.number().optional(),
+  id: z.string().optional(),
   sku: z.string().min(1, "SKU is required"),
-  price: z.number().min(0, "Price must be >= 0"),
+  price: z.string()
+    .min(1, "Vui lòng nhập giá tiền")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    }, {
+      message: "Giá tiền phải lớn hơn 0",
+    }),
   stock: z.number().int().min(0).optional(),
   isDefault: z.boolean().optional(),
 
@@ -24,7 +31,14 @@ export const productSchema = z.object({
 
   slug: z.string().optional(),
 
-  basePrice: z.number().min(0).optional(),
+  basePrice: z.string()
+    .min(1, "Vui lòng nhập giá tiền")
+    .refine((val) => {
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    }, {
+      message: "Giá tiền phải lớn hơn 0",
+    }),
 
   description: z.string().optional(),
 

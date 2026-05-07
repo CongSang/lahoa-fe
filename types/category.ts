@@ -1,7 +1,7 @@
 import { StatusCommon } from "@/types/index"
 
 export interface Category {
-  id: number
+  id: string
   name: string
   description?: string
   slug: string
