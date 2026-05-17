@@ -5,14 +5,16 @@ import { cn } from "@/lib/index";
 import { FieldConfig } from "@/schema/index";
 import { FieldValues, UseFormReturn } from "react-hook-form";
 
-export interface AutoFormProps<TFieldValues extends FieldValues = FieldValues> {
+export interface FormSectionProps<TFieldValues extends FieldValues = FieldValues> {
   form: UseFormReturn<TFieldValues>;
   config: FieldConfig<TFieldValues>[]
   disabledAll?: boolean
   gap?: string
 }
 
-export function AutoForm<TFieldValues extends FieldValues>({ form, config, disabledAll, gap = "gap-2" }: AutoFormProps<TFieldValues>) {
+export function FormSection<TFieldValues extends FieldValues>(
+  { form, config, disabledAll, gap = "gap-3" }
+: FormSectionProps<TFieldValues>) {
   return (
     <div className={cn("grid grid-cols-12", gap)}>
       {config.map((field: FieldConfig<TFieldValues>, index) => (

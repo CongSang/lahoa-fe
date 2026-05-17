@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
-  AutoForm,
+  FormSection,
   DialogDescription,
   Spinner,
   Separator
@@ -21,7 +21,7 @@ import {
 import { categorySchema, CategoryFormValues, FieldConfig } from "@/schema/index";
 import { Option, StatusCommon } from "@/types/index";
 import { statusDropdown } from "@/lib/index";
-import { WandSparkles } from "lucide-react";
+import { PencilLineIcon, PlusIcon, WandSparkles } from "lucide-react";
 
 type UpsertCategoryDialogProps = {
   isLoading: boolean;
@@ -56,17 +56,17 @@ export function UpsertCategoryDialog({
   const { handleSubmit, reset } = form;
 
   const sectionFormConfig: FieldConfig<CategoryFormValues>[] = [
-    { name: "imageUrl", type: "image" },
-    { name: "name", label: "Tên danh mục", type: "text", className: "col-span-6" },
-    { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents, className: "col-span-6" },
-    { name: "displayOrder", label: "TT hiển thị", type: "number", className: "col-span-6" },
-    { name: "status", label: "Trạng thái", type: "select", className: "col-span-6", options: statusDropdown },
-    { name: "path", label: "Đường dẫn", type: "text", disabled: true },
+    { name: "imageUrl", type: "image", label: "Ảnh danh mục", required: true },
+    { name: "name", label: "Tên danh mục", type: "text", className: "sm:col-span-6", required: true },
+    { name: "status", label: "Trạng thái", type: "select", className: "sm:col-span-6", options: statusDropdown, required: true },
+    { name: "parentId", label: "Danh mục cha", type: "select", placeholder: "Chọn danh mục", options: parents, className: "sm:col-span-6" },
+    { name: "displayOrder", label: "TT hiển thị", type: "number", className: "sm:col-span-6" },
+    { name: "path", label: "Đường dẫn", type: "text", readonly: true },
     { name: "description", label: "Mô tả", type: "textarea", placeholder: "Mô tả danh mục" },
   ];
 
   const sectionFormSEOConfig: FieldConfig<CategoryFormValues>[] = [
-    { name: "seoTitle", label: "Tiêu đề", type: "text", placeholder: "Tiêu đề SEO", className: "col-span-6" },
+    { name: "seoTitle", label: "Tiêu đề", type: "text", placeholder: "Tiêu đề SEO", className: "sm:col-span-6" },
     { name: "seoKeywords", label: "Từ khóa", type: "text", placeholder: "Từ khóa SEO", className: "col-span-6" },
     { name: "seoDescription", label: "Mô tả", type: "textarea", placeholder: "Mô tả SEO" },
   ]
@@ -100,13 +100,12 @@ export function UpsertCategoryDialog({
         <form
           id="form-category"
           onSubmit={handleSubmit((data) => {
-            
             onSubmit(data as CategoryFormValues);
           })}
           className="space-y-2"
         >
-          <div className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 py-1 flex flex-col gap-2">
-            <AutoForm<CategoryFormValues>
+          <div className="-mx-4 no-scrollbar max-h-[60vh] overflow-y-auto px-4 py-1 flex flex-col gap-4">
+            <FormSection<CategoryFormValues>
               form={form}
               config={sectionFormConfig}
               disabledAll={isLoading}
@@ -122,7 +121,7 @@ export function UpsertCategoryDialog({
               </Button>
             </div>
 
-            <AutoForm<CategoryFormValues>
+            <FormSection<CategoryFormValues>
               form={form}
               config={sectionFormSEOConfig}
               disabledAll={isLoading}
@@ -135,9 +134,14 @@ export function UpsertCategoryDialog({
                 Huỷ
               </Button>
             </DialogClose>
-            <Button type="submit" disabled={isLoading} className="sm:w-20">
+            <Button type="submit" disabled={isLoading || (initialData && !form.formState.isDirty)}>
               {isLoading ? <Spinner /> :
-              initialData ? "Cập nhật" : "Tạo mới"}
+                initialData ? <PencilLineIcon /> : <PlusIcon />}
+              {
+                initialData
+                  ? "Cập nhật"
+                  : "Tạo mới"
+              }
             </Button>
           </DialogFooter>
         </form>

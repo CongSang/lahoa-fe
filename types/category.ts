@@ -1,4 +1,9 @@
-import { StatusCommon } from "@/types/index"
+import { StatusCommon } from "./common"
+
+export type categoryStatus = 
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'DELETED'
 
 export interface Category {
   id: string
@@ -9,7 +14,7 @@ export interface Category {
   imageUrl: string
   displayOrder?: number
   productCount?: number
-  status?: StatusCommon
+  status?: categoryStatus
   parent?: Category 
   children?: Category[]  
   seoTitle?: string

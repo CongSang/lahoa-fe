@@ -6,7 +6,6 @@ export interface LayoutProps {
 
 export enum StatusCommon {
   ALL = "ALL",
-  DRAFT = "DRAFT",
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   DELETED = 'DELETED',
@@ -22,10 +21,6 @@ export const STATUS_MAP: Record<StatusCommon, Status> = {
   [StatusCommon.ALL]: {
     label: 'Tất cả',
     className: '',
-  },
-  [StatusCommon.DRAFT]: {
-    label: 'Bản nháp',
-    className: 'bg-secondary text-secondary-foreground',
   },
   [StatusCommon.ACTIVE]: {
     label: 'Hoạt động',
@@ -51,9 +46,16 @@ export interface ExtraParams {
 }
 
 export interface Option {
-  id?: number
+  id?: string
   label: string;
   value: string; 
+}
+
+export interface GroupOptions {
+  id: string
+  code: string
+  name: string
+  values: Option[] | []
 }
 
 export type AlertDialogType = "info" | "warning" | "delete";

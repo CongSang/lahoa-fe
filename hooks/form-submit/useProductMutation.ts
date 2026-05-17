@@ -1,29 +1,29 @@
-import { getProductUploadSignatureApi } from '@/services/index';
-import { parseNumber, uploadToCloudinary } from "@/lib/index";
+import { getProductUploadSignatureApi, updateProductStatusApi } from '@/services/index';
+import { uploadToCloudinary } from "@/lib/index";
 import { createProductApi, deleteProductApi, restoreProductApi, updateProductApi } from "@/services/index";
 import { useCrudMutation } from "@/hooks/index";
 import { ProductFormValues } from "@/schema/product";
 
 export async function handleProductSubmit(data: ProductFormValues): Promise<ProductFormValues> {
-  let mainImage = data.mainImage;
+  let imageUrl = data.imageUrl;
   let imagePublicId = data.imagePublicId;
 
-  if (data.mainImage instanceof File) {
-    const uploaded = await uploadToCloudinary(data.mainImage, getProductUploadSignatureApi);
+  if (data.imageUrl instanceof File) {
+    const uploaded = await uploadToCloudinary(data.imageUrl, getProductUploadSignatureApi);
 
-    mainImage = uploaded.url
+    imageUrl = uploaded.url
     imagePublicId = uploaded.publicId
   }
 
   const payload: ProductFormValues = {
     ...data,
     name: data.name.trim(),
-    mainImage,
+    description: data.description?.trim(),
+    imageUrl,
     imagePublicId,
-    displayOrder:
-      data.displayOrder !== undefined
-        ? parseNumber(String(data.displayOrder))
-        : undefined,
+    seoTitle: data.seoTitle?.trim(),
+    seoDescription: data.seoDescription?.trim(),
+    seoKeywords: data.seoKeywords?.trim(),
   };
 
   return payload;
@@ -34,7 +34,7 @@ export function useProductCrud() {
     queryKey: ["products"],
 
     mutationFn: async (vars) => {
-      const { action, data, id } = vars;
+      const { action, data, id, status } = vars;
 
       switch (action) {
         case "create": {
@@ -45,6 +45,10 @@ export function useProductCrud() {
         case "update": {
           const payload = await handleProductSubmit(data as ProductFormValues);
           return updateProductApi(payload.id!, payload)
+        };
+
+        case "update-status": {
+          return updateProductStatusApi(id!, status!)
         };
 
         case "delete":

@@ -1,26 +1,31 @@
 'use client'
 
 import { Button, Spinner } from '@/components/index'
-import { ProductFormValues } from '@/schema/product';
 import { Plus } from 'lucide-react'
-import { Suspense, useState } from 'react';
+import { Suspense } from 'react';
 import { DataTable } from './data-table';
+import { useRouter } from 'next/navigation';
+import { ProductFormValues } from '@/schema/product';
 
 const Products = () => {
-  const [open, setOpen] = useState(false);
-    const [initialData, setInitialData] = useState<Partial<ProductFormValues> | undefined>(undefined);
+  const route = useRouter();
   
-    const handleOpenDialog = (data?: Partial<ProductFormValues>) => {
-      setInitialData(data)
-      setOpen(true)
+  const handleOpenDialog = (data?: Partial<ProductFormValues>) => {
+    if (data) {
+      route.push(`/admin/products/${data.id}/edit`)
+    } else {
+      route.push('/admin/products/new')
     }
+  }
 
   return (
     <div>
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-bold tracking-tight text-foreground">Sản phẩm</h2>
 
-        <Button size="lg"><Plus />Thêm sản phẩm</Button>
+        <Button onClick={() => handleOpenDialog()}>
+          <Plus />Thêm sản phẩm
+        </Button>
       </div>
 
       <Suspense fallback={
@@ -28,10 +33,7 @@ const Products = () => {
           <Spinner className="size-6" />
         </div>
       }>
-        <DataTable 
-          initialData={initialData}
-          openDialog={open} 
-          setOpenDialog={setOpen} 
+        <DataTable
           handleOpenDialog={handleOpenDialog}
         />
       </Suspense>

@@ -1,5 +1,4 @@
 import { ChartLine, FileCog, Flower, LayoutDashboard, Notebook, Package, Rows2, Settings, ShoppingCart, Tickets, UserKey, Users } from "lucide-react";
-import { StatusCommon } from "../types";
 
 export const dataNavbar = {
   navMain: [
@@ -50,7 +49,7 @@ export const dataNavbar = {
     },
     {
       title: "Nhật kí thay đổi",
-      url: "/admin/audit-log",
+      url: "/admin/audit-logs",
       icon: Notebook,
     },
     {
@@ -95,14 +94,18 @@ export const dataNavbar = {
 }
 
 export const breadcrumbLabels: Record<string, string> = {
-  admin: "Bảng điều khiển",
-  products: "Quản lý sản phẩm",
-  categories: "Quản lý danh mục",
-  materials: "Quản lý nguyên liệu",
-  orders: "Quản lý đơn hàng",
-  customers: "Quản lý khách hàng",
-  promotions: "Quản lý khuyến mãi",
+  admin: "Dashboard",
+  products: "Sản phẩm",
+  categories: "Danh mục",
+  materials: "Nguyên liệu",
+  orders: "Đơn hàng",
+  customers: "Khách hàng",
+  promotions: "Khuyến mãi",
   settings: "Cấu hình",
   authorize: "Phân quyền",
-  profile: "Trang cá nhân",
+  "audit-logs": "Nhật kí thay đổi",
+  profile: "Hồ sơ",
+
+  new: "Thêm mới",
+  edit: "Cập nhật",
 };

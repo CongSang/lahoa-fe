@@ -16,13 +16,15 @@ interface DataTableColumnHeaderProps<TData, TValue>
   column: Column<TData, TValue>
   title: string
   side?: "right" | "left"
+  sort?: boolean
 }
 
 export function DataTableColumnHeader<TData, TValue>({
   column,
   title,
   className,
-  side = "left"
+  side = "left",
+  sort = true
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
@@ -47,16 +49,20 @@ export function DataTableColumnHeader<TData, TValue>({
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-            <ArrowUp />
-            Tăng
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-            <ArrowDown />
-            Giảm
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+        <DropdownMenuContent align={side === "left" ? "start" : "end"}>
+          {sort && (
+            <>
+              <DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+                <ArrowUp />
+                Tăng
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+                <ArrowDown />
+                Giảm
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
           <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>
             <EyeOff />
             Ẩn cột

@@ -3,13 +3,13 @@
 import { cleanNumber, formatNumber, getCaretPosition, parseNumber } from "@/lib/index";
 import { useRef } from "react";
 import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/index";
+import { Percent } from "lucide-react";
 
-type InputNumberProps = {
-  value?: string | number;
-  onChange?: (val: string) => void;
-
-  format?: "currency" | "percent" | "decimal";
-  currency?: string;
+interface InputNumberProps {
+  value?: string | number
+  onChange?: (val: string) => void
+  format?: "currency" | "percent" | "decimal"
+  currency?: string
 };
 
 export function InputNumber({
@@ -31,12 +31,17 @@ export function InputNumber({
 
     const numeric = parseNumber(cleaned);
 
-    const formatted = formatNumber(numeric || "", {
+    const nextValue =
+      cleaned === ""
+        ? ""
+        : String(numeric);
+
+    const formatted = formatNumber(nextValue, {
       style: "decimal",
       currency,
     });
-    
-    onChange?.(String(numeric));
+
+    onChange?.(nextValue);
 
     requestAnimationFrame(() => {
       if (!inputRef.current) return;
@@ -46,10 +51,12 @@ export function InputNumber({
     });
   };
 
-  const display = formatNumber(value, {
-    style: "decimal",
-    currency,
-  });
+  const display = value === "" || value === undefined
+    ? ""
+    : formatNumber(value, {
+        style: "decimal",
+        currency,
+      });
 
   return (
     <InputGroup>
@@ -61,7 +68,7 @@ export function InputNumber({
       />
       {format !== "decimal" && (
         <InputGroupAddon align="inline-end">
-          <InputGroupText>{format === "currency" ? currency : "%"}</InputGroupText>
+          <InputGroupText>{format === "currency" ? currency : <Percent />}</InputGroupText>
         </InputGroupAddon>
       )}
     </InputGroup>

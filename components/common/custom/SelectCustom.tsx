@@ -16,16 +16,10 @@ import {
   Button,
   Badge,
   CommandShortcut,
+  CommandSeparator,
 } from "@/components/index"
-import { Option } from "@/types/index"
+import { GroupOptions, Option } from "@/types/index"
 import { Selection } from "@/schema/index"
-
-interface GroupOptions {
-  id: number
-  code: string
-  name: string
-  values: Option[] | []
-}
 
 interface MultiSelectProps<T extends GroupOptions> {
   options?: Option[]
@@ -120,7 +114,6 @@ export function SelectCustom<T extends GroupOptions>({
       <CommandItem
         key={option.value}
         onSelect={() => handleSelect(String(option[fieldValue]))}
-        
       >
         {option.label}
         <CommandShortcut>
@@ -145,7 +138,7 @@ export function SelectCustom<T extends GroupOptions>({
           variant="outline"
           role="combobox"
           type="button"
-          className="w-full justify-between min-h-8 h-auto gap-1 px-2 py-1.5 font-normal hover:bg-background data-[state=open]:bg-background"
+          className="w-full justify-between min-h-8 h-auto gap-1 px-2.5 py-1 font-normal hover:bg-background data-[state=open]:bg-background"
           {...props}
         >
           <div className="flex flex-wrap gap-1 text-left">
@@ -165,9 +158,12 @@ export function SelectCustom<T extends GroupOptions>({
           <CommandList className="max-h-64 overflow-y-auto">
             {hasGroups ? (
               groupOptions?.map((items) => (
-                <CommandGroup key={items.id} heading={items.name}>
-                  {renderItems(items.values)}
-                </CommandGroup>
+                <React.Fragment key={items.id}>
+                  <CommandGroup heading={items.name}>
+                    {renderItems(items.values)}
+                  </CommandGroup>
+                  <CommandSeparator />
+                </React.Fragment>
               ))
             ) : (
               <CommandGroup>{renderItems(options)}</CommandGroup>

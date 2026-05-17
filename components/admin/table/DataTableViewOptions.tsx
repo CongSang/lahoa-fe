@@ -1,7 +1,7 @@
 "use client"
 
 import { type Table } from "@tanstack/react-table"
-import { Eye } from "lucide-react"
+import { Columns2 } from "lucide-react"
 
 import {
   Button,
@@ -11,22 +11,24 @@ import {
   DropdownMenuTrigger,
   TooltipRender,
 } from "@/components/index"
-import { CATEGORY_FIELD } from "@/types/category"
 
 export function DataTableViewOptions<TData>({
   table,
+  fieldName
 }: {
   table: Table<TData>
+  fieldName: Record<string, string>
 }) {
   return (
     <DropdownMenu>
       <TooltipRender tooltip="Ẩn/ hiện cột">
         <DropdownMenuTrigger asChild>
           <Button
+            type="button"
             variant="outline"
             size="icon"
           >
-            <Eye />
+            <Columns2 />
           </Button>
         </DropdownMenuTrigger>
       </TooltipRender>
@@ -45,7 +47,7 @@ export function DataTableViewOptions<TData>({
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}
               >
-                {CATEGORY_FIELD[column.id]}
+                {fieldName[column.id]}
               </DropdownMenuCheckboxItem>
             )
           })}

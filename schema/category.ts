@@ -1,10 +1,14 @@
 import { z } from "zod";
-import { statusEnum } from "./common";
+
+const statusEnum = z.enum(["ACTIVE", "INACTIVE", "DELETED"]);
 
 export const categorySchema = z.object({
   id: z.string().optional(),
 
-  name: z.string().min(1, "Tên danh mục không được để trống"),
+  name: z
+    .string()
+    .min(1, "Tên danh mục không được để trống")
+    .max(255, "Tên danh mục tối đa 255 ký tự"),
 
   imageUrl: z
     .union([
@@ -15,7 +19,7 @@ export const categorySchema = z.object({
     .refine((val) => !!val, "Ảnh danh mục không được để trống")
     .refine((file) => {
       if (file instanceof File) {
-        return file.size < 5_000_000; // <5MB
+        return file.size < 10_000_000; // <5MB
       }
       return true;
     }, "File quá lớn"),
@@ -26,23 +30,32 @@ export const categorySchema = z.object({
 
   status: statusEnum.default("ACTIVE"),
 
-  description: z.string().optional(),
-
-  path: z.string().optional(),
-
-  displayOrder: z
+  description: z
     .string()
-    .optional()
-    .transform((val) =>
-      val ? Number(val.replace(/[.,]/g, "")) : undefined
-    ),
-  
-  
-  seoTitle: z.string().optional(),
+    .max(500, "Mô tả tối đa 500 ký tự")
+    .optional(),
 
-  seoDescription: z.string().optional(),
+  path: z.string().nullable().optional(),
 
-  seoKeywords: z.string().optional(),
+  displayOrder: z.preprocess(
+    (val) => val === "" ? undefined : val,
+    z.coerce.number().optional()
+  ),
+  
+  seoTitle: z
+    .string()
+    .max(60, "Tiêu đề SEO tối đa 60 ký tự")
+    .optional(),
+
+  seoDescription: z
+    .string()
+    .max(160, "Mô tả SEO tối đa 160 ký tự")
+    .optional(),
+
+  seoKeywords: z
+    .string()
+    .max(255, "Từ khóa SEO tối đa 255 ký tự")
+    .optional(),
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;

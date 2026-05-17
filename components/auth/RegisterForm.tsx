@@ -5,7 +5,7 @@ import { registerApi } from "@/services/index";
 import { UserRequest } from "@/types/index";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { AutoForm, Button, Spinner } from "@/components/index";
+import { FormSection, Button, Spinner } from "@/components/index";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldConfig, RegisterFormValues, registerSchema } from "@/schema/index";
@@ -52,7 +52,7 @@ export const RegisterForm = () => {
         className="w-full space-y-2 text-left"
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
       >
-        <AutoForm<RegisterFormValues>
+        <FormSection<RegisterFormValues>
           form={form}
           config={sectionFormConfig}
           disabledAll={mutation.isPending}

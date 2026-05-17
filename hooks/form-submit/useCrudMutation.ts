@@ -4,7 +4,7 @@ import { PageResponse } from "@/types/index";
 import toast from "react-hot-toast";
 import { toastApiError } from "@/lib/index";
 
-type CrudAction = "create" | "update" | "delete" | "bulk-delete" | "restore";
+type CrudAction = "create" | "update" | "update-status" | "delete" | "bulk-delete" | "restore";
 
 type Id = number | string;
 
@@ -13,7 +13,7 @@ type CrudVariables<T> = {
   data?: T;
   id?: Id;
   ids?: Id[];
-
+  status?: string;
   meta?: {
     successMessage?: string;
     errorMessage?: string;
@@ -21,7 +21,7 @@ type CrudVariables<T> = {
   };
 };
 
-type CrudMutationOptions<T extends { id?: Id }> = {
+type CrudMutationOptions<T extends { id?: Id, status?: string }> = {
   queryKey: string[];
 
   mutationFn: (variables: CrudVariables<T>) => Promise<any>;
@@ -37,6 +37,7 @@ function getDefaultSuccessMessage(action: CrudAction) {
     case "create":
       return "Tạo thành công";
     case "update":
+    case "update-status":
       return "Cập nhật thành công";
     case "delete":
       return "Xoá thành công";
@@ -83,6 +84,17 @@ export function useCrudMutation<T extends { id?: Id }>({
               content: old.content.map((item) =>
                 getId(item) === getId(variables.data!)
                   ? { ...item, ...variables.data }
+                  : item
+              ),
+            };
+
+          // UPDATE
+          case "update-status":
+            return {
+              ...old,
+              content: old.content.map((item) =>
+                getId(item) === getId(variables.data!)
+                  ? { ...item, status: variables.status }
                   : item
               ),
             };

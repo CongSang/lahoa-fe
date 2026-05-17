@@ -1,14 +1,12 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback, TooltipRender } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator } from "@/components/index"
+import { useProductCrud } from "@/hooks/form-submit"
 import { APP_URL, formatNumber } from "@/lib/index"
-import { updateProductStatusApi } from "@/services/index"
 import { Product, PRODUCT_FIELD, StatusCommon } from "@/types/index"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArchiveRestore, ImageIcon, Pencil, Trash2 } from "lucide-react"
+import { EllipsisIcon, ImageIcon } from "lucide-react"
 import Link from "next/link"
-import toast from "react-hot-toast"
 
 export const getColumns = (
   onEdit?: (product: Product) => void,
@@ -32,6 +30,7 @@ export const getColumns = (
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     enableSorting: false,
@@ -66,13 +65,32 @@ export const getColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.name || ""}</div>,
+  },
+
+  {
+    accessorKey: "variants",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-30 truncate">
+        {row.original.variants?.flatMap((variant) => 
+            variant.properties
+        ).flatMap((p) => 
+            p.values
+        ).map((val) => val.label).join(", ")}
+      </div>
   },
   {
-    accessorKey: "price",
+    accessorKey: "basePrice",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} side="right" />
     ),
-    cell: ({ row }) => <div className="text-right">{formatNumber(row.original.price, { style: "currency", currency: "VND" })}</div>,
+    cell: ({ row }) => 
+      <div className="text-right w-25">
+        {formatNumber(row.original.basePrice, { style: "currency", currency: "VND" })}
+      </div>,
   },
   {
     accessorKey: "status",
@@ -82,17 +100,43 @@ export const getColumns = (
     cell: ({ row }) => <StatusCell product={row.original} />,
   },
   {
+    accessorKey: "properties",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => (
+      <div className="space-y-0.5 w-40">
+        {row.original.properties?.map((property) => (
+          <div key={property.id} className="flex gap-2">
+            <span className="font-medium shrink-0">
+              {property.name}:
+            </span>
+
+            <span className="wrap-break-word">
+              {property.values.map(v => v.label).join(", ")}
+            </span>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
     accessorKey: "primaryCategory",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="max-w-50 truncate">{row.original.primaryCategory?.name || ""}</div>,
   },
   {
     accessorKey: "categories",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <>{row.original.categories?.[0]?.name || ""}</>,
+    cell: ({ row }) => (
+      <div className="max-w-50 truncate">
+        {row.original.categories?.map(v => v.name).join(", ")}
+      </div>
+    ),
   },
   {
     accessorKey: "slug",
@@ -103,7 +147,12 @@ export const getColumns = (
       const path = row.original.primaryCategory?.slug ? `${row.original.primaryCategory.slug}/${row.original.slug}` : row.original.slug;
 
       return (
-        <Button variant="link" className="px-0" asChild>
+        <Button 
+          variant="link" 
+          className="px-0 truncate" 
+          asChild 
+          onClick={(e) => e.stopPropagation()}
+        >
           <Link 
             href={`${APP_URL}/${path}`} 
             target="_blank" 
@@ -116,10 +165,45 @@ export const getColumns = (
     },
   },
   {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-60 line-clamp-2 whitespace-normal">
+        {row.original?.description || ""}
+      </div>,
+  },
+  {
     accessorKey: "seoTitle",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.seoTitle || ""}</div>,
+  },
+  {
+    accessorKey: "seoKeywords",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.seoKeywords || ""}</div>,
+  },
+  {
+    accessorKey: "seoDescription",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-60 line-clamp-2 whitespace-normal">
+        {row.original?.seoDescription || ""}
+      </div>,
+  },
+  {
+    accessorKey: "displayOrder",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} side="right" />
+    ),
+    cell: ({ row }) => <div className="text-right">{row.original.displayOrder || 0}</div>
   },
   {
     id: "actions",
@@ -127,86 +211,76 @@ export const getColumns = (
       const product = row.original
  
       return (
-        <>
-          {product.status !== StatusCommon.DELETED ? (
-            <div className="flex items-center justify-end gap-2">
-              <TooltipRender tooltip="Chỉnh sửa">
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm" 
-                  className="text-gray-500"
-                  onClick={() => onEdit?.(product)}
-                >
-                  <Pencil />
-                </Button>
-              </TooltipRender>
-              <TooltipRender tooltip="Xóa">
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm" 
-                  className="text-gray-500 hover:text-red-600 dark:hover:text-red-400"
-                  onClick={() => onDelete?.(product)}
-                >
-                  <Trash2 />
-                </Button>
-              </TooltipRender>
-            </div>
-          ) : (
-            <TooltipRender tooltip="Khôi phục">
-              <Button 
-                variant="ghost" 
-                size="icon-sm" 
-                className="text-gray-500"
-                onClick={() => onRestore?.(product)}
-              >
-                <ArchiveRestore />
-              </Button>
-            </TooltipRender>
-          )}
-        </>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              size="icon"
+            >
+              <EllipsisIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            {product.status !== StatusCommon.DELETED ? (
+              <>
+                <DropdownMenuItem onClick={() => onEdit?.(product)}>
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(product)}>
+                  Xóa
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <DropdownMenuItem onClick={() => onRestore?.(product)}>
+                Khôi phục
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )
     },
   }
 ]
 
 const StatusCell = ({ product }: { product: Product }) => {
-  const queryClient = useQueryClient();
+  const mutation = useProductCrud();
 
-  const mutation = useMutation({
-    mutationFn: (newStatus: string) => updateProductStatusApi(product.id, newStatus),
-    onSuccess: () => {
-      toast.success("Cập nhật trạng thái thành công");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
-    onError: () => toast.error("Có lỗi xảy ra khi cập nhật trạng thái"),
-  });
+  const onUpdate = async (status: string) => {
+    mutation.mutate({ 
+      action: "update-status", 
+      id: product.id, 
+      status, 
+      meta: {
+        successMessage: "Đã cập nhật trạng thái",
+        errorMessage: "Cập nhật trạng thái thất bại"
+      }
+    })
+  }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={product.status === StatusCommon.DELETED}>
-        {mutation.isPending ? 
-          <div className="w-16 flex items-center justify-center "><Spinner /></div>
-        : <button disabled={mutation.isPending} className="focus:outline-none">
-            <BadgeCustom status={product.status! as StatusCommon} />
-          </button>
-        }
+      <DropdownMenuTrigger 
+        asChild 
+        disabled={product.status === StatusCommon.DELETED}
+        onClick={(e) => e.stopPropagation()}
+      > 
+        <button disabled={mutation.isPending} className="focus:outline-none">
+          <BadgeCustom status={product.status as StatusCommon} className="hover:brightness-95" />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem 
-          disabled={product.status === StatusCommon.DRAFT} 
-          onClick={() => mutation.mutate(StatusCommon.DRAFT)}
-        >
-          Bản nháp
-        </DropdownMenuItem>
-        <DropdownMenuItem 
           disabled={product.status === StatusCommon.ACTIVE} 
-          onClick={() => mutation.mutate(StatusCommon.ACTIVE)}
+          onClick={() => onUpdate(StatusCommon.ACTIVE)}
         >
           Hoạt động
         </DropdownMenuItem>
         <DropdownMenuItem 
           disabled={product.status === StatusCommon.INACTIVE} 
-          onClick={() => mutation.mutate(StatusCommon.INACTIVE)}
+          onClick={() => onUpdate(StatusCommon.INACTIVE)}
         > 
           Tạm ngưng
         </DropdownMenuItem>

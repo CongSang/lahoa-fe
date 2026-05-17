@@ -1,4 +1,9 @@
-import { Category, StatusCommon } from "@/types/index"
+import { Category, Property, StatusCommon, Variant } from "@/types/index"
+
+type Status = 
+  | 'ACTIVE'
+  | 'INACTIVE'
+  | 'DELETED'
 
 export interface Product {
   id: string
@@ -6,22 +11,26 @@ export interface Product {
   description?: string
   slug: string
   mainImage: string
-  price: string
+  imagePublicId: string
+  basePrice: string
   displayOrder?: number
-  status: StatusCommon
+  status: Status
   primaryCategory: Category
   categories: Category[]
   seoTitle?: string
   seoDescription?: string
   seoKeywords?: string
+
+  properties: Property[]
+  variants: Variant[]
 }
 
 export interface ProductFilterRequest {
   keyword: string
   status: StatusCommon | null
   categoryId: string | null
-  minPrice: string | null
-  maxPrice: string | null
+  minPrice: string
+  maxPrice: string
   propertyValueIds: Record<string, string[]>
 }
 
@@ -32,10 +41,12 @@ export const PRODUCT_FIELD: Record<string, string> = {
   slug: "Đường dẫn",
   mainImage: "Ảnh",
   displayOrder: "TT hiển thị",
-  price: "Giá tiền",
+  basePrice: "Giá tiền",
   status: "Trạng thái",
+  properties: "Thuộc tính",
   primaryCategory: "Danh mục chính",
   categories: "Danh mục",
+  variants: "Biến thể",
   seoTitle: "Tiêu đề SEO",
   seoDescription: "Mô tả SEO",
   seoKeywords: "Từ khóa SEO",

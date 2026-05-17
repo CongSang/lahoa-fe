@@ -33,11 +33,6 @@ export function proxy(request: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL('/', request.url));
     }
-
-    const decoded = decodeToken(token);
-    if (!decoded?.roles?.some(r => adminRoles.includes(r))) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
   }
 
   return NextResponse.next()

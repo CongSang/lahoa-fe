@@ -31,7 +31,7 @@ import {
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Category, CategoryFilterRequest, Option, StatusCommon } from "@/types/index"
+import { AlertDialog, Category, CATEGORY_FIELD, CategoryFilterRequest, Option, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
@@ -187,8 +187,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     data: data || [],
     columns,
     pageCount: apiResponse?.totalPages || 0,
+    rowCount: apiResponse?.totalElements || 0,
     manualPagination: true, 
     manualSorting: true, 
+    getRowId: row => row.id.toString(),
     onPaginationChange: tableState.setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -223,7 +225,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
   return (
     <>
-      <Card className="shadow p-4 gap-3">
+      <Card className="p-4 gap-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-2 max-w-2xl">
             <InputGroup className="max-w-sm">
@@ -256,7 +258,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} />
+            <DataTableViewOptions table={table} fieldName={CATEGORY_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -336,8 +338,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
         <div className="flex-1 text-sm text-muted-foreground">
           Đã chọn <span className="font-semibold text-accent-foreground">
-            {table.getFilteredSelectedRowModel().rows.length}/{" "}
-            {table.getFilteredRowModel().rows.length}
+            {Object.keys(rowSelection).length}/{" "}
+            {table.getRowCount()}
           </span> danh mục.
         </div>
 

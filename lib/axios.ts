@@ -1,6 +1,10 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import Cookies from 'js-cookie';
 import { refreshTokenApi } from '../services';
+
+interface RetryConfig extends InternalAxiosRequestConfig { 
+  _retry?: boolean; 
+}
 
 
 const axiosInstance = axios.create({
@@ -21,9 +25,10 @@ axiosInstance.interceptors.request.use(async (config) => {
   let token: string = '';
 
   if (typeof window === 'undefined') {
-    const { cookies } = await import('next/headers');
-    const cookieStore = cookies();
-    token = (await cookieStore).get('access_token')?.value ?? '';
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+
+    token = cookieStore.get("access_token")?.value ?? "";
   } else {
     token = Cookies.get('access_token') ?? '';
   }
@@ -41,9 +46,9 @@ axiosInstance.interceptors.request.use(async (config) => {
 axiosInstance.interceptors.response.use((response) => {
   return response;
 }, async (error) => {
-  const originalRequest = error.config;
+  const originalRequest = error.config as RetryConfig;
 
-  if (originalRequest.url.includes('/auth/login')) {
+  if (originalRequest?.url?.includes('/auth/login')) {
     return Promise.reject(error); 
   }
 
@@ -54,13 +59,18 @@ axiosInstance.interceptors.response.use((response) => {
       refreshPromise = refreshTokenApi( 
         Cookies.get('refresh_token') 
       ).then(res => {
-        const newToken = res.token;
-        Cookies.set('access_token', newToken, { path: '/' });
+        Cookies.set('access_token', res.token, { path: '/' });
         Cookies.set('refresh_token', res.refreshToken, { path: '/' });
-        return newToken;
+
+        return res.token;
       }).catch(() => {
         Cookies.remove('access_token', { path: '/' });
         Cookies.remove('refresh_token', { path: '/' });
+
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+
         return null;
       }).finally(() => {
         refreshPromise = null;
@@ -68,8 +78,10 @@ axiosInstance.interceptors.response.use((response) => {
     }
 
     const newToken = await refreshPromise;
+
     if (newToken) {
       originalRequest.headers.Authorization = `Bearer ${newToken}`;
+
       return axiosInstance(originalRequest);
     } else {
       return Promise.reject(error);

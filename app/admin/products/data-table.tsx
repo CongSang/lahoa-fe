@@ -27,25 +27,22 @@ import {
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Product, ProductFilterRequest, Property, StatusCommon } from "@/types/index"
+import { AlertDialog, Product, PRODUCT_FIELD, ProductFilterRequest, Property, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getDropdownCategoryApi, getProductsApi } from "@/services/index"
+import { useQuery } from "@tanstack/react-query"
+import { getDropdownCategoryApi, getProductsApi, mapProductToForm } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
 import { ProductFormValues } from "@/schema/index"
-import { useProductCrud } from "@/hooks/form-submit/useProductMutation"
+import { useProductCrud } from "@/hooks/index"
 import { getPropertiesApi } from "@/services/index"
 
 interface DataTableProps {
-  initialData?: Partial<ProductFormValues>
-  openDialog: boolean
-  setOpenDialog: (value: boolean) => void
   handleOpenDialog: (data?: Partial<ProductFormValues>) => void
 }
 
-export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
+export function DataTable({ handleOpenDialog }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -56,7 +53,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     description: "",
     item: null
   });
-  const queryClient = useQueryClient();
 
   const { data: apiResponse, tableState, form, isLoading } = useDataTable<Product, ProductFilterRequest>(
     "products", 
@@ -66,52 +62,14 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         keyword: "",
         status: null,
         categoryId: null,
-        minPrice: null,
-        maxPrice: null,
+        minPrice: "",
+        maxPrice: "",
         propertyValueIds: {},
       }
     }
   )
 
   const mutation = useProductCrud();
-
-  const onSubmit = async (formData: ProductFormValues) => {
-    if(!formData.id) {
-      mutation.mutate({ 
-        action: "create", 
-        data: formData,
-        meta: {
-          successMessage: "Tạo sản phẩm thành công",
-          errorMessage: "Tạo sản phẩm thất bại"
-        }
-      },
-      {
-        onSuccess: () => {
-          setTimeout(() => setOpenDialog(false), 300);
-        },
-        onError: () => {
-          setOpenDialog(true);
-        },
-      })
-    } else {
-      mutation.mutate({ 
-        action: "update", 
-        id: formData.id, 
-        data: formData,
-        meta: {
-          successMessage: "Cập nhật sản phẩm thành công",
-          errorMessage: "Cập nhật sản phẩm thất bại"
-        }
-      },{
-        onSuccess: () => {
-          setTimeout(() => setOpenDialog(false), 300);
-        },
-        onError: () => {
-          setOpenDialog(true);
-        },
-      })
-    }
-  };
 
   const onDelete = async (id: number | string) => {
     mutation.mutate({ 
@@ -171,7 +129,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   }
 
   const columns = useMemo(() => getColumns(
-    (product) => handleOpenDialog(product as ProductFormValues),
+    (product) => handleOpenDialog(mapProductToForm(product)),
     (product) => handleDelete(product),
     (product) => handleRestore(product)
   ), [handleOpenDialog]);
@@ -184,8 +142,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     data: data || [],
     columns,
     pageCount: apiResponse?.totalPages || 0,
+    rowCount: apiResponse?.totalElements || 0,
     manualPagination: true, 
     manualSorting: true, 
+    getRowId: row => row.id.toString(),
     onPaginationChange: tableState.setPagination,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -200,7 +160,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   })
 
   const { data: productProperties } = useQuery({
-    queryKey: ["properties-dropdown"],
+    queryKey: ["filtered-properties-dropdown"],
     queryFn: () => getPropertiesApi(true),
   });
 
@@ -225,7 +185,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
   return (
     <>
-      <Card className="shadow p-4 gap-3">
+      <Card className="p-4 gap-3">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-1 items-center gap-2 max-w-2xl">
             <InputGroup className="max-w-sm">
@@ -259,7 +219,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} />
+            <DataTableViewOptions table={table} fieldName={PRODUCT_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -325,7 +285,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 render={({ field }) => (
                   <InputNumber
                     {...field}
-                    value={String(field.value)}
+                    value={field.value}
                     onChange={field.onChange}
                     format="currency"
                     id={field.name}
@@ -346,7 +306,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 render={({ field }) => (
                   <InputNumber
                     {...field}
-                    value={String(field.value)}
+                    value={field.value}
                     onChange={field.onChange}
                     format="currency"
                     id={field.name}
@@ -397,9 +357,9 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
         <div className="flex-1 text-sm text-muted-foreground">
           Đã chọn <span className="font-semibold text-accent-foreground">
-            {table.getFilteredSelectedRowModel().rows.length}/{" "}
-            {table.getFilteredRowModel().rows.length}
-          </span> sản phẩm.
+            {Object.keys(rowSelection).length}/{" "}
+            {table.getRowCount()}
+          </span> danh mục.
         </div>
 
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />

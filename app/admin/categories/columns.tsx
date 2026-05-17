@@ -1,15 +1,13 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Spinner, Avatar, AvatarImage, AvatarFallback, TooltipRender } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator } from "@/components/index"
+import { useCategoryCrud } from "@/hooks/form-submit"
 import { APP_URL } from "@/lib/index"
-import { updateCategoryStatusApi } from "@/services/index"
 import { Category, CATEGORY_FIELD } from "@/types/category"
 import { StatusCommon } from "@/types/common"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArchiveRestore, ImageIcon, Pencil, Trash2 } from "lucide-react"
+import { EllipsisIcon, ImageIcon } from "lucide-react"
 import Link from "next/link"
-import toast from "react-hot-toast"
 
 export const getColumns = (
   onEdit?: (category: Category) => void,
@@ -33,6 +31,7 @@ export const getColumns = (
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
+        onClick={(e) => e.stopPropagation()}
       />
     ),
     enableSorting: false,
@@ -67,12 +66,14 @@ export const getColumns = (
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.name || ""}</div>,
   },
   {
     accessorKey: "productCount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} side="right" />
     ),
+    cell: ({ row }) => <div className="text-right">{row.original.productCount || 0}</div>
   },
   {
     accessorKey: "status",
@@ -82,17 +83,11 @@ export const getColumns = (
     cell: ({ row }) => <StatusCell category={row.original} />,
   },
   {
-    accessorKey: "displayOrder",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
-    ),
-  },
-  {
     accessorKey: "parent",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <>{row.original.parent?.name}</>,
+    cell: ({ row }) => <div className="max-w-50 truncate">{row.original?.parent?.name || ""}</div>,
   },
   {
     accessorKey: "path",
@@ -100,7 +95,12 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
     cell: ({ row }) => (
-      <Button variant="link" className="px-0" asChild>
+      <Button 
+        variant="link" 
+        className="px-0 truncate" 
+        asChild
+        onClick={(e) => e.stopPropagation()}
+      >
         <Link 
           href={`${APP_URL}/${row.original.path}`} 
           target="_blank" 
@@ -112,10 +112,45 @@ export const getColumns = (
     ),
   },
   {
+    accessorKey: "description",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-60 line-clamp-2 whitespace-normal">
+        {row.original?.description || ""}
+      </div>,
+  },
+  {
     accessorKey: "seoTitle",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.name || ""}</div>,
+  },
+  {
+    accessorKey: "seoKeywords",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.seoKeywords || ""}</div>,
+  },
+  {
+    accessorKey: "seoDescription",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-60 line-clamp-2 whitespace-normal">
+        {row.original?.seoDescription || ""}
+      </div>,
+  },
+  {
+    accessorKey: "displayOrder",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} side="right" />
+    ),
+    cell: ({ row }) => <div className="text-right">{row.original.displayOrder || 0}</div>
   },
   {
     id: "actions",
@@ -123,80 +158,76 @@ export const getColumns = (
       const category = row.original
  
       return (
-        <>
-          {category.status !== StatusCommon.DELETED ? (
-            <div className="flex items-center justify-end gap-2">
-              <TooltipRender tooltip="Chỉnh sửa">
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm" 
-                  className="text-gray-500"
-                  onClick={() => onEdit?.(category)}
-                >
-                  <Pencil />
-                </Button>
-              </TooltipRender>
-              <TooltipRender tooltip="Xóa">
-                <Button 
-                  variant="ghost" 
-                  size="icon-sm" 
-                  className="text-gray-500 hover:text-red-600 dark:hover:text-red-400"
-                  onClick={() => onDelete?.(category)}
-                >
-                  <Trash2 />
-                </Button>
-              </TooltipRender>
-            </div>
-          ) : (
-            <TooltipRender tooltip="Khôi phục">
-              <Button 
-                variant="ghost" 
-                size="icon-sm" 
-                className="text-gray-500"
-                onClick={() => onRestore?.(category)}
-              >
-                <ArchiveRestore />
-              </Button>
-            </TooltipRender>
-          )}
-        </>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              size="icon"
+            >
+              <EllipsisIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32">
+            {category.status !== StatusCommon.DELETED ? (
+              <>
+                <DropdownMenuItem onClick={() => onEdit?.(category)}>
+                  Chỉnh sửa
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(category)}>
+                  Xóa
+                </DropdownMenuItem>
+              </>
+            ) : (
+              <DropdownMenuItem onClick={() => onRestore?.(category)}>
+                Khôi phục
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )
     },
   }
 ]
 
 const StatusCell = ({ category }: { category: Category }) => {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: (newStatus: string) => updateCategoryStatusApi(category.id, newStatus),
-    onSuccess: () => {
-      toast.success("Cập nhật trạng thái thành công");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
-    },
-    onError: () => toast.error("Có lỗi xảy ra khi cập nhật trạng thái"),
-  });
+  const mutation = useCategoryCrud();
+  
+    const onUpdate = async (status: string) => {
+      mutation.mutate({ 
+        action: "update-status", 
+        id: category.id, 
+        status, 
+        meta: {
+          successMessage: "Đã cập nhật trạng thái",
+          errorMessage: "Cập nhật trạng thái thất bại"
+        }
+      })
+    }
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={category.status === StatusCommon.DELETED}>
-        {mutation.isPending ? 
-          <div className="w-16 flex items-center justify-center "><Spinner /></div>
-        : <button disabled={mutation.isPending} className="focus:outline-none">
-            <BadgeCustom status={category.status!} />
-          </button>
-        }
+      <DropdownMenuTrigger 
+        asChild 
+        disabled={category.status === StatusCommon.DELETED}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button disabled={mutation.isPending} className="focus:outline-none">
+          <BadgeCustom status={category.status! as StatusCommon} className="hover:brightness-95" />
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem 
           disabled={category.status === StatusCommon.ACTIVE} 
-          onClick={() => mutation.mutate(StatusCommon.ACTIVE)}
+          onClick={() => onUpdate(StatusCommon.ACTIVE)}
         >
           Hoạt động
         </DropdownMenuItem>
         <DropdownMenuItem 
           disabled={category.status === StatusCommon.INACTIVE} 
-          onClick={() => mutation.mutate(StatusCommon.INACTIVE)}
+          onClick={() => onUpdate(StatusCommon.INACTIVE)}
         > 
           Tạm ngưng
         </DropdownMenuItem>

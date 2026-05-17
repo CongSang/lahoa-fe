@@ -1,12 +1,16 @@
+"use client"
+
 import { ColumnDef, flexRender, Table as TableType } from '@tanstack/react-table'
 import { Button, DataTableSkeleton, Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/index'
 import { Download, Folder, Plus, SearchX } from 'lucide-react'
+import { useRef } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   table: TableType<TData>
   isLoading: boolean
   emptyLabel: string
+  hideImportExcel?: boolean
   isFiltering: () => boolean
   onReset: () => void
   handleOpenDialog: (data?: Partial<TValue>) => void
@@ -19,10 +23,15 @@ export function DataTableCommon<TData, TValue> ({
   isFiltering, 
   emptyLabel,
   onReset,
-  handleOpenDialog
+  handleOpenDialog,
+  hideImportExcel = false 
 }: DataTableProps<TData, TValue>) {
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  const selectable = !!table.options.enableRowSelection;
+
   return (
-    <div className="overflow-hidden rounded-sm border">
+    <div className="overflow-hidden rounded-lg border">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -50,6 +59,26 @@ export function DataTableCommon<TData, TValue> ({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onDoubleClick={() => {
+                  if (clickTimeout.current) {
+                    clearTimeout(clickTimeout.current);
+                  }
+
+                  if(row.original) {
+                    handleOpenDialog(row.original)
+                  }
+                }}
+                onClick={() => {
+                  if (!selectable) return;
+
+                  if (clickTimeout.current) {
+                    clearTimeout(clickTimeout.current);
+                  } 
+
+                  clickTimeout.current = setTimeout(() => {
+                    row.toggleSelected(!row.getIsSelected())
+                  }, 200);
+                }}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -65,7 +94,7 @@ export function DataTableCommon<TData, TValue> ({
                   <div className="flex flex-col items-center gap-2 py-4">
                     <SearchX className="h-8 w-8 text-muted-foreground" />
                     <p className='text-accent-foreground'>Không tìm thấy kết quả</p>
-                    <Button variant="outline" onClick={onReset}>Xóa bộ lọc</Button>
+                    <Button type='button' variant="outline" onClick={onReset}>Xóa bộ lọc</Button>
                   </div>
                 ) : (
                   <Empty>
@@ -76,8 +105,8 @@ export function DataTableCommon<TData, TValue> ({
                       <EmptyTitle>{emptyLabel}</EmptyTitle>
                     </EmptyHeader>
                     <EmptyContent className="flex-row justify-center gap-2">
-                      <Button onClick={() => handleOpenDialog()}><Plus />Tạo mới</Button>
-                      <Button variant="outline"><Download />Nhập excel</Button>
+                      <Button type='button' onClick={() => handleOpenDialog()}><Plus />Tạo mới</Button>
+                      {!hideImportExcel && <Button type='button' variant="outline"><Download />Nhập excel</Button>}
                     </EmptyContent>
                   </Empty>
                 )}

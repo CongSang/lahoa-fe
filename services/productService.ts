@@ -13,6 +13,16 @@ export const getProductsApi = async (filter: ProductFilterRequest & PageRequest)
   return response.data;
 };
 
+export const getProductByIdApi = async (id: string) => {
+  const response = await axiosInstance.get(`/products/${id}`);
+  return response.data;
+};
+
+export const getProductBySlugApi = async (slug: string) => {
+  const response = await axiosInstance.get(`/products/slug/${slug}`);
+  return response.data;
+};
+
 export const createProductApi = async (request: ProductFormValues) => {
   const response = await axiosInstance.post('/products', request);
   return response.data;

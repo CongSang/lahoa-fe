@@ -10,7 +10,7 @@ export function DataTableSkeleton({ columns, rows = 10 }: { columns: number, row
             <Skeleton className="h-4 w-4 rounded-xs animate-pulse bg-muted" />
           </TableCell>
           {Array.from({ length: columns - 1 }).map((_, j) => (
-            <TableCell key={j} className="py-3" >
+            <TableCell key={j} className="py-4" >
               <Skeleton className="h-4 w-full animate-pulse bg-muted" />
             </TableCell>
           ))}

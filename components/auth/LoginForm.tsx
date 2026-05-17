@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { AutoForm, Button, Spinner } from '@/components/index'
+import { FormSection, Button, Spinner } from '@/components/index'
 import { AuthRequest } from '@/types/index';
 import { toastApiError } from '@/lib/index';
 import toast from 'react-hot-toast';
@@ -72,7 +72,7 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
         className="w-full space-y-2 text-left"
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
       >
-        <AutoForm<AuthFormValues>
+        <FormSection<AuthFormValues>
           form={form}
           config={sectionFormConfig}
           disabledAll={mutation.isPending}
