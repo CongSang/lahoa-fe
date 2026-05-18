@@ -3,13 +3,17 @@ import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownM
 import { Bell, LogOut, Moon, Settings2, Shield, Sun } from 'lucide-react'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/index'
 import { useTheme } from 'next-themes'
-import { useUserStore } from '@/store/index'
+import { useUserStore } from '@/stores/index'
 import { logoutApi } from '@/services/index'
-import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
+import { ACCOUNT_QUERY_KEY } from '@/hooks/index'
 
 export const HeaderAdmin = () => {
   const { setTheme, theme } = useTheme()
   const { user, logout } = useUserStore()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const toggleTheme = () => {
     if(theme === 'light') {
@@ -22,10 +26,21 @@ export const HeaderAdmin = () => {
   const handleLogout = async () => {
     try {
       await logoutApi()
-      logout();
+    } catch(err) {
+      console.error("Logout error", err)
+    } finally {
+      queryClient.removeQueries({
+        queryKey:
+          ACCOUNT_QUERY_KEY,
+      })
+
+      logout()
+
       setTheme("light")
-    } catch {
-      toast.error('Có lỗi khi đăng xuất. Vui lòng thử lại.');
+
+      router.replace('/')
+
+      router.refresh()
     }
   }
 
@@ -53,7 +68,7 @@ export const HeaderAdmin = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
               <Avatar>
-                <AvatarImage src={user?.userImageUrl || ""} alt={user?.fullName} />
+                <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
             </Button>
@@ -67,7 +82,7 @@ export const HeaderAdmin = () => {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar>
-                  <AvatarImage src={user?.userImageUrl || ""} alt={user?.fullName} />
+                  <AvatarImage src={user?.userImageUrl} alt={user?.fullName} />
                   <AvatarFallback>AD</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">

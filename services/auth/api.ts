@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/lib/index';
-import { AuthRequest, UserRequest } from '@/types/index';
+import { AuthRequest, User, UserRequest } from '@/types/index';
 import axios from 'axios';
 
 export const loginApi = async (request: AuthRequest) => {
@@ -14,7 +14,7 @@ export const registerApi = async (request: UserRequest) => {
 
 export const getAccountInfoApi = async () => {
   const response = await axiosInstance.get('/auth/account-info');
-  return response.data;
+  return response.data as User;
 };
 
 export const refreshTokenApi = async (refreshToken: string | undefined) => {

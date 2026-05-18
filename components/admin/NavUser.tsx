@@ -24,20 +24,32 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/index"
-import { useUserStore } from "@/store/index"
+import { useUserStore } from "@/stores/index"
 import { logoutApi } from "@/services/index"
-import toast from "react-hot-toast"
+import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
+import { ACCOUNT_QUERY_KEY } from "@/hooks/index"
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { user, logout } = useUserStore()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const handleLogout = async () => {
     try {
       await logoutApi()
-      logout();
-    } catch {
-      toast.error('Có lỗi khi đăng xuất. Vui lòng thử lại.');
+    } finally {
+      queryClient.removeQueries({
+        queryKey:
+          ACCOUNT_QUERY_KEY,
+      })
+
+      logout()
+
+      router.replace('/')
+
+      router.refresh()
     }
   }
 

@@ -1,17 +1,47 @@
-import { GoogleLoginRedirect } from '@/components/auth';
+'use client'
 
-interface OAuth2RedirectPageProps {
-  searchParams: Promise<{
-    token: string;
-    refreshToken: string;
-  }>
-}
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react'
+import { Loading } from '@/components/index';
+import { useUserStore } from '@/stores/index'
+import { decodeToken } from '@/lib/auth';
  
-const OAuth2RedirectPage = async ({ searchParams } : OAuth2RedirectPageProps) => {
-  const params = await searchParams
+const OAuth2RedirectPage = () => {
+  const router = useRouter();
+  const params = useSearchParams()
+  const { login } = useUserStore();
+
+  useEffect(() => {
+    const accessToken = params.get("token") as string;
+    const refreshToken = params.get("refreshToken") as string;
+
+    if (!accessToken && !refreshToken) {
+      router.replace('/login?error=oauth2_failed');
+      return
+    }
+
+    login({ token: accessToken, refreshToken })
+    
+    const decoded = decodeToken(accessToken)
+    
+    const isAdmin =
+      decoded?.permissions?.includes(
+        'ACCESS_ADMIN_PANEL'
+      )
+
+    router.replace(
+      isAdmin
+        ? '/admin'
+        : '/'
+    )
+
+    router.refresh()
+  }, [router, params, login]);
 
   return (
-    <GoogleLoginRedirect searchParams={params} />
+    <div className="flex items-center justify-center min-h-screen">
+      <Loading />
+    </div>
   );
 }
 

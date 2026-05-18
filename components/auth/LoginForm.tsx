@@ -1,17 +1,19 @@
 'use client'
 
 import { useEffect } from 'react'
-import { FormSection, Button, Spinner } from '@/components/index'
+import { FormSection, Button, Spinner, Alert, AlertTitle } from '@/components/index'
 import { AuthRequest } from '@/types/index';
-import { toastApiError } from '@/lib/index';
+import { decodeToken, getApiErrorMessage } from '@/lib/index';
 import toast from 'react-hot-toast';
-import { useUserStore } from 'store/useUserStore';
+import { useUserStore } from '@/stores/useUserStore';
 import { useRouter } from 'next/navigation';
 import { loginApi } from '@/services/index';
 import { useForm } from 'react-hook-form';
 import { AuthFormValues, authSchema, FieldConfig } from '@/schema/index';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import Link from 'next/link';
+import { AlertCircleIcon } from 'lucide-react';
 
 interface LoginFormProps {
   searchParams?: {
@@ -40,15 +42,39 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
 
   const mutation = useMutation({
     mutationFn: (request: AuthRequest) => loginApi(request),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       login(data);
-      router.replace('/');
+      
+      const decoded = decodeToken(data.token)
+
+      const isAdmin =
+        decoded?.permissions?.includes(
+          'ACCESS_ADMIN_PANEL'
+        )
+
+      router.replace(
+        isAdmin
+          ? '/admin'
+          : '/'
+      )
+
+      router.refresh()
     },
     onError: (error) => {
-      console.error('Login failed', error);
-      toastApiError(error, 'Đăng nhập thất bại. Vui lòng thử lại.');
+      form.setError("root", {
+        type: "server",
+        message: getApiErrorMessage(
+          error,
+          "Đăng nhập thất bại"
+        )
+      })
     },
   });
+
+  const onSubmit = (data: AuthFormValues) => {
+    form.clearErrors("root")
+    mutation.mutate(data)
+  }
 
   const handleLoginWithGoogle = () => {
     router.push(`${process.env.NEXT_PUBLIC_API_URL}/oauth2/authorization/google`);
@@ -67,10 +93,21 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
 
   return (
     <>
+      {
+        form.formState.errors.root && (
+          <Alert className="w-full border-destructive/80 bg-destructive/5 text-destructive mb-2">
+            <AlertCircleIcon />
+            <AlertTitle>
+              {form.formState.errors.root.message}
+            </AlertTitle>
+          </Alert>
+        )
+      }
+
       <form 
         id='form-login' 
         className="w-full space-y-2 text-left"
-        onSubmit={handleSubmit((data) => mutation.mutate(data))}
+        onSubmit={handleSubmit(onSubmit)}
       >
         <FormSection<AuthFormValues>
           form={form}
@@ -115,6 +152,23 @@ export const LoginForm = ({ searchParams } : LoginFormProps) => {
         </svg>
         Đăng nhập với Google
       </Button>
+
+      <div className="mt-6 text-center">
+        <p className="text-gray-400 text-sm">
+          Bạn chưa có tài khoản? {" "}
+
+          <Button
+            type="button"
+            disabled={mutation.isPending}
+            variant="link"
+            className='p-0 h-auto font-bold'
+          >
+            <Link href="/register" className="text-secondary-ec transition-colors">
+              Đăng kí
+            </Link>
+          </Button>
+        </p>
+      </div>
     </>
   )
 }

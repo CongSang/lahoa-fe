@@ -3,6 +3,7 @@ import { jwtDecode } from "jwt-decode";
 interface MyTokenPayload {
   sub: string;
   roles: string[];
+  permissions: string[];
   exp: number;
 }
 

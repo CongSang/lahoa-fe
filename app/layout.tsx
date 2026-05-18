@@ -4,8 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { LayoutProps } from '@/types/index'
 import "./globals.css";
 import { cn } from "@/lib/utils";
-import { TooltipProvider, ThemeProvider } from "@/components/index";
-import QueryProvider from "@/components/admin/QueryProvider";
+import { TooltipProvider, ThemeProvider, AuthHydrator, QueryProvider } from "@/components/index";
 
 const inter = Inter({subsets:['latin'],variable:'--font-sans'});
 
@@ -38,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps) {
           disableTransitionOnChange
         >
           <QueryProvider>
+            <AuthHydrator/>
             <TooltipProvider>
               <main className="transition-opacity duration-300 ease-in-out overflow-hidden">{children}</main>
             </TooltipProvider>

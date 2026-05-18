@@ -23,10 +23,20 @@ export const formatDisplay = (val: string) => {
   return parts.join(".");
 };
 
-export const toastApiError = (error: unknown, errorMsg: string) => {
+export const getApiErrorMessage = (
+  error: any,
+  fallback = "Có lỗi xảy ra"
+) => {
+  return (
+    error?.response?.data?.message ||
+    fallback
+  )
+}
+
+export const toastApiError = (error: any, errorMsg: string) => {
   let errorMessage = errorMsg;
   if (axios.isAxiosError(error)) {
-    errorMessage = errorMsg + ": " + error.response?.data?.message;
+    errorMessage = error.response?.data?.message;
   }
   toast.error(errorMessage, { duration: 5000 });
 }

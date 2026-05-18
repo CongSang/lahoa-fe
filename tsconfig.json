@@ -25,7 +25,7 @@
       "@/types/*": ["types/*"],
       "@/services/*": ["services/*"],
       "@/lib/*": ["lib/*"],
-      "@/store/*": ["store/*"],
+      "@/stores/*": ["stores/*"],
       "@/schema/*": ["schema/*"],
     }
   },

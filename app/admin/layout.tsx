@@ -1,10 +1,36 @@
-import { HeaderAdmin, AppInitializer, SidebarProvider, SidebarInset, SidebarAdmin, CopyrightSection } from '@/components/index'
+import { HeaderAdmin, SidebarProvider, SidebarInset, SidebarAdmin, CopyrightSection } from '@/components/index'
 import { LayoutProps } from 'types/index'
 import NextTopLoader from 'nextjs-toploader';
+import { redirect } from 'next/navigation';
+import { getCurrentUserServer } from '@/services/auth/server-api';
+import { dehydrate, HydrationBoundary, QueryClient } from '@tanstack/react-query';
+import { ACCOUNT_QUERY_KEY } from '@/hooks/index';
 
-const AdminLayout = ({ children } : LayoutProps) => {
+async function AdminLayout({
+  children,
+}: LayoutProps) {
+  const queryClient = new QueryClient()
+
+  const user = await getCurrentUserServer()
+
+  if (!user) {
+    redirect('/login')
+  }
+
+  const hasAccess =
+    user.permissions?.includes('ACCESS_ADMIN_PANEL')
+
+  if (!hasAccess) {
+    redirect('/')
+  }
+
+  queryClient.setQueryData(
+    ACCOUNT_QUERY_KEY,
+    user
+  )
+
   return (
-    <AppInitializer>
+    <HydrationBoundary state={dehydrate(queryClient)}>
       <SidebarProvider>
         <SidebarAdmin />
 
@@ -35,8 +61,7 @@ const AdminLayout = ({ children } : LayoutProps) => {
           
         </SidebarInset>
       </SidebarProvider>
-      
-    </AppInitializer>
+    </HydrationBoundary>
   )
 }
 

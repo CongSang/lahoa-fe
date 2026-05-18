@@ -1,5 +1,4 @@
 import { LoginForm, Logo } from '@/components/index'
-import Link from 'next/link'
 
 interface LoginProps {
   searchParams?: Promise<{
@@ -16,19 +15,9 @@ const Login = async ({ searchParams } : LoginProps) => {
         className="w-full max-w-120 bg-white rounded-3xl shadow-md p-6 md:p-8"
       >
         <div className="flex flex-col items-center text-center">
-          <Logo className='w-38 md:w-45 h-16 md:h-20 mb-12' />
+          <Logo className='w-38 md:w-45 h-auto mb-10' />
 
           <LoginForm searchParams={params} />
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
-              Bạn chưa có tài khoản? {" "}
-              <Link href="/register" className="font-bold text-secondary-ec hover:underline transition-colors">
-                Đăng kí
-              </Link>
-            </p>
-          </div>
-
         </div>
       </div>
     </div>

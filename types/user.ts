@@ -8,8 +8,8 @@ export interface User {
   fullName: string;
   userImageUrl?: string;
   addresses: Address[] | []
-  createdAt?: string; // ISO date string
-  updatedAt?: string; // ISO date string
+  roles: string[]
+  permissions: string[]
 }
 
 export interface UserRequest {
