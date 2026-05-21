@@ -1,12 +1,12 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Loading } from '@/components/index';
 import { useUserStore } from '@/stores/index'
 import { decodeToken } from '@/lib/auth';
  
-const OAuth2RedirectPage = () => {
+const OAuth2RedirectContent = () => {
   const router = useRouter();
   const params = useSearchParams()
   const { login } = useUserStore();
@@ -42,6 +42,20 @@ const OAuth2RedirectPage = () => {
     <div className="flex items-center justify-center min-h-screen">
       <Loading />
     </div>
+  );
+}
+
+const OAuth2RedirectPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Loading />
+        </div>
+      }
+    >
+      <OAuth2RedirectContent />
+    </Suspense>
   );
 }
 

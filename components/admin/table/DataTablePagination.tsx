@@ -24,36 +24,42 @@ export function DataTablePagination<TData>({
   prefetchNextPage: () => void;
 }) {
   const getPaginationRange = (currentPage: number, totalPages: number) => {
-    const delta = 1;
-    const range = [];
-    const rangeWithDots = [];
-    let l;
-
-    range.push(1);
-
-    for (let i = currentPage - delta; i <= currentPage + delta; i++) {
-      if (i > 1 && i < totalPages) {
-        range.push(i);
-      }
+    if (totalPages <= 7) {
+      return Array.from(
+        { length: totalPages },
+        (_, i) => i + 1
+      )
     }
 
-    if (totalPages > 1) {
-      range.push(totalPages);
+    if (currentPage <= 2) {
+      return [
+        1,
+        2,
+        3,
+        '...',
+        totalPages,
+      ]
     }
 
-    for (const i of range) {
-      if (l) {
-        if (i - l === 2) {
-          rangeWithDots.push(l + 1);
-        } else if (i - l !== 1) {
-          rangeWithDots.push('...');
-        }
-      }
-      rangeWithDots.push(i);
-      l = i;
+    if (currentPage >= totalPages - 1) {
+      return [
+        1,
+        '...',
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ]
     }
 
-    return rangeWithDots;
+    return [
+      1,
+      '...',
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      '...',
+      totalPages,
+    ]
   };
 
   const currentPage = table.getState().pagination.pageIndex + 1;

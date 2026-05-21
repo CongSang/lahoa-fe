@@ -1,0 +1,268 @@
+"use client"
+
+import {
+  getCoreRowModel,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table"
+
+import {
+  Button,
+  Card,
+  DataTableCommon,
+  DataTableFilterSheet,
+  TooltipRender,
+  DataTableViewOptions, 
+  DataTablePagination,
+  InputGroup,
+  InputGroupInput,
+  InputGroupAddon,
+  Field,
+  FieldLabel,
+  SelectCustom,
+  AuditLogDetailDialog,
+  DatePicker,
+} from "@/components/index"
+import { useMemo, useState } from "react"
+import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
+import { AuditLog, AuditLogFilterRequest, AUDIT_LOG_FIELD, AUDIT_ENTITY_OPTIONS, AUDIT_ACTION_OPTIONS } from "@/types/index"
+import { useQuery } from "@tanstack/react-query"
+import { getAuditLogsApi, getUserByKeywordApi } from "@/services/index"
+import { useDataTable } from "@/hooks/index"
+import { getColumns } from "./columns"
+import { Controller } from "react-hook-form"
+import type { DateRange } from "react-day-picker"
+import { getDateRangeValue, setDateRangeValue } from "@/lib/index"
+
+interface DataTableProps {
+  initialData?: Partial<AuditLog>
+  openDialog: boolean
+  setOpenDialog: (value: boolean) => void
+  handleOpenDialog: (data?: Partial<AuditLog>) => void
+}
+
+export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
+  const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>()
+
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<AuditLog, AuditLogFilterRequest>(
+    "audit-logs", 
+    getAuditLogsApi, 
+    {
+      defaultFilter: { 
+        keyword: "",
+        entityName: undefined,
+        action: undefined,
+        userId: "",
+        fromDate: "",
+        toDate: ""
+      }
+    }
+  )
+
+  const columns = useMemo(() => getColumns(), []);
+
+  const data = useMemo(() => {
+    return apiResponse?.content ?? [];
+  }, [apiResponse?.content]);
+
+  const table = useReactTable({
+    data: data || [],
+    columns,
+    enableRowSelection: false,
+    pageCount: apiResponse?.totalPages || 0,
+    rowCount: apiResponse?.totalElements || 0,
+    manualPagination: true, 
+    manualSorting: true, 
+    onPaginationChange: tableState.setPagination,
+    onSortingChange: tableState.setSorting,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    state: {
+      sorting: tableState.sorting,
+      columnVisibility,
+      pagination: tableState.pagination
+    },
+  })
+
+  const handleSearch = () => {
+    setIsFilterOpen(false)
+    setTimeout(() => {
+      form.handleSubmit(form.onSubmit)()
+    }, 250)
+  }
+
+  const handleReset = () => {
+    setIsFilterOpen(false)
+    setTimeout(() => {
+      form.onReset()
+    }, 250)
+  }
+
+  const {
+    data: users = []
+  } = useQuery({
+    queryKey: [
+      'users-dropdown',
+      ""
+    ],
+    queryFn: () =>
+      getUserByKeywordApi("")
+  })
+
+  return (
+    <>
+      <Card className="p-4 gap-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-1 items-center gap-2 max-w-2xl">
+            <InputGroup className="max-w-sm">
+              <InputGroupInput
+                {...form.register("keyword")}
+                name="keyword"
+                placeholder="Nhập từ khóa..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearch();
+                }}
+                autoComplete="off"
+              />
+              <InputGroupAddon align="inline-start">
+                <SearchIcon className="text-muted-foreground" />
+              </InputGroupAddon>
+            </InputGroup>
+
+            <Button 
+              variant="outline" 
+              onClick={() => setIsFilterOpen(true)}
+            >
+              <ListFilter />
+              Bộ lọc
+            </Button>
+            <TooltipRender tooltip="Làm mới">
+              <Button variant="outline" size="icon" onClick={handleReset}>
+                <RefreshCcw />
+              </Button>
+            </TooltipRender>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <DataTableViewOptions table={table} fieldName={AUDIT_LOG_FIELD} />
+            <TooltipRender tooltip="Xuất Excel">
+              <Button variant="outline" size="icon">
+                <Upload />
+              </Button>
+            </TooltipRender>
+            <TooltipRender tooltip="Nhập Excel">
+              <Button variant="outline" size="icon">
+                <Download />
+              </Button>
+            </TooltipRender>
+          </div>
+        </div>
+
+        <DataTableFilterSheet
+          isOpen={isFilterOpen}
+          onOpenChange={setIsFilterOpen}
+          onReset={handleReset}
+          onApply={handleSearch}
+        >
+          <Field>
+            <FieldLabel>Từ ngày - Đến ngày</FieldLabel>
+            <Controller
+              control={form.control}
+              name="userId"
+              render={() => (
+                <DatePicker 
+                  mode="range"
+                  value={getDateRangeValue(
+                    form.watch(
+                      'fromDate'
+                    ),
+                    form.watch(
+                      'toDate'
+                    )
+                  )}
+                  onChange={(range) => 
+                    setDateRangeValue(
+                      form, 
+                      {
+                        from: "fromDate",
+                        to: "toDate"
+                      }, 
+                      range
+                    )}
+                  numberOfMonths={2}
+                  captionLayout="dropdown"
+                  disableFuture
+                />
+              )}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Đối tượng</FieldLabel>
+            <Controller
+              control={form.control}
+              name="entityName"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  options={AUDIT_ENTITY_OPTIONS}
+                  value={String(field.value || "")}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Hành động</FieldLabel>
+            <Controller
+              control={form.control}
+              name="action"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  options={AUDIT_ACTION_OPTIONS}
+                  value={String(field.value || "")}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Người thực hiện</FieldLabel>
+            <Controller
+              control={form.control}
+              name="userId"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  options={users}
+                  value={String(field.value || "")}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+        </DataTableFilterSheet>
+
+        <DataTableCommon 
+          table={table} 
+          columns={columns}
+          isFiltering={tableState.isFiltering}
+          emptyLabel="Chưa có Danh mục nào"
+          isLoading={isLoading} 
+          onReset={handleReset}
+          handleOpenDialog={handleOpenDialog}
+        />
+
+        <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />
+      </Card>
+
+      <AuditLogDetailDialog 
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        audit={initialData}
+      />
+    </>
+  )
+}

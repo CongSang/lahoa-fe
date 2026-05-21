@@ -76,7 +76,7 @@ export function SelectCustom<T extends GroupOptions>({
     if (selection === "single") {
       const option = allOptions?.find((option) => String(option[fieldValue]) === String(selected))
       return option 
-        ? option.label 
+        ? <span className="truncate">{option.label}</span>
         : <span className="text-muted-foreground">{placeholder}</span>
     }
 
@@ -115,7 +115,7 @@ export function SelectCustom<T extends GroupOptions>({
         key={option.value}
         onSelect={() => handleSelect(String(option[fieldValue]))}
       >
-        {option.label}
+        <span className="w-full truncate">{option.label}</span>
         <CommandShortcut>
           <Check
             className={cn(
@@ -141,7 +141,7 @@ export function SelectCustom<T extends GroupOptions>({
           className="w-full justify-between min-h-8 h-auto gap-1 px-2.5 py-1 font-normal hover:bg-background data-[state=open]:bg-background"
           {...props}
         >
-          <div className="flex flex-wrap gap-1 text-left">
+          <div className="flex flex-wrap gap-1 text-left truncate">
             {renderValue()}
           </div>
           <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />

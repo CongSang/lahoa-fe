@@ -213,14 +213,14 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     setIsFilterOpen(false)
     setTimeout(() => {
       form.handleSubmit(form.onSubmit)()
-    }, 210)
+    }, 250)
   }
 
   const handleReset = () => {
     setIsFilterOpen(false)
     setTimeout(() => {
       form.onReset()
-    }, 210)
+    }, 250)
   }
 
   return (
