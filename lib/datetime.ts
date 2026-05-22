@@ -41,20 +41,25 @@ export const formatRelative = (
     }
   )
 
-export const getDateRangeValue = (
-  from?: string,
-  to?: string
-) => {
-  if (!from && !to) return undefined
+const BACKEND_DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
 
-  return {
-    from: from
-      ? new Date(from)
-      : undefined,
-    to: to
-      ? new Date(to)
-      : undefined,
-  }
+export const toBackendDateTime = (
+  date?: Date | null
+) => {
+  if (!date) return ''
+
+  return format(
+    date,
+    BACKEND_DATETIME_FORMAT
+  )
+}
+
+export const fromBackendDateTime = (
+  value?: string | null
+) => {
+  if (!value) return undefined
+
+  return new Date(value)
 }
 
 type DateRangeFields<
@@ -62,6 +67,23 @@ type DateRangeFields<
 > = {
   from: Path<T>
   to:  Path<T>
+}
+
+export const getDateRangeValue = <
+  T extends FieldValues
+>(
+  form: UseFormReturn<T>,
+  fields: DateRangeFields<T>
+): DateRange | undefined => {
+  const from = form.watch(fields.from)
+  const to = form.watch(fields.to)
+
+  if (!from && !to) return undefined
+  
+  return {
+    from: fromBackendDateTime(from as string),
+    to: fromBackendDateTime(to as string),
+  }
 }
 
 export const setDateRangeValue = <
@@ -75,19 +97,15 @@ export const setDateRangeValue = <
 ) => {
   form.setValue(
     fields.from,
-    (
+    toBackendDateTime(
       range?.from
-        ?.toISOString() ??
-      ''
     ) as T[Path<T>]
   )
 
   form.setValue(
     fields.to,
-    (
+    toBackendDateTime(
       range?.to
-        ?.toISOString() ??
-      ''
     ) as T[Path<T>]
   )
 }

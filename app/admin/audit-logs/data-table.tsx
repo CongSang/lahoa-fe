@@ -175,12 +175,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                 <DatePicker 
                   mode="range"
                   value={getDateRangeValue(
-                    form.watch(
-                      'fromDate'
-                    ),
-                    form.watch(
-                      'toDate'
-                    )
+                    form,
+                    {
+                      from: "fromDate",
+                      to: "toDate"
+                    }, 
                   )}
                   onChange={(range) => 
                     setDateRangeValue(

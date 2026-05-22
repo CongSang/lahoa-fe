@@ -9,51 +9,46 @@ export const getProductsApi = async (filter: ProductFilterRequest & PageRequest)
   })
   const params = buildApiParams(cleanParams)
 
-  const response = await axiosInstance.get('/products', { params });
+  const response = await axiosInstance.get('/admin/products', { params });
   return response.data;
 };
 
 export const getProductByIdApi = async (id: string) => {
-  const response = await axiosInstance.get(`/products/${id}`);
+  const response = await axiosInstance.get(`/admin/products/${id}`);
+  return response.data;
+};
+
+export const createProductApi = async (request: ProductFormValues) => {
+  const response = await axiosInstance.post('/admin/products', request);
+  return response.data;
+};
+
+export const updateProductApi = async (id: number | string, request: ProductFormValues) => {
+  const response = await axiosInstance.put(`/admin/products/${id}`, request);
+  return response.data;
+};
+
+export const restoreProductApi = async (id: number | string) => {
+  const response = await axiosInstance.put(`/admin/products/${id}/restore`);
+  return response.data;
+};
+
+export const deleteProductApi = async (id: number | string) => {
+  const response = await axiosInstance.delete(`/admin/products/${id}`);
+  return response.data;
+};
+
+export const updateProductStatusApi = async (id: number | string, status: string) => {
+  const response = await axiosInstance.patch(`/admin/products/${id}/status`, { status });
+  return response.data;
+};
+
+export const getProductUploadSignatureApi = async () => {
+  const response = await axiosInstance.get(`/admin/products/upload-signature`);
   return response.data;
 };
 
 export const getProductBySlugApi = async (slug: string) => {
   const response = await axiosInstance.get(`/products/slug/${slug}`);
-  return response.data;
-};
-
-export const createProductApi = async (request: ProductFormValues) => {
-  const response = await axiosInstance.post('/products', request);
-  return response.data;
-};
-
-export const updateProductApi = async (id: number | string, request: ProductFormValues) => {
-  const response = await axiosInstance.put(`/products/${id}`, request);
-  return response.data;
-};
-
-export const restoreProductApi = async (id: number | string) => {
-  const response = await axiosInstance.put(`/products/${id}/restore`);
-  return response.data;
-};
-
-export const deleteProductApi = async (id: number | string) => {
-  const response = await axiosInstance.delete(`/products/${id}`);
-  return response.data;
-};
-
-export const updateProductStatusApi = async (id: number | string, status: string) => {
-  const response = await axiosInstance.patch(`/products/${id}/status`, { status });
-  return response.data;
-};
-
-export const updateVariantStatusApi = async (id: number | string, status: string) => {
-  const response = await axiosInstance.patch(`/products/variants/${id}/status`, { status });
-  return response.data;
-};
-
-export const getProductUploadSignatureApi = async () => {
-  const response = await axiosInstance.get(`/products/upload-signature`);
   return response.data;
 };
