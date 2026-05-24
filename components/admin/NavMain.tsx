@@ -48,7 +48,7 @@ export function NavMain({
               return (
                 <SidebarMenuItem key={item.title} className="my-0.75">
                   <SidebarMenuButton 
-                    isActive={isActive(item.url)} 
+                    isActive={isActive(item.url)}
                     tooltip={item.title}
                     className={isActive(item.url) ? "bg-ring/20! font-semibold!" : ""}
                     asChild
@@ -86,7 +86,7 @@ export function NavMain({
                           <SidebarMenuSubButton 
                             asChild 
                             isActive={isActive(subItem.url)}
-                            className={isActive(item.url) ? "bg-ring/20! font-semibold!" : ""}
+                            className={isActive(subItem.url) ? "bg-ring/20! font-semibold!" : ""}
                           >
                             <Link href={subItem.url}>
                               <span>{subItem.title}</span>

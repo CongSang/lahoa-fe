@@ -1,3 +1,5 @@
 export * from './useCategoryMutation'
 export * from './useCrudMutation'
 export * from './useProductMutation'
+export * from './useMaterialCategoryMutation'
+export * from './useMaterialMutation'

@@ -222,7 +222,7 @@ export const getColumns = (
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32">
+          <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
             {product.status !== StatusCommon.DELETED ? (
               <>
                 <DropdownMenuItem onClick={() => onEdit?.(product)}>
@@ -271,7 +271,7 @@ const StatusCell = ({ product }: { product: Product }) => {
           <BadgeCustom status={product.status as StatusCommon} className="hover:brightness-95" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem 
           disabled={product.status === StatusCommon.ACTIVE} 
           onClick={() => onUpdate(StatusCommon.ACTIVE)}

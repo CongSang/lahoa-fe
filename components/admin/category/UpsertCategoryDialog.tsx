@@ -22,6 +22,7 @@ import { categorySchema, CategoryFormValues, FieldConfig } from "@/schema/index"
 import { Option, StatusCommon } from "@/types/index";
 import { statusDropdown } from "@/lib/index";
 import { PencilLineIcon, PlusIcon, WandSparkles } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UpsertCategoryDialogProps = {
   isLoading: boolean;
@@ -40,6 +41,8 @@ export function UpsertCategoryDialog({
   parents = [],
   onSubmit,
 }: UpsertCategoryDialogProps) {
+  const queryClient = useQueryClient();
+
   const form = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema) as Resolver<CategoryFormValues>,
     defaultValues: {
@@ -73,6 +76,8 @@ export function UpsertCategoryDialog({
 
   useEffect(() => {
     if (open) {
+      queryClient.invalidateQueries({ queryKey: ["category-parents"] });
+
       reset({
         name: "",
         imageUrl: "",
@@ -83,7 +88,7 @@ export function UpsertCategoryDialog({
         parentId: initialData?.parentId ? initialData.parentId : -1 ,
       } as CategoryFormValues);
     }
-  }, [open, initialData, reset]);
+  }, [open, initialData, reset, queryClient]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

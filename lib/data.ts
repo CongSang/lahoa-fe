@@ -21,6 +21,16 @@ export const dataNavbar = {
       title: "Nguyên vật liệu - tồn kho",
       url: "/admin/materials",
       icon: Package,
+      items: [
+        {
+          title: "Danh mục nguyên liệu",
+          url: "/admin/material-categories",
+        },
+        {
+          title: "Nguyên liệu",
+          url: "/admin/materials",
+        },
+      ]
     },
     {
       title: "Đơn hàng",
@@ -98,6 +108,7 @@ export const breadcrumbLabels: Record<string, string> = {
   products: "Sản phẩm",
   categories: "Danh mục",
   materials: "Nguyên liệu",
+  "material-categories": "Danh mục nguyên liệu",
   orders: "Đơn hàng",
   customers: "Khách hàng",
   promotions: "Khuyến mãi",

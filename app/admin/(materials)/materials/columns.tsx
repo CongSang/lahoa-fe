@@ -1,19 +1,18 @@
 "use client"
 
 import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator } from "@/components/index"
-import { useCategoryCrud } from "@/hooks/form-submit"
-import { APP_URL } from "@/lib/index"
-import { Category, CATEGORY_FIELD } from "@/types/category"
+import { useMaterialCrud } from "@/hooks/index"
+import { formatNumber } from "@/lib/index"
 import { StatusCommon } from "@/types/common"
+import { Material, MATERIAL_FIELD, MATERIAL_UNIT_LABEL } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
 import { EllipsisIcon, ImageIcon } from "lucide-react"
-import Link from "next/link"
 
 export const getColumns = (
-  onEdit?: (category: Category) => void,
-  onDelete?: (category: Category) => void,
-  onRestore?: (category: Category) => void
-): ColumnDef<Category>[] => [
+  onEdit?: (material: Material) => void,
+  onDelete?: (material: Material) => void,
+  onRestore?: (material: Material) => void
+): ColumnDef<Material>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -40,20 +39,20 @@ export const getColumns = (
   {
     accessorKey: "id",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
   },
   {
-    accessorKey: "imageUrl",
+    accessorKey: "thumbnail",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
     cell: ({ row }) => {  
       const category = row.original
       return(
         <Avatar>
           <AvatarImage
-            src={category.imageUrl || undefined}
+            src={category.thumbnail || undefined}
             alt={category.name}
           />
           <AvatarFallback><ImageIcon size={18} /></AvatarFallback>
@@ -62,95 +61,59 @@ export const getColumns = (
     },
   },
   {
+    accessorKey: "code",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => <div className="max-w-50 truncate">{row.original?.code || ""}</div>,
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
     cell: ({ row }) => <div className="w-50 truncate">{row.original?.name || ""}</div>,
   },
   {
-    accessorKey: "productCount",
+    accessorKey: "defaultCost",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} side="right" />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
     ),
-    cell: ({ row }) => <div className="text-right">{row.original.productCount || 0}</div>
+    cell: ({ row }) => 
+          <div className="text-right w-25">
+            {formatNumber(row.original.defaultCost, { style: "currency", currency: "VND" })}
+          </div>,
   },
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <StatusCell category={row.original} />,
+    cell: ({ row }) => <StatusCell material={row.original} />,
   },
   {
-    accessorKey: "parent",
+    accessorKey: "unit",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <div className="max-w-50 truncate">{row.original?.parent?.name || ""}</div>,
+    cell: ({ row }) => <div className="truncate">{MATERIAL_UNIT_LABEL[row.original?.unit] || ""}</div>,
   },
   {
-    accessorKey: "path",
+    accessorKey: "categoryName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => (
-      <Button 
-        variant="link" 
-        className="px-0 truncate" 
-        asChild
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Link 
-          href={`${APP_URL}/${row.original.path}`} 
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          {row.original.path}
-        </Link>
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "description",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
     cell: ({ row }) => 
       <div className="w-60 line-clamp-2 whitespace-normal">
-        {row.original?.description || ""}
+        {row.original?.categoryName || ""}
       </div>,
   },
   {
-    accessorKey: "seoTitle",
+    accessorKey: "lowStockThreshold",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
     ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.seoTitle || ""}</div>,
-  },
-  {
-    accessorKey: "seoKeywords",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.seoKeywords || ""}</div>,
-  },
-  {
-    accessorKey: "seoDescription",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => 
-      <div className="w-60 line-clamp-2 whitespace-normal">
-        {row.original?.seoDescription || ""}
-      </div>,
-  },
-  {
-    accessorKey: "displayOrder",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} side="right" />
-    ),
-    cell: ({ row }) => <div className="text-right">{row.original.displayOrder || 0}</div>
+    cell: ({ row }) => <div className="text-right">{row.original.lowStockThreshold || 0}</div>
   },
   {
     id: "actions",
@@ -192,13 +155,13 @@ export const getColumns = (
   }
 ]
 
-const StatusCell = ({ category }: { category: Category }) => {
-  const mutation = useCategoryCrud();
+const StatusCell = ({ material }: { material: Material }) => {
+  const mutation = useMaterialCrud();
   
     const onUpdate = async (status: string) => {
       mutation.mutate({ 
         action: "update-status", 
-        id: category.id, 
+        id: material.id, 
         status, 
         meta: {
           successMessage: "Đã cập nhật trạng thái",
@@ -211,22 +174,22 @@ const StatusCell = ({ category }: { category: Category }) => {
     <DropdownMenu>
       <DropdownMenuTrigger 
         asChild 
-        disabled={category.status === StatusCommon.DELETED}
+        disabled={material.status === StatusCommon.DELETED}
         onClick={(e) => e.stopPropagation()}
       >
         <button disabled={mutation.isPending} className="focus:outline-none">
-          <BadgeCustom status={category.status! as StatusCommon} className="hover:brightness-95" />
+          <BadgeCustom status={material.status! as StatusCommon} className="hover:brightness-95" />
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
         <DropdownMenuItem 
-          disabled={category.status === StatusCommon.ACTIVE} 
+          disabled={material.status === StatusCommon.ACTIVE} 
           onClick={() => onUpdate(StatusCommon.ACTIVE)}
         >
           Hoạt động
         </DropdownMenuItem>
         <DropdownMenuItem 
-          disabled={category.status === StatusCommon.INACTIVE} 
+          disabled={material.status === StatusCommon.INACTIVE} 
           onClick={() => onUpdate(StatusCommon.INACTIVE)}
         > 
           Tạm ngưng

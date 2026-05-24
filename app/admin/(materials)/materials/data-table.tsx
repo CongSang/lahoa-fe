@@ -13,75 +13,71 @@ import {
   DataTableFilterSheet,
   Field,
   FieldLabel,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   TooltipRender, 
   DropdownStatus, 
   DataTableViewOptions, 
   DataTablePagination,
-  UpsertCategoryDialog,
   AlertDialogConfirm,
   InputGroup,
   InputGroupInput,
-  InputGroupAddon
+  InputGroupAddon,
+  UpsertMaterialDialog,
+  InputNumber,
+  SelectCustom
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AlertDialog, Category, CATEGORY_FIELD, CategoryFilterRequest, Option, StatusCommon } from "@/types/index"
+import { AlertDialog, Material, MATERIAL_FIELD, MaterialFilterRequest, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { getCategoriesApi, getDropdownParentApi } from "@/services/index"
-import { useCategoryCrud, useDataTable } from "@/hooks/index"
+import { getMaterialCategoryDropdownApi, getMaterialsApi } from "@/services/index"
+import { useDataTable, useMaterialCrud } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
-import { CategoryFormValues } from "@/schema/index"
+import { MaterialFormValues } from "@/schema/index"
+import { useQuery } from "@tanstack/react-query"
 
 interface DataTableProps {
-  initialData?: Partial<CategoryFormValues>
+  initialData?: Partial<MaterialFormValues>
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<CategoryFormValues>) => void
+  handleOpenDialog: (data?: Partial<MaterialFormValues>) => void
 }
 
 export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [alert, setAlert] = useState<AlertDialog<Category>>({
+  const [alert, setAlert] = useState<AlertDialog<Material>>({
     type: "delete",
     open: false,
     title: "",
     description: "",
     item: null
   });
-  const queryClient = useQueryClient();
 
-  const { data: apiResponse, tableState, form, isLoading } = useDataTable<Category, CategoryFilterRequest>(
-    "categories", 
-    getCategoriesApi, 
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<Material, MaterialFilterRequest>(
+    "materials", 
+    getMaterialsApi, 
     {
       defaultFilter: { 
         keyword: "",
+        categoryId: undefined,
         status: null,
-        parentId: null,
+        lowStock: undefined
       }
     }
   )
 
-  const mutation = useCategoryCrud();
+  const mutation = useMaterialCrud();
 
-  const onSubmit = async (formData: CategoryFormValues) => {
+  const onSubmit = async (formData: MaterialFormValues) => {
     if(!formData.id) {
       mutation.mutate({ 
         action: "create", 
         data: formData,
         meta: {
-          successMessage: "Tạo danh mục thành công",
-          errorMessage: "Tạo danh mục thất bại"
+          successMessage: "Tạo nguyên liệu thành công",
+          errorMessage: "Tạo nguyên liệu thất bại"
         }
       },
       {
@@ -98,8 +94,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         id: formData.id, 
         data: formData,
         meta: {
-          successMessage: "Cập nhật danh mục thành công",
-          errorMessage: "Cập nhật danh mục thất bại"
+          successMessage: "Cập nhật nguyên liệu thành công",
+          errorMessage: "Cập nhật nguyên liệu thất bại"
         }
       },{
         onSuccess: () => {
@@ -117,8 +113,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "delete", 
       id: id, 
       meta: {
-        successMessage: "Xóa danh mục thành công",
-        errorMessage: "Xóa danh mục thất bại"
+        successMessage: "Xóa nguyên liệu thành công",
+        errorMessage: "Xóa nguyên liệu thất bại"
       }
     },{
       onSuccess: () => {
@@ -135,8 +131,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "restore", 
       id: id, 
       meta: {
-        successMessage: "Khôi phục danh mục thành công",
-        errorMessage: "Khôi phục danh mục thất bại"
+        successMessage: "Khôi phục nguyên liệu thành công",
+        errorMessage: "Khôi phục nguyên liệu thất bại"
       }
     },{
       onSuccess: () => {
@@ -148,31 +144,30 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     })
   }
 
-  const handleDelete = (cat: Category) => {
+  const handleDelete = (material: Material) => {
     setAlert({ 
       type: "delete", 
-      item: cat, 
-      title: "Xóa danh mục?", 
-      description: `Bạn có chắc chắn xóa danh mục ${cat.name}.${" "}
-      Hãy chắc chắn rằng đã chuyển tất cả danh mục con và sản phẩm sang danh mục mới!`,
+      item: material, 
+      title: "Xóa nguyên liệu?", 
+      description: `Bạn có chắc chắn xóa nguyên liệu ${material.name}.${" "}`,
       open: true, 
     })
   }
 
-  const handleRestore = (cat: Category) => {
+  const handleRestore = (material: Material) => {
     setAlert({ 
       type: "info", 
-      item: cat, 
-      title: "Khôi phục danh mục?", 
-      description: `Bạn có chắc chắn khôi phục danh mục ${cat.name}.`,
+      item: material, 
+      title: "Khôi phục nguyên liệu?", 
+      description: `Bạn có chắc chắn khôi phục nguyên liệu ${material.name}.`,
       open: true, 
     })
   }
 
   const columns = useMemo(() => getColumns(
-    (cat) => handleOpenDialog({ ...cat, parentId: cat.parent?.id } as CategoryFormValues),
-    (cat) => handleDelete(cat),
-    (cat) => handleRestore(cat)
+    (material) => handleOpenDialog(material),
+    (material) => handleDelete(material),
+    (material) => handleRestore(material)
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -200,18 +195,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     },
   })
 
-  const { data: parents } = useQuery({
-    queryKey: ["category-parents"],
-    queryFn: getDropdownParentApi,
+  const { data: categoryDropdown } = useQuery({
+    queryKey: ["material-category-dropdown"],
+    queryFn: getMaterialCategoryDropdownApi,
   });
-
-  const handleOpenFilterChange = (open: boolean) => {
-    setIsFilterOpen(open)
-
-    if (open) {
-      queryClient.invalidateQueries({ queryKey: ["category-parents"] });
-    }
-  }
 
   const handleSearch = () => {
     setIsFilterOpen(false)
@@ -262,7 +249,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} fieldName={CATEGORY_FIELD} />
+            <DataTableViewOptions table={table} fieldName={MATERIAL_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -278,7 +265,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
 
         <DataTableFilterSheet
           isOpen={isFilterOpen}
-          onOpenChange={handleOpenFilterChange}
+          onOpenChange={setIsFilterOpen}
           onReset={handleReset}
           onApply={handleSearch}
         >
@@ -296,35 +283,39 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
                   )} 
                 />
               )}
-          />
+            />
           </Field>
           <Field>
-            <FieldLabel>Danh mục cha</FieldLabel>
+            <FieldLabel>Danh mục nguyên liệu</FieldLabel>
             <Controller
               control={form.control}
-              name="parentId"
+              name="categoryId"
               render={({ field }) => (
-                <Select
-                  value={field.value?.toString() ?? "ALL"}
-                  onValueChange={(val) => field.onChange(
-                    val === "ALL" ? null : Number(val)
-                  )}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Tất cả" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="ALL">Tất cả</SelectItem>
-                      <SelectItem value="-1">Danh mục gốc</SelectItem>
-                      {parents?.map((p: Option) => (
-                        <SelectItem key={p.value} value={p.value.toString()}>
-                          {p.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <SelectCustom
+                  selection="single"
+                  options={categoryDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Ngưỡng cảnh báo tồn kho thấp</FieldLabel>
+            <Controller
+              control={form.control}
+              name="lowStock"
+              render={({ field }) => (
+                <InputNumber
+                  {...field}
+                  value={field.value}
+                  onChange={field.onChange}
+                  format="decimal"
+                  id={field.name}
+                  autoComplete="off"
+                  placeholder="0"
+                />
               )}
             />
           </Field>
@@ -334,7 +325,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có Danh mục nào"
+          emptyLabel="Chưa có nguyên liệu nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}
@@ -344,18 +335,18 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           Đã chọn <span className="font-semibold text-accent-foreground">
             {Object.keys(rowSelection).length}/{" "}
             {table.getRowCount()}
-          </span> danh mục.
+          </span> nguyên liệu.
         </div>
 
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />
       </Card>
 
-      <UpsertCategoryDialog
+      <UpsertMaterialDialog
         isLoading={mutation.isPending}
         open={openDialog}
         onOpenChange={setOpenDialog}
         initialData={initialData}
-        parents={[ { value: "-1", label: "Không danh mục cha" }, ...parents || [] ]}
+        dropdown={categoryDropdown}
         onSubmit={onSubmit}
       />
 

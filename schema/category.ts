@@ -19,7 +19,7 @@ export const categorySchema = z.object({
     .refine((val) => !!val, "Ảnh danh mục không được để trống")
     .refine((file) => {
       if (file instanceof File) {
-        return file.size < 10_000_000; // <5MB
+        return file.size < 10_000_000; // <10MB
       }
       return true;
     }, "File quá lớn"),
