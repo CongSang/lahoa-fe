@@ -8,6 +8,7 @@ import {
 } from "@/components/index";
 import { FieldConfig } from "@/schema/index";
 import { createFieldRenderers } from "./FieldRenderers";
+import { useMemo } from "react";
 
 export interface RenderFieldProps<TFieldValues extends FieldValues = FieldValues> {
   form: UseFormReturn<TFieldValues>;
@@ -19,7 +20,9 @@ export function RenderField<TFieldValues extends FieldValues>({ form, fieldConfi
   const { control } = form;
   const { name, label, type, required, render} = fieldConfig;
 
-  const fieldRenderers = createFieldRenderers<TFieldValues>();
+  const fieldRenderers = useMemo(() => {
+    return createFieldRenderers<TFieldValues>();
+  }, [])
 
   const Renderer= render || fieldRenderers[fieldConfig.type];
 

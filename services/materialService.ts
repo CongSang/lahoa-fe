@@ -1,7 +1,6 @@
 import { axiosInstance, cleanObject, buildApiParams } from "@/lib/index";
-import { PageRequest } from "@/types/index";
+import { PageRequest, MaterialFilterRequest } from "@/types/index";
 import { MaterialFormValues } from "@/schema/index";
-import { MaterialFilterRequest } from "@/types/index";
 
 export const getMaterialsApi = async (filter: MaterialFilterRequest & PageRequest) => {
   const params = buildApiParams(cleanObject(filter))

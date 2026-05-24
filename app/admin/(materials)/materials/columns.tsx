@@ -118,7 +118,7 @@ export const getColumns = (
   {
     id: "actions",
     cell: ({ row }) => {
-      const category = row.original
+      const material = row.original
  
       return (
         <DropdownMenu>
@@ -133,18 +133,18 @@ export const getColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
-            {category.status !== StatusCommon.DELETED ? (
+            {material.status !== StatusCommon.DELETED ? (
               <>
-                <DropdownMenuItem onClick={() => onEdit?.(category)}>
+                <DropdownMenuItem onClick={() => onEdit?.(material)}>
                   Chỉnh sửa
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(category)}>
+                <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(material)}>
                   Xóa
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onClick={() => onRestore?.(category)}>
+              <DropdownMenuItem onClick={() => onRestore?.(material)}>
                 Khôi phục
               </DropdownMenuItem>
             )}

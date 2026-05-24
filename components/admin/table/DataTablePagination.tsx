@@ -71,6 +71,7 @@ export function DataTablePagination<TData>({
       <Field orientation="horizontal" className="w-fit">
         <FieldLabel htmlFor="select-rows-per-page">Hiển thị </FieldLabel>
         <Select 
+          disabled={!totalPages}
           value={table.getState().pagination.pageSize.toString()}
           onValueChange={(value) => table.setPageSize(Number(value))}
         >

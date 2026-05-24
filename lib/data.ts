@@ -30,6 +30,10 @@ export const dataNavbar = {
           title: "Nguyên liệu",
           url: "/admin/materials",
         },
+        {
+          title: "Kho",
+          url: "/admin/warehouses",
+        },
       ]
     },
     {
