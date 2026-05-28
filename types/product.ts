@@ -7,6 +7,7 @@ type Status =
 
 export interface Product {
   id: string
+  code: string
   name: string
   description?: string
   slug: string
@@ -36,6 +37,7 @@ export interface ProductFilterRequest {
 
 export const PRODUCT_FIELD: Record<string, string> = {
   id: "ID",
+  code: "Mã",
   name: "Tên",
   description: "Mô tả",
   slug: "Đường dẫn",

@@ -43,13 +43,6 @@ export const getColumns = (
     ),
   },
   {
-    accessorKey: "code",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={MATERIAL_CATEGORY_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.code || ""}</div>,
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={MATERIAL_CATEGORY_FIELD[column.id]} />

@@ -4,7 +4,6 @@ import { StatusCommon } from "./common"
 
 export interface MaterialCategory {
   id: string
-  code: string
   name: string
   description?: string
   status?: categoryStatus
@@ -18,7 +17,6 @@ export interface MaterialCategoryFilterRequest {
 
 export const MATERIAL_CATEGORY_FIELD: Record<string, string> = {
   id: "ID",
-  code: "Mã",
   name: "Tên",
   description: "Mô tả",
   status: "Trạng thái",

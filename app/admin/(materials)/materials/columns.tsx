@@ -1,6 +1,6 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator, Badge } from "@/components/index"
 import { useMaterialCrud } from "@/hooks/index"
 import { formatNumber } from "@/lib/index"
 import { StatusCommon } from "@/types/common"
@@ -75,14 +75,14 @@ export const getColumns = (
     cell: ({ row }) => <div className="w-50 truncate">{row.original?.name || ""}</div>,
   },
   {
-    accessorKey: "defaultCost",
+    accessorKey: "costPrice",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
     ),
     cell: ({ row }) => 
-          <div className="text-right w-25">
-            {formatNumber(row.original.defaultCost, { style: "currency", currency: "VND" })}
-          </div>,
+      <div className="text-right">
+        {formatNumber(row.original.costPrice, { style: "currency", currency: "VND" })}
+      </div>,
   },
   {
     accessorKey: "status",
@@ -104,9 +104,69 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
     cell: ({ row }) => 
-      <div className="w-60 line-clamp-2 whitespace-normal">
+      <div className="w-50 truncate">
         {row.original?.categoryName || ""}
       </div>,
+  },
+  {
+    accessorKey: "warehouseCount",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <div className="w-25 truncate">
+        {row.original?.warehouseCount || 0} kho
+      </div>,
+  },
+  {
+    accessorKey: "onHand",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
+    ),
+    cell: ({ row }) => 
+      <div className="text-right">
+        {row.original.onHand || 0}
+      </div>,
+  },
+  {
+    accessorKey: "reserved",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
+    ),
+    cell: ({ row }) => 
+      <div className="text-right">
+        {row.original.reserved || 0}
+      </div>,
+  },
+  {
+    accessorKey: "available",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} side="right" />
+    ),
+    cell: ({ row }) => 
+      <div className="text-right">
+        {row.original.available || 0}
+      </div>,
+  },
+  {
+    accessorKey: "hasLowStockWarehouse",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <Badge variant={row.original.hasLowStockWarehouse ? "destructive" : "secondary"}>
+        {row.original.hasLowStockWarehouse ? "Cần nhập hàng" : "Không"}
+      </Badge>,
+  },
+  {
+    accessorKey: "hasOutOfStockWarehouse",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+    ),
+    cell: ({ row }) => 
+      <Badge variant={row.original.hasOutOfStockWarehouse ? "destructive" : "secondary"}>
+        {row.original.hasOutOfStockWarehouse ? "Hết hàng" : "Không"}
+      </Badge>,
   },
   {
     accessorKey: "lowStockThreshold",

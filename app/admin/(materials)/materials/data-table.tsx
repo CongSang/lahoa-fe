@@ -301,24 +301,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               )}
             />
           </Field>
-          <Field>
-            <FieldLabel>Ngưỡng cảnh báo tồn kho thấp</FieldLabel>
-            <Controller
-              control={form.control}
-              name="lowStock"
-              render={({ field }) => (
-                <InputNumber
-                  {...field}
-                  value={field.value}
-                  onChange={field.onChange}
-                  format="decimal"
-                  id={field.name}
-                  autoComplete="off"
-                  placeholder="0"
-                />
-              )}
-            />
-          </Field>
         </DataTableFilterSheet>
 
         <DataTableCommon 

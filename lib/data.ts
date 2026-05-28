@@ -18,20 +18,32 @@ export const dataNavbar = {
       icon: Flower,
     },
     {
-      title: "Nguyên vật liệu - tồn kho",
+      title: "Kho & Vật liệu",
       url: "/admin/materials",
       icon: Package,
       items: [
         {
-          title: "Danh mục nguyên liệu",
+          title: "Danh mục vật liệu",
           url: "/admin/material-categories",
         },
         {
-          title: "Nguyên liệu",
+          title: "Vật liệu & Phụ kiện",
           url: "/admin/materials",
         },
         {
-          title: "Kho",
+          title: "Nhập kho (GRN)",
+          url: "/admin/inventory-receipts", // 3. TRANG TẠO MỚI: Quản lý phiếu nhập hàng từ nhà cung cấp
+        },
+        {
+          title: "Phiếu kiểm kê",
+          url: "/admin/inventories",
+        },
+        {
+          title: "Lịch sử kho",
+          url: "/admin/inventory-logs",
+        },
+        {
+          title: "Danh sách kho",
           url: "/admin/warehouses",
         },
       ]

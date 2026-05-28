@@ -47,7 +47,6 @@ export function UpsertMaterialDialog({
       thumbnail: "",
       categoryId: "",
       unit: "",
-      defaultCost: "",
       lowStockThreshold: undefined,
       status: StatusCommon.ACTIVE,
       ...initialData,
@@ -58,9 +57,8 @@ export function UpsertMaterialDialog({
 
   const sectionFormConfig: FieldConfig<MaterialFormValues>[] = [
     { name: "thumbnail", type: "image", label: "Ảnh nguyên liệu", required: true },
-    { name: "code", label: "Mã nguyên liệu", type: "text", readonly: true },
+    { name: "code", label: "Mã nguyên liệu", className: "sm:col-span-6", type: "text", readonly: true },
     { name: "name", label: "Tên nguyên liệu", type: "text", className: "sm:col-span-6", required: true },
-    { name: "defaultCost", label: "Giá vốn", type: "price",  className: "sm:col-span-6", required: true },
     { name: "unit", label: "Đơn vị", type: "select",  className: "sm:col-span-6", options: MATERIAL_UNIT_OPTIONS, required: true },
     { name: "categoryId", label: "Danh mục", type: "select-command",  className: "sm:col-span-6", options: dropdown, required: true },
     { name: "status", label: "Trạng thái", type: "select", className: "sm:col-span-6", options: statusDropdown, required: true },
@@ -75,7 +73,6 @@ export function UpsertMaterialDialog({
         thumbnail: "",
         categoryId: "",
         unit: "",
-        defaultCost: "",
         lowStockThreshold: undefined,
         status: StatusCommon.ACTIVE,
         ...initialData,

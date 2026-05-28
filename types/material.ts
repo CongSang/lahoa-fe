@@ -14,15 +14,24 @@ export interface Material {
   unit: string
   thumbnail?: string
   thumbnailPublicId?: string
-  defaultCost: string
   status?: materialStatus
   lowStockThreshold: number
+
+  warehouseCount: number
+  onHand: number
+  reserved: number
+  available: number
+  hasLowStockWarehouse: boolean
+  hasOutOfStockWarehouse: boolean
+  costPrice: string
 }
 
 export interface MaterialFilterRequest {
   keyword?: string
   categoryId?: string
-  lowStock?: string
+  warehouseId?: string
+  lowStock?: boolean
+  outOfStock?: boolean
   status?: StatusCommon | null
 }
 
@@ -33,9 +42,16 @@ export const MATERIAL_FIELD: Record<string, string> = {
   name: "Tên",
   unit: "Đơn vị",
   thumbnail: "Ảnh",
-  defaultCost: "Giá vốn",
   status: "Trạng thái",
-  lowStockThreshold: "Ngưỡng cảnh báo tồn kho thấp"
+  lowStockThreshold: "Ngưỡng cảnh báo tồn kho thấp",
+
+  warehouseCount: "Kho",
+  onHand: "Tồn thực tế",
+  reserved: "Đang giữ",
+  available: "Có thể bán",
+  hasLowStockWarehouse: "Tồn kho thấp",
+  hasOutOfStockWarehouse: "Hết hàng",
+  costPrice: "Giá vốn bình quân"
 }
 
 export const MATERIAL_UNIT_LABEL: Record<string, string> = {

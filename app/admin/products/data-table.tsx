@@ -359,7 +359,7 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
           Đã chọn <span className="font-semibold text-accent-foreground">
             {Object.keys(rowSelection).length}/{" "}
             {table.getRowCount()}
-          </span> danh mục.
+          </span> sản phẩm.
         </div>
 
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />

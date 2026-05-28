@@ -35,15 +35,6 @@ export const materialSchema = z.object({
     .string()
     .min(1, "Đơn vị không được để trống"),
 
-  defaultCost: z.string()
-    .min(1, "Giá vốn không được để trống")
-    .refine((val) => {
-      const num = parseFloat(val);
-      return !isNaN(num) && num > 0;
-    }, {
-      message: "Giá tiền phải lớn hơn 0",
-    }),
-
   lowStockThreshold: z.coerce.number().nullable().optional(),
 });
 

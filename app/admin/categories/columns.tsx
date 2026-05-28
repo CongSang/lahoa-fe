@@ -38,7 +38,7 @@ export const getColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "code",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={CATEGORY_FIELD[column.id]} />
     ),

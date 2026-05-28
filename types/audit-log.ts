@@ -60,7 +60,7 @@ export const AUDIT_LOG_FIELD: Record<string, string> = {
   newData: "Dữ liệu mới",
   changedFields: "Trường thay đổi",
 
-  userId: "ID người dùng",
+  userId: "ID người thực hiện",
   userEmail: "Người thực hiện",
 
   ipAddress: "Địa chỉ IP",
@@ -69,7 +69,7 @@ export const AUDIT_LOG_FIELD: Record<string, string> = {
 
   traceId: "Trace ID",
 
-  createAt: "Thời gian"
+  createAt: "Thời gian thực hiện"
 }
 
 export const AUDIT_ACTION_LABEL: Record<

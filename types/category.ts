@@ -7,6 +7,7 @@ export type categoryStatus =
 
 export interface Category {
   id: string
+  code: string
   name: string
   description?: string
   slug: string
@@ -30,6 +31,7 @@ export interface CategoryFilterRequest {
 
 export const CATEGORY_FIELD: Record<string, string> = {
   id: "ID",
+  code: "Mã",
   name: "Tên",
   description: "Mô tả",
   path: "Đường dẫn",

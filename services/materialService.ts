@@ -5,7 +5,7 @@ import { MaterialFormValues } from "@/schema/index";
 export const getMaterialsApi = async (filter: MaterialFilterRequest & PageRequest) => {
   const params = buildApiParams(cleanObject(filter))
 
-  const response = await axiosInstance.get('/admin/materials', { params });
+  const response = await axiosInstance.get('/admin/inventories', { params });
   return response.data;
 };
 
