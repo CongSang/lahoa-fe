@@ -22,14 +22,15 @@ import {
   InputGroupInput,
   InputGroupAddon,
   UpsertMaterialDialog,
-  InputNumber,
-  SelectCustom
+  SelectCustom,
+  Switch,
+  WarehouseInventoryDialog,
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
 import { AlertDialog, Material, MATERIAL_FIELD, MaterialFilterRequest, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
-import { getMaterialCategoryDropdownApi, getMaterialsApi } from "@/services/index"
+import { getMaterialCategoryDropdownApi, getMaterialsApi, getWarehouseDropdownApi } from "@/services/index"
 import { useDataTable, useMaterialCrud } from "@/hooks/index"
 import { Controller } from "react-hook-form"
 import { getColumns } from "./columns"
@@ -47,6 +48,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [warehouse, setWarehouse] = useState<{ open: boolean, material: Material | null }>({
+    open: false,
+    material: null
+  });
   const [alert, setAlert] = useState<AlertDialog<Material>>({
     type: "delete",
     open: false,
@@ -62,8 +67,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       defaultFilter: { 
         keyword: "",
         categoryId: undefined,
+        warehouseId: undefined,
         status: null,
-        lowStock: undefined
+        lowStock: undefined,
+        outOfStock: undefined
       }
     }
   )
@@ -164,10 +171,15 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     })
   }
 
+  const handleOpenWarehouseDetail = (material: Material) => {
+    setWarehouse({ material, open: true })
+  }
+
   const columns = useMemo(() => getColumns(
     (material) => handleOpenDialog(material),
     (material) => handleDelete(material),
-    (material) => handleRestore(material)
+    (material) => handleRestore(material),
+    (material) => handleOpenWarehouseDetail(material),
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -198,6 +210,11 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   const { data: categoryDropdown } = useQuery({
     queryKey: ["material-category-dropdown"],
     queryFn: getMaterialCategoryDropdownApi,
+  });
+
+  const { data: warehouseDropdown } = useQuery({
+    queryKey: ["warehouse-dropdown"],
+    queryFn: getWarehouseDropdownApi,
   });
 
   const handleSearch = () => {
@@ -301,6 +318,52 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
               )}
             />
           </Field>
+          <Field>
+            <FieldLabel>Kho</FieldLabel>
+            <Controller
+              control={form.control}
+              name="warehouseId"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  options={warehouseDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+
+          <Field orientation="horizontal">
+            <FieldLabel htmlFor="low-stock">Tồn kho thấp</FieldLabel>
+            <Controller
+              control={form.control}
+              name="lowStock"
+              render={({ field }) => (
+                <Switch 
+                  id="low-stock" 
+                  checked={field.value} 
+                  onCheckedChange={field.onChange} 
+                />
+              )}
+            />
+          </Field>
+
+          <Field orientation="horizontal">
+            <FieldLabel htmlFor="out-of-stock">Hết hàng</FieldLabel>
+            <Controller
+              control={form.control}
+              name="outOfStock"
+              render={({ field }) => (
+                <Switch 
+                  id="out-of-stock"
+                  checked={field.value} 
+                  onCheckedChange={field.onChange} 
+                />
+              )}
+            />
+          </Field>
         </DataTableFilterSheet>
 
         <DataTableCommon 
@@ -345,6 +408,17 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         }}
         title={alert.title}
         description={alert.description}
+      />
+
+      <WarehouseInventoryDialog 
+        open={warehouse.open} 
+        onOpenChange={(open) =>
+          setWarehouse(prev => ({
+            ...prev,
+            open,
+          }))
+        }
+        material={warehouse.material}
       />
     </>
   )

@@ -9,6 +9,11 @@ export const getMaterialsApi = async (filter: MaterialFilterRequest & PageReques
   return response.data;
 };
 
+export const getWarehouseInventoriesApi = async (materialId: string) => {
+  const response = await axiosInstance.get(`/admin/inventories/${materialId}/warehouses`);
+  return response.data;
+};
+
 export const createMaterialApi = async (request: MaterialFormValues) => {
   const response = await axiosInstance.post('/admin/materials', request);
   return response.data;

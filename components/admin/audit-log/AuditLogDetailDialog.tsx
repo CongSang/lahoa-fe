@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  ScrollArea,
 } from '@/components/index'
 import { AUDIT_ACTION_LABEL, AUDIT_ENTITY_LABEL, AuditLog } from '@/types/index'
 import { format } from 'date-fns'

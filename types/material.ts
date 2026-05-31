@@ -35,6 +35,19 @@ export interface MaterialFilterRequest {
   status?: StatusCommon | null
 }
 
+export interface MaterialWarehouseInventory {
+  inventoryId: number;
+  warehouseId: number;
+  warehouseName: string;
+  onHand: number;
+  reserved: number;
+  available: number;
+  costPrice: number;
+  lowStock: boolean;
+  outOfStock: boolean;
+  updatedAt: string
+}
+
 export const MATERIAL_FIELD: Record<string, string> = {
   id: "ID",
   categoryName: "Thuộc danh mục",
@@ -49,9 +62,19 @@ export const MATERIAL_FIELD: Record<string, string> = {
   onHand: "Tồn thực tế",
   reserved: "Đang giữ",
   available: "Có thể bán",
-  hasLowStockWarehouse: "Tồn kho thấp",
-  hasOutOfStockWarehouse: "Hết hàng",
+  hasOutOfStockWarehouse: "Cảnh báo tồn kho",
   costPrice: "Giá vốn bình quân"
+}
+
+export const MATERIAL_WAREHOUSE_FIELD: Record<string, string> = {
+  warehouseId: "ID kho",
+  warehouseName: "Kho",
+  onHand: "Tồn thực tế",
+  reserved: "Đang giữ",
+  available: "Có thể bán",
+  costPrice: "Giá vốn",
+  outOfStock: "Cảnh báo tồn kho",
+  updatedAt: "Cập nhật lần cuối",
 }
 
 export const MATERIAL_UNIT_LABEL: Record<string, string> = {

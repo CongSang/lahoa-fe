@@ -5,7 +5,7 @@ import { useProductCrud } from "@/hooks/form-submit"
 import { APP_URL, formatNumber } from "@/lib/index"
 import { Product, PRODUCT_FIELD, StatusCommon } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
-import { EllipsisIcon, ImageIcon } from "lucide-react"
+import { Edit, EllipsisIcon, ImageIcon, Trash } from "lucide-react"
 import Link from "next/link"
 
 export const getColumns = (
@@ -226,10 +226,12 @@ export const getColumns = (
             {product.status !== StatusCommon.DELETED ? (
               <>
                 <DropdownMenuItem onClick={() => onEdit?.(product)}>
+                  <Edit />
                   Chỉnh sửa
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(product)}>
+                  <Trash />
                   Xóa
                 </DropdownMenuItem>
               </>

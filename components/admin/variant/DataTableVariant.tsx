@@ -27,7 +27,7 @@ interface DataTableProps {
 }
 
 export function DataTableVariant({ data, handleOpenDialog, onRowDelete, onRowUpdate }: DataTableProps) {
-  const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [alert, setAlert] = useState<AlertDialog<number>>({
     type: "delete",
     open: false,

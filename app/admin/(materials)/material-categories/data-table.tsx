@@ -27,7 +27,6 @@ import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
 import { AlertDialog, MATERIAL_CATEGORY_FIELD, MaterialCategory, MaterialCategoryFilterRequest, StatusCommon } from "@/types/index"
 import { statusFilterDropdown } from "@/lib/index"
-import { useQueryClient } from "@tanstack/react-query"
 import { getMaterialCategoriesApi } from "@/services/index"
 import { useDataTable, useMaterialCategoryCrud } from "@/hooks/index"
 import { Controller } from "react-hook-form"
@@ -52,7 +51,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     description: "",
     item: null
   });
-  const queryClient = useQueryClient();
 
   const { data: apiResponse, tableState, form, isLoading } = useDataTable<MaterialCategory, MaterialCategoryFilterRequest>(
     "material-categories", 

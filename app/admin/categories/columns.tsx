@@ -6,7 +6,7 @@ import { APP_URL } from "@/lib/index"
 import { Category, CATEGORY_FIELD } from "@/types/category"
 import { StatusCommon } from "@/types/common"
 import { ColumnDef } from "@tanstack/react-table"
-import { EllipsisIcon, ImageIcon } from "lucide-react"
+import { Edit, EllipsisIcon, ImageIcon, Trash } from "lucide-react"
 import Link from "next/link"
 
 export const getColumns = (
@@ -173,10 +173,12 @@ export const getColumns = (
             {category.status !== StatusCommon.DELETED ? (
               <>
                 <DropdownMenuItem onClick={() => onEdit?.(category)}>
+                  <Edit />
                   Chỉnh sửa
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(category)}>
+                  <Trash />
                   Xóa
                 </DropdownMenuItem>
               </>

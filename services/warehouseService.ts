@@ -9,6 +9,11 @@ export const getWarehousesApi = async (filter: WarehouseFilterRequest & PageRequ
   return response.data;
 };
 
+export const getWarehouseDropdownApi = async () => {
+  const response = await axiosInstance.get('/admin/warehouses/dropdown');
+  return response.data;
+};
+
 export const createWarehouseApi = async (request: WarehouseFormValues) => {
   const response = await axiosInstance.post('/admin/warehouses', request);
   return response.data;

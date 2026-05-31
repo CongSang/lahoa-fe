@@ -1,17 +1,18 @@
 "use client"
 
-import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator, Badge } from "@/components/index"
+import { BadgeCustom, Checkbox, DataTableColumnHeader, Button, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Avatar, AvatarImage, AvatarFallback, DropdownMenuSeparator, InventoryStatusBadge } from "@/components/index"
 import { useMaterialCrud } from "@/hooks/index"
 import { formatNumber } from "@/lib/index"
 import { StatusCommon } from "@/types/common"
 import { Material, MATERIAL_FIELD, MATERIAL_UNIT_LABEL } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
-import { EllipsisIcon, ImageIcon } from "lucide-react"
+import { Edit, EllipsisIcon, History, ImageIcon, Trash2 } from "lucide-react"
 
 export const getColumns = (
   onEdit?: (material: Material) => void,
   onDelete?: (material: Material) => void,
-  onRestore?: (material: Material) => void
+  onRestore?: (material: Material) => void,
+  onOpenWarehouse?: (material: Material) => void
 ): ColumnDef<Material>[] => [
   {
     id: "select",
@@ -37,10 +38,11 @@ export const getColumns = (
     enableHiding: false,
   },
   {
-    accessorKey: "id",
+    accessorKey: "code",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
     ),
+    cell: ({ row }) => <div className="max-w-50 truncate">{row.original?.code || ""}</div>,
   },
   {
     accessorKey: "thumbnail",
@@ -59,13 +61,6 @@ export const getColumns = (
         </Avatar>
       )
     },
-  },
-  {
-    accessorKey: "code",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => <div className="max-w-50 truncate">{row.original?.code || ""}</div>,
   },
   {
     accessorKey: "name",
@@ -111,12 +106,21 @@ export const getColumns = (
   {
     accessorKey: "warehouseCount",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => 
-      <div className="w-25 truncate">
+      <Button
+        type="button"
+        // disabled={!row.original?.warehouseCount}
+        variant="link"
+        className='p-0 h-auto'
+        onClick={(e) => {
+          e.stopPropagation()
+          onOpenWarehouse?.(row.original)
+        }}
+      >
         {row.original?.warehouseCount || 0} kho
-      </div>,
+      </Button>
   },
   {
     accessorKey: "onHand",
@@ -149,24 +153,15 @@ export const getColumns = (
       </div>,
   },
   {
-    accessorKey: "hasLowStockWarehouse",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => 
-      <Badge variant={row.original.hasLowStockWarehouse ? "destructive" : "secondary"}>
-        {row.original.hasLowStockWarehouse ? "Cần nhập hàng" : "Không"}
-      </Badge>,
-  },
-  {
     accessorKey: "hasOutOfStockWarehouse",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={MATERIAL_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => 
-      <Badge variant={row.original.hasOutOfStockWarehouse ? "destructive" : "secondary"}>
-        {row.original.hasOutOfStockWarehouse ? "Hết hàng" : "Không"}
-      </Badge>,
+      <InventoryStatusBadge 
+        lowStock={row.original.hasLowStockWarehouse}
+        outOfStock={row.original.hasOutOfStockWarehouse} 
+      />
   },
   {
     accessorKey: "lowStockThreshold",
@@ -195,11 +190,17 @@ export const getColumns = (
           <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
             {material.status !== StatusCommon.DELETED ? (
               <>
+                <DropdownMenuItem>
+                  <History />
+                  Xem lịch sử
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(material)}>
+                  <Edit />
                   Chỉnh sửa
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(material)}>
+                  <Trash2 />
                   Xóa
                 </DropdownMenuItem>
               </>

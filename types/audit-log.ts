@@ -3,7 +3,9 @@ export type AuditEntityType =
   | 'PRODUCT'
   | 'CATEGORY'
   | 'ORDER'
-  | 'INVENTORY'
+  | 'MATERIAL'
+  | 'MATERIAL_CATEGORY'
+  | 'WAREHOUSE'
 
 export type AuditAction =
   | 'CREATE'
@@ -92,7 +94,9 @@ export const AUDIT_ENTITY_LABEL: Record<
   CATEGORY: "Danh mục",
   PRODUCT: "Sản phẩm",
   ORDER: "Đơn hàng",
-  INVENTORY: "Nguyên liệu",
+  MATERIAL: "Vật liệu",
+  MATERIAL_CATEGORY: "Danh mục vật liệu",
+  WAREHOUSE: "Kho"
 }
 
 export const AUDIT_ENTITY_OPTIONS = [
@@ -100,7 +104,9 @@ export const AUDIT_ENTITY_OPTIONS = [
   { value: 'CATEGORY', label: 'Danh mục' },
   { value: 'PRODUCT', label: 'Sản phẩm' },
   { value: 'ORDER', label: 'Đơn hàng' },
-  { value: 'INVENTORY', label: 'Thuộc tính' },
+  { value: 'MATERIAL', label: 'Vật liệu' },
+  { value: 'MATERIAL_CATEGORY', label: 'Danh mục vật liệu' },
+  { value: 'WAREHOUSE', label: 'Kho' },
 ]
 
 export const AUDIT_ACTION_OPTIONS = [

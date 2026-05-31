@@ -36,7 +36,7 @@ export const getAuditEntityRoute = (
       return `/admin/products/${id}/edit`
 
     case 'CATEGORY':
-      // return `/admin/categories/${id}`
+      return `/admin/categories`
       return null
 
     case 'ORDER':
@@ -45,8 +45,14 @@ export const getAuditEntityRoute = (
     case 'USER':
       return `/admin/users/${id}`
 
-    case 'INVENTORY':
-      return `/admin/inventories/${id}`
+    case 'WAREHOUSE':
+      return `/admin/warehouses`
+
+    case 'MATERIAL':
+      return `/admin/materials`
+
+    case 'MATERIAL_CATEGORY':
+      return `/admin/material-categories`
 
     default:
       return null
