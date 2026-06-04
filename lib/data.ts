@@ -123,8 +123,9 @@ export const breadcrumbLabels: Record<string, string> = {
   admin: "Dashboard",
   products: "Sản phẩm",
   categories: "Danh mục",
-  materials: "Nguyên liệu",
-  "material-categories": "Danh mục nguyên liệu",
+  materials: "Vật liệu",
+  "material-categories": "Danh mục vật liệu",
+  "inventory-receipts": "Nhập kho",
   orders: "Đơn hàng",
   customers: "Khách hàng",
   promotions: "Khuyến mãi",
@@ -134,5 +135,4 @@ export const breadcrumbLabels: Record<string, string> = {
   profile: "Hồ sơ",
 
   new: "Thêm mới",
-  edit: "Cập nhật",
 };

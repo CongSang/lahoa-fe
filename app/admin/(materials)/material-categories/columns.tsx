@@ -5,7 +5,7 @@ import { useMaterialCategoryCrud } from "@/hooks/form-submit"
 import { StatusCommon } from "@/types/common"
 import { MATERIAL_CATEGORY_FIELD, MaterialCategory } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
-import { Edit, EllipsisIcon, ListCollapse, Trash } from "lucide-react"
+import { Edit, EllipsisIcon, LayoutList, Trash } from "lucide-react"
 import Link from "next/link"
 
 export const getColumns = (
@@ -97,8 +97,8 @@ export const getColumns = (
                   <Link
                     href={`/admin/materials?categoryId=${category.id}`}
                   >
-                    <ListCollapse />
-                    Xem nguyên liệu
+                    <LayoutList />
+                    Xem vật liệu
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(category)}>

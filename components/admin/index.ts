@@ -6,6 +6,7 @@ export * from './audit-log/index'
 export * from './material-category/index'
 export * from './material/index'
 export * from './warehouse/index'
+export * from './inventory-receipt/index'
 
 export * from './HeaderAdmin'
 export * from './SidebarAdmin'

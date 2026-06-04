@@ -56,9 +56,9 @@ export function UpsertMaterialDialog({
   const { handleSubmit, reset } = form;
 
   const sectionFormConfig: FieldConfig<MaterialFormValues>[] = [
-    { name: "thumbnail", type: "image", label: "Ảnh nguyên liệu", required: true },
-    { name: "code", label: "Mã nguyên liệu", className: "sm:col-span-6", type: "text", readonly: true },
-    { name: "name", label: "Tên nguyên liệu", type: "text", className: "sm:col-span-6", required: true },
+    { name: "thumbnail", type: "image", label: "Ảnh vật liệu", required: true },
+    { name: "code", label: "Mã vật liệu", className: "sm:col-span-6", type: "text", readonly: true },
+    { name: "name", label: "Tên vật liệu", type: "text", className: "sm:col-span-6", required: true },
     { name: "unit", label: "Đơn vị", type: "select",  className: "sm:col-span-6", options: MATERIAL_UNIT_OPTIONS, required: true },
     { name: "categoryId", label: "Danh mục", type: "select-command",  className: "sm:col-span-6", options: dropdown, required: true },
     { name: "status", label: "Trạng thái", type: "select", className: "sm:col-span-6", options: statusDropdown, required: true },
@@ -85,10 +85,10 @@ export function UpsertMaterialDialog({
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>
-            {initialData ? "Cập nhật nguyên liệu" : "Tạo nguyên liệu"}
+            {initialData ? "Cập nhật vật liệu" : "Tạo vật liệu"}
           </DialogTitle>
           <DialogDescription className={!initialData ? "sr-only" : ""}>
-            ID: {initialData?.id}
+            #{initialData?.code}
           </DialogDescription>
         </DialogHeader>
 

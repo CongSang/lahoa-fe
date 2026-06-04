@@ -1,27 +1,30 @@
 "use client"
 
 import { Button, Spinner } from '@/components/index';
-import { MaterialFormValues } from '@/schema/index';
 import { Plus } from 'lucide-react';
-import { Suspense, useState } from 'react'
+import { Suspense } from 'react'
 import { DataTable } from './data-table';
+import { useRouter } from 'next/navigation';
+import { MaterialImportFormValues } from '@/schema/index';
 
-const Materials = () => {
-  const [open, setOpen] = useState(false);
-  const [initialData, setInitialData] = useState<Partial<MaterialFormValues> | undefined>(undefined);
+const InventoryReceipts = () => {
+  const route = useRouter();
 
-  const handleOpenDialog = (data?: Partial<MaterialFormValues>) => {
-    setInitialData(data)
-    setOpen(true)
+  const handleOpenDialog = (data?: Partial<MaterialImportFormValues>) => {
+    if (data) {
+      route.push(`/admin/inventory-receipts/${data.id}`)
+    } else {
+      route.push('/admin/inventory-receipts/new')
+    }
   }
-
+  
   return (
     <div>
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">Vật liệu</h2>
+        <h2 className="text-xl font-bold tracking-tight text-foreground">Hóa đơn vật liệu</h2>
 
         <Button onClick={() => handleOpenDialog()}>
-          <Plus />Thêm vật liệu
+          <Plus />Tạo phiếu nhập kho
         </Button>
       </div>
 
@@ -31,9 +34,6 @@ const Materials = () => {
         </div>
       }>
         <DataTable
-          initialData={initialData}
-          openDialog={open} 
-          setOpenDialog={setOpen} 
           handleOpenDialog={handleOpenDialog}
         />
       </Suspense>
@@ -41,4 +41,4 @@ const Materials = () => {
   )
 }
 
-export default Materials
+export default InventoryReceipts

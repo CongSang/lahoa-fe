@@ -20,5 +20,5 @@ export const MATERIAL_CATEGORY_FIELD: Record<string, string> = {
   name: "Tên",
   description: "Mô tả",
   status: "Trạng thái",
-  materialCount: "Nguyên liệu"
+  materialCount: "Tổng số vật liệu"
 }

@@ -12,7 +12,7 @@ const Products = () => {
   
   const handleOpenDialog = (data?: Partial<ProductFormValues>) => {
     if (data) {
-      route.push(`/admin/products/${data.id}/edit`)
+      route.push(`/admin/products/${data.id}`)
     } else {
       route.push('/admin/products/new')
     }

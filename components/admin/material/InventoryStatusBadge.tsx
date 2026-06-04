@@ -19,7 +19,7 @@ export function InventoryStatusBadge({
 
   if (lowStock) {
     return (
-      <Badge variant="outline">
+      <Badge variant="destructive">
         Sắp hết hàng
       </Badge>
     );

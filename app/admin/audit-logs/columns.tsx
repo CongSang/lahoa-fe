@@ -1,12 +1,15 @@
 "use client"
 
-import { Badge, Button, DataTableColumnHeader, TooltipRender } from "@/components/index"
+import { Badge, Button, DataTableColumnHeader, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, TooltipRender } from "@/components/index"
 import { AuditLog, AUDIT_LOG_FIELD, AUDIT_ACTION_LABEL, AUDIT_ENTITY_LABEL } from "@/types/index"
 import { formatDateTime, formatRelative, getAuditActionClass, getAuditEntityRoute } from "@/lib/index"
 import { ColumnDef } from "@tanstack/react-table"
 import Link from "next/link"
+import { EllipsisIcon, LayoutList } from "lucide-react"
 
-export const getColumns = (): ColumnDef<AuditLog>[] => [
+export const getColumns = (
+  onOpenDetail?: (audit: AuditLog) => void
+): ColumnDef<AuditLog>[] => [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -181,4 +184,31 @@ export const getColumns = (): ColumnDef<AuditLog>[] => [
         <div className="truncate">{formatDateTime(row.original.createAt) || ""}</div>
       </TooltipRender>
   },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const audit = row.original
+ 
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+            <Button
+              variant="ghost"
+              className="flex size-8 text-muted-foreground data-[state=open]:bg-muted"
+              size="icon"
+            >
+              <EllipsisIcon />
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={() => onOpenDetail?.(audit)}>
+              <LayoutList />
+              Xem chi tiết
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  }
 ]

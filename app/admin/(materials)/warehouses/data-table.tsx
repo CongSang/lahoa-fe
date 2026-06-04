@@ -139,22 +139,23 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     })
   }
 
-  const handleDelete = (cat: Warehouse) => {
+  const handleDelete = (wh: Warehouse) => {
     setAlert({ 
       type: "delete", 
-      item: cat, 
+      item: wh, 
       title: "Xóa kho?", 
-      description: `Bạn có chắc chắn xóa kho nguyên liệu ${cat.name}.${" "}`,
+      description: `Bạn có chắc chắn xóa kho vật liệu ${wh.name}.${" "}
+      Hãy chắc chắn rằng bạn đã chuyển tất cả vật liệu của kho ${wh.name} sang kho khác.`,
       open: true, 
     })
   }
 
-  const handleRestore = (cat: Warehouse) => {
+  const handleRestore = (wh: Warehouse) => {
     setAlert({ 
       type: "info", 
-      item: cat, 
+      item: wh, 
       title: "Khôi phục kho?", 
-      description: `Bạn có chắc chắn khôi phục kho ${cat.name}.`,
+      description: `Bạn có chắc chắn khôi phục kho ${wh.name}.`,
       open: true, 
     })
   }

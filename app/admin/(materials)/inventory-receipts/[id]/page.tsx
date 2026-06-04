@@ -1,5 +1,5 @@
-import { UpsertProductForm } from "@/components/index"
-import { getProductByIdApi } from "@/services/index";
+import { MaterialReceiptForm } from "@/components/index"
+import { getMaterialReceiptByIdApi } from "@/services/index";
 import { dehydrate, HydrationBoundary, QueryClient } from "@tanstack/react-query";
 
 
@@ -16,19 +16,13 @@ const EditProductPage = async ({ params }: EditProductPageProps) => {
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({
-    queryKey: ["product", id],
-    queryFn: () => getProductByIdApi(id),
+    queryKey: ["material-receipt", id],
+    queryFn: () => getMaterialReceiptByIdApi(id),
   });
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div>
-        <h2 className="text-xl font-bold tracking-tight text-foreground mb-4 leading-8">
-          Chỉnh sửa sản phẩm
-        </h2>
-
-        <UpsertProductForm mode="edit" productId={id} />
-      </div>
+      <MaterialReceiptForm mode="detail" receiptId={id} />
     </HydrationBoundary>
   )
 }

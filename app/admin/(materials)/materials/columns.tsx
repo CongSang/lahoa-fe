@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/index"
 import { StatusCommon } from "@/types/common"
 import { Material, MATERIAL_FIELD, MATERIAL_UNIT_LABEL } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
-import { Edit, EllipsisIcon, History, ImageIcon, Trash2 } from "lucide-react"
+import { Edit, EllipsisIcon, History, ImageIcon, Trash } from "lucide-react"
 
 export const getColumns = (
   onEdit?: (material: Material) => void,
@@ -187,12 +187,12 @@ export const getColumns = (
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuContent align="end" className="min-w-42" onClick={(e) => e.stopPropagation()}>
             {material.status !== StatusCommon.DELETED ? (
               <>
                 <DropdownMenuItem>
                   <History />
-                  Xem lịch sử
+                  Lịch sử biến động
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(material)}>
                   <Edit />
@@ -200,7 +200,7 @@ export const getColumns = (
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={() => onDelete?.(material)}>
-                  <Trash2 />
+                  <Trash />
                   Xóa
                 </DropdownMenuItem>
               </>

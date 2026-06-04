@@ -5,8 +5,6 @@ const statusEnum = z.enum(["ACTIVE", "INACTIVE", "DELETED"]);
 export const materialCategorySchema = z.object({
   id: z.string().optional(),
 
-  code: z.string().nullable().optional(),
-
   name: z
     .string()
     .min(1, "Tên danh mục không được để trống")

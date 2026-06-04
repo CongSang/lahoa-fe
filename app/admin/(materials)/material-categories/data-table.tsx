@@ -144,7 +144,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       type: "delete", 
       item: cat, 
       title: "Xóa danh mục?", 
-      description: `Bạn có chắc chắn xóa danh mục nguyên liệu ${cat.name}.${" "}
+      description: `Bạn có chắc chắn xóa danh mục vật liệu ${cat.name}.${" "}
       Hãy chắc chắn rằng đã chuyển tất cả danh mục con sang danh mục mới!`,
       open: true, 
     })
@@ -282,7 +282,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có Danh mục nguyên liệu nào"
+          emptyLabel="Chưa có Danh mục vật liệu nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}

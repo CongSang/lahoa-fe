@@ -66,7 +66,7 @@ export function WarehouseInventoryDialog({
       <DialogContent className="sm:max-w-5xl">
         <DialogHeader>
           <DialogTitle>
-            Tồn nguyên liệu theo kho
+            Tồn vật liệu theo kho
           </DialogTitle>
           <DialogDescription className="sr-only">
             ID: {material?.id}
@@ -117,7 +117,7 @@ export function WarehouseInventoryDialog({
                   <TableRow>
                     <TableCell colSpan={columns.length} className="h-24 text-center">
                         <div className="flex flex-col items-center gap-2 py-4">
-                          <p className='text-accent-foreground'>Chưa nhập nguyên liệu</p>
+                          <p className='text-accent-foreground'>Chưa nhập vật liệu</p>
                         </div>
                     </TableCell>
                   </TableRow>

@@ -3,6 +3,7 @@
 import { ColumnDef, flexRender, Table as TableType } from '@tanstack/react-table'
 import { Button, DataTableSkeleton, Empty, EmptyContent, EmptyHeader, EmptyMedia, EmptyTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/index'
 import { Download, Folder, Plus, SearchX } from 'lucide-react'
+import { useRef } from 'react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -25,6 +26,8 @@ export function DataTableCommon<TData, TValue> ({
   handleOpenDialog,
   hideImportExcel = false 
 }: DataTableProps<TData, TValue>) {
+  const clickTimeout = useRef<NodeJS.Timeout | null>(null)
+
   const selectable = !!table.options.enableRowSelection;
 
   return (
@@ -56,9 +59,25 @@ export function DataTableCommon<TData, TValue> ({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onDoubleClick={() => {
+                  if (clickTimeout.current) {
+                    clearTimeout(clickTimeout.current)
+                  }
+
+                  if (row.original) {
+                    handleOpenDialog(row.original)
+                  }
+                }}
                 onClick={() => {
                   if (!selectable) return;
-                  row.toggleSelected(!row.getIsSelected())
+
+                  if (clickTimeout.current) {
+                    clearTimeout(clickTimeout.current)
+                  }
+
+                  clickTimeout.current = setTimeout(() => {
+                    row.toggleSelected(!row.getIsSelected())
+                  }, 250)
                 }}
               >
                 {row.getVisibleCells().map((cell) => (

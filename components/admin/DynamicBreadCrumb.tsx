@@ -23,7 +23,6 @@ export function DynamicBreadcrumb() {
   const segments = pathname
     .split("/")
     .filter(Boolean)
-    .filter((segment) => !isDynamicSegment(segment));
 
   return (
     <Breadcrumb className="hidden sm:flex">
@@ -45,9 +44,12 @@ export function DynamicBreadcrumb() {
           const isLast =
             index === segments.slice(1).length - 1;
 
-          const label =
-            breadcrumbLabels[segment] ||
-            segment.replace(/-/g, " ");
+          let label = segment.replace(/-/g, " ");
+          if (isDynamicSegment(segment)) {
+            label = "Chi tiết";
+          } else if (breadcrumbLabels[segment]) {
+            label = breadcrumbLabels[segment];
+          }
 
           return (
             <React.Fragment key={href}>

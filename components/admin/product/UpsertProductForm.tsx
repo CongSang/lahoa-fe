@@ -72,53 +72,60 @@ export const UpsertProductForm = ({ mode, productId }: UpsertProductFormProps) =
   }, [product, mode, form]);
 
   return (
-    <Card className="p-4">
-      <form id='form-product' onSubmit={form.handleSubmit(
-        (data) => onSubmit(data),
-        (error) => console.log("error", error)
-      )}>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-col justify-start gap-6">
-          <div className="flex items-center justify-between gap-2">
-            <Label htmlFor="view-selector" className="sr-only">
-              View
-            </Label>
-            <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger
-                className="flex w-fit lg:hidden"
-                id="view-selector"
-              >
-                <SelectValue placeholder="Select a view" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="basic">Thông tin</SelectItem>
-                <SelectItem value="variants">Biến thể</SelectItem>
-              </SelectContent>
-            </Select>
-            <TabsList className="hidden lg:flex">
-              <TabsTrigger value="basic">Thông tin</TabsTrigger>
-              <TabsTrigger value="variants">Biến thể</TabsTrigger>
-            </TabsList>
-            <div className="flex items-center gap-2">
-              <Button type="submit" disabled={mutation.isPending || (mode === "edit" && !form.formState.isDirty)}>
-                {mutation.isPending ? <Spinner /> :
-                  mode === "edit" ? <PencilLineIcon /> : <PlusIcon />}
-                {
-                  mode === "edit"
-                    ? "Cập nhật"
-                    : "Tạo mới"
-                }
-              </Button>
-            </div>
-          </div>
+    <>
+      {mode === "edit" && (
+        <h2 className="text-xl font-bold tracking-tight text-foreground mb-4 leading-8">
+          Chỉnh sửa sản phẩm <span className="text-rose-600 dark:text-rose-400">#{product?.code}</span>
+        </h2>
+      )}
 
-          <TabsContent value="basic" className="space-y-2">
-              <ProductInfoTab form={form} isLoading={mutation.isPending} />
-          </TabsContent>
-          <TabsContent value="variants" className="space-y-2">
-              <VariantTab form={form} isLoading={mutation.isPending} />
-          </TabsContent>
-        </Tabs>
-      </form>
-    </Card>
+      <Card className="p-4">
+        <form id='form-product' onSubmit={form.handleSubmit(
+          (data) => onSubmit(data)
+        )}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-col justify-start gap-6">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="view-selector" className="sr-only">
+                View
+              </Label>
+              <Select value={activeTab} onValueChange={setActiveTab}>
+                <SelectTrigger
+                  className="flex w-fit lg:hidden"
+                  id="view-selector"
+                >
+                  <SelectValue placeholder="Select a view" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="basic">Thông tin</SelectItem>
+                  <SelectItem value="variants">Biến thể</SelectItem>
+                </SelectContent>
+              </Select>
+              <TabsList className="hidden lg:flex">
+                <TabsTrigger value="basic">Thông tin</TabsTrigger>
+                <TabsTrigger value="variants">Biến thể</TabsTrigger>
+              </TabsList>
+              <div className="flex items-center gap-2">
+                <Button type="submit" disabled={mutation.isPending || (mode === "edit" && !form.formState.isDirty)}>
+                  {mutation.isPending ? <Spinner /> :
+                    mode === "edit" ? <PencilLineIcon /> : <PlusIcon />}
+                  {
+                    mode === "edit"
+                      ? "Cập nhật"
+                      : "Tạo mới"
+                  }
+                </Button>
+              </div>
+            </div>
+
+            <TabsContent value="basic" className="space-y-2">
+                <ProductInfoTab form={form} isLoading={mutation.isPending} />
+            </TabsContent>
+            <TabsContent value="variants" className="space-y-2">
+                <VariantTab form={form} isLoading={mutation.isPending} />
+            </TabsContent>
+          </Tabs>
+        </form>
+      </Card>
+    </>
   )
 }

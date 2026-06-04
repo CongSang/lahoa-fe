@@ -20,49 +20,44 @@ import {
   Field,
   FieldLabel,
   SelectCustom,
-  AuditLogDetailDialog,
   DatePicker,
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AuditLog, AuditLogFilterRequest, AUDIT_LOG_FIELD, AUDIT_ENTITY_OPTIONS, AUDIT_ACTION_OPTIONS } from "@/types/index"
-import { useQuery } from "@tanstack/react-query"
-import { getAuditLogsApi, getUserByKeywordApi } from "@/services/index"
+import { InventoryReceipt, InventoryReceiptFilterRequest, MATERIAL_CATEGORY_FIELD } from "@/types/index"
+import { getMaterialCategoryDropdownApi, getMaterialReceiptsApi, getWarehouseDropdownApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { getColumns } from "./columns"
+import { MaterialImportFormValues } from "@/schema/index"
+import { useQuery } from "@tanstack/react-query"
 import { Controller } from "react-hook-form"
-import type { DateRange } from "react-day-picker"
 import { getDateRangeValue, setDateRangeValue } from "@/lib/index"
 
 interface DataTableProps {
-  initialData?: Partial<AuditLog>
-  openDialog: boolean
-  setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<AuditLog>) => void
+  handleOpenDialog: (data?: Partial<MaterialImportFormValues>) => void
 }
 
-export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
+export function DataTable({ handleOpenDialog }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>()
 
-  const { data: apiResponse, tableState, form, isLoading } = useDataTable<AuditLog, AuditLogFilterRequest>(
-    "audit-logs", 
-    getAuditLogsApi, 
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<InventoryReceipt, InventoryReceiptFilterRequest>(
+    "material-receipts", 
+    getMaterialReceiptsApi, 
     {
       defaultFilter: { 
         keyword: "",
-        entityName: undefined,
-        action: undefined,
-        userId: "",
+        categoryId: undefined,
+        warehouseId: undefined,
         fromDate: "",
-        toDate: ""
+        toDate: "",
       }
     }
   )
 
   const columns = useMemo(() => getColumns(
-    (audit) => handleOpenDialog(audit)
+    (receipt) => handleOpenDialog({ id: receipt.id })
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -72,21 +67,33 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
   const table = useReactTable({
     data: data || [],
     columns,
-    enableRowSelection: false,
     pageCount: apiResponse?.totalPages || 0,
     rowCount: apiResponse?.totalElements || 0,
     manualPagination: true, 
     manualSorting: true, 
+    getRowId: row => row.id.toString(),
     onPaginationChange: tableState.setPagination,
-    onSortingChange: tableState.setSorting,
     onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: tableState.setSorting,
     getCoreRowModel: getCoreRowModel(),
     state: {
       sorting: tableState.sorting,
       columnVisibility,
+      rowSelection,
       pagination: tableState.pagination
     },
   })
+
+  const { data: categoryDropdown } = useQuery({
+    queryKey: ["material-category-dropdown"],
+    queryFn: getMaterialCategoryDropdownApi,
+  });
+
+  const { data: warehouseDropdown } = useQuery({
+    queryKey: ["warehouse-dropdown"],
+    queryFn: getWarehouseDropdownApi,
+  });
 
   const handleSearch = () => {
     setIsFilterOpen(false)
@@ -101,17 +108,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       form.onReset()
     }, 250)
   }
-
-  const {
-    data: users = []
-  } = useQuery({
-    queryKey: [
-      'users-dropdown',
-      ""
-    ],
-    queryFn: () =>
-      getUserByKeywordApi("")
-  })
 
   return (
     <>
@@ -148,7 +144,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} fieldName={AUDIT_LOG_FIELD} />
+            <DataTableViewOptions table={table} fieldName={MATERIAL_CATEGORY_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -170,75 +166,56 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         >
           <Field>
             <FieldLabel>Từ ngày - Đến ngày</FieldLabel>
-            <Controller
-              control={form.control}
-              name="userId"
-              render={() => (
-                <DatePicker 
-                  mode="range"
-                  value={getDateRangeValue(
-                    form,
+              <DatePicker
+                mode="range"
+                value={getDateRangeValue(
+                  form,
+                  {
+                    from: "fromDate",
+                    to: "toDate"
+                  }, 
+                )}
+                onChange={(range) => 
+                  setDateRangeValue(
+                    form, 
                     {
                       from: "fromDate",
                       to: "toDate"
                     }, 
+                    range
                   )}
-                  onChange={(range) => 
-                    setDateRangeValue(
-                      form, 
-                      {
-                        from: "fromDate",
-                        to: "toDate"
-                      }, 
-                      range
-                    )}
-                  numberOfMonths={2}
-                  captionLayout="dropdown"
-                  disableFuture
-                />
-              )}
-            />
+                numberOfMonths={2}
+                captionLayout="dropdown"
+                disableFuture
+              />
           </Field>
           <Field>
-            <FieldLabel>Đối tượng</FieldLabel>
+            <FieldLabel>Danh mục vật liệu</FieldLabel>
             <Controller
               control={form.control}
-              name="entityName"
+              name="categoryId"
               render={({ field }) => (
                 <SelectCustom
                   selection="single"
-                  options={AUDIT_ENTITY_OPTIONS}
-                  value={String(field.value || "")}
+                  options={categoryDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
                   onChange={field.onChange}
                 />
               )}
             />
           </Field>
           <Field>
-            <FieldLabel>Hành động</FieldLabel>
+            <FieldLabel>Kho</FieldLabel>
             <Controller
               control={form.control}
-              name="action"
+              name="warehouseId"
               render={({ field }) => (
                 <SelectCustom
                   selection="single"
-                  options={AUDIT_ACTION_OPTIONS}
-                  value={String(field.value || "")}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          </Field>
-          <Field>
-            <FieldLabel>Người thực hiện</FieldLabel>
-            <Controller
-              control={form.control}
-              name="userId"
-              render={({ field }) => (
-                <SelectCustom
-                  selection="single"
-                  options={users}
-                  value={String(field.value || "")}
+                  options={warehouseDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
                   onChange={field.onChange}
                 />
               )}
@@ -250,20 +227,21 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có Danh mục nào"
+          emptyLabel="Chưa có hóa đơn vật liệu nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}
         />
 
+        <div className="flex-1 text-sm text-muted-foreground">
+          Đã chọn <span className="font-semibold text-accent-foreground">
+            {Object.keys(rowSelection).length}/{" "}
+            {table.getRowCount()}
+          </span> hóa đơn.
+        </div>
+
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />
       </Card>
-
-      <AuditLogDetailDialog 
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        audit={initialData}
-      />
     </>
   )
 }

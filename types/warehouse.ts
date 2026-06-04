@@ -22,5 +22,5 @@ export const WAREHOUSE_FIELD: Record<string, string> = {
   name: "Tên",
   address: "Địa chỉ",
   status: "Trạng thái",
-  materialCount: "Tổng nguyên liệu"
+  materialCount: "Số vật liệu còn tồn"
 }

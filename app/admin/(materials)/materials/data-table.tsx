@@ -83,8 +83,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         action: "create", 
         data: formData,
         meta: {
-          successMessage: "Tạo nguyên liệu thành công",
-          errorMessage: "Tạo nguyên liệu thất bại"
+          successMessage: "Tạo vật liệu thành công",
+          errorMessage: "Tạo vật liệu thất bại"
         }
       },
       {
@@ -101,8 +101,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         id: formData.id, 
         data: formData,
         meta: {
-          successMessage: "Cập nhật nguyên liệu thành công",
-          errorMessage: "Cập nhật nguyên liệu thất bại"
+          successMessage: "Cập nhật vật liệu thành công",
+          errorMessage: "Cập nhật vật liệu thất bại"
         }
       },{
         onSuccess: () => {
@@ -120,8 +120,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "delete", 
       id: id, 
       meta: {
-        successMessage: "Xóa nguyên liệu thành công",
-        errorMessage: "Xóa nguyên liệu thất bại"
+        successMessage: "Xóa vật liệu thành công",
+        errorMessage: "Xóa vật liệu thất bại"
       }
     },{
       onSuccess: () => {
@@ -138,8 +138,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       action: "restore", 
       id: id, 
       meta: {
-        successMessage: "Khôi phục nguyên liệu thành công",
-        errorMessage: "Khôi phục nguyên liệu thất bại"
+        successMessage: "Khôi phục vật liệu thành công",
+        errorMessage: "Khôi phục vật liệu thất bại"
       }
     },{
       onSuccess: () => {
@@ -155,8 +155,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     setAlert({ 
       type: "delete", 
       item: material, 
-      title: "Xóa nguyên liệu?", 
-      description: `Bạn có chắc chắn xóa nguyên liệu ${material.name}.${" "}`,
+      title: "Xóa vật liệu?", 
+      description: `Bạn có chắc chắn xóa vật liệu ${material.name}.${" "}`,
       open: true, 
     })
   }
@@ -165,8 +165,8 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     setAlert({ 
       type: "info", 
       item: material, 
-      title: "Khôi phục nguyên liệu?", 
-      description: `Bạn có chắc chắn khôi phục nguyên liệu ${material.name}.`,
+      title: "Khôi phục vật liệu?", 
+      description: `Bạn có chắc chắn khôi phục vật liệu ${material.name}.`,
       open: true, 
     })
   }
@@ -303,7 +303,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
             />
           </Field>
           <Field>
-            <FieldLabel>Danh mục nguyên liệu</FieldLabel>
+            <FieldLabel>Danh mục vật liệu</FieldLabel>
             <Controller
               control={form.control}
               name="categoryId"
@@ -370,7 +370,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có nguyên liệu nào"
+          emptyLabel="Chưa có vật liệu nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}
@@ -380,7 +380,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           Đã chọn <span className="font-semibold text-accent-foreground">
             {Object.keys(rowSelection).length}/{" "}
             {table.getRowCount()}
-          </span> nguyên liệu.
+          </span> vật liệu.
         </div>
 
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />

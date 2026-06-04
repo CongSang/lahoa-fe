@@ -4,6 +4,7 @@ const statusEnum = z.enum(["ACTIVE", "INACTIVE", "DELETED"]);
 
 export const categorySchema = z.object({
   id: z.string().optional(),
+  code: z.string().optional(),
 
   name: z
     .string()

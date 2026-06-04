@@ -14,6 +14,11 @@ export const getWarehouseInventoriesApi = async (materialId: string) => {
   return response.data;
 };
 
+export const getMaterialDropdownApi = async () => {
+  const response = await axiosInstance.get('/admin/materials/dropdown');
+  return response.data;
+};
+
 export const createMaterialApi = async (request: MaterialFormValues) => {
   const response = await axiosInstance.post('/admin/materials', request);
   return response.data;

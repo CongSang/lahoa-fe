@@ -5,7 +5,7 @@ import { useWarehouseCrud } from "@/hooks/index"
 import { StatusCommon } from "@/types/common"
 import { WAREHOUSE_FIELD, Warehouse } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
-import { Edit, EllipsisIcon, Trash } from "lucide-react"
+import { Edit, EllipsisIcon, History, Trash } from "lucide-react"
 
 export const getColumns = (
   onEdit?: (warehouse: Warehouse) => void,
@@ -96,9 +96,13 @@ export const getColumns = (
               <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-40" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuContent align="end" className="min-w-42" onClick={(e) => e.stopPropagation()}>
             {warehouse.status !== StatusCommon.DELETED ? (
               <>
+                <DropdownMenuItem>
+                  <History />
+                  Lịch sử biến động
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => onEdit?.(warehouse)}>
                   <Edit />
                   Chỉnh sửa

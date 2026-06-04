@@ -8,7 +8,6 @@ export function handleMaterialCategorySubmit(
   const payload = {
     ...data,
     name: data.name.trim(),
-    code: data.code?.trim(),
     description: data.description?.trim(),
   };
 

@@ -40,7 +40,6 @@ export function UpsertMaterialCategoryDialog({
   const form = useForm<MaterialCategoryFormValues>({
     resolver: zodResolver(materialCategorySchema) as Resolver<MaterialCategoryFormValues>,
     defaultValues: {
-      code: "",
       name: "",
       description: "",
       status: StatusCommon.ACTIVE,
@@ -51,7 +50,6 @@ export function UpsertMaterialCategoryDialog({
   const { handleSubmit, reset } = form;
 
   const sectionFormConfig: FieldConfig<MaterialCategoryFormValues>[] = [
-    { name: "code", label: "Mã danh mục", type: "text", className: "sm:col-span-6", readonly: true },
     { name: "name", label: "Tên danh mục", type: "text", className: "sm:col-span-6", required: true },
     { name: "status", label: "Trạng thái", type: "select", className: "sm:col-span-6", options: statusDropdown, required: true },
     { name: "description", label: "Mô tả", type: "textarea", placeholder: "Mô tả danh mục" },
