@@ -6,13 +6,13 @@ const loading = () => {
   return (
     <div>
       <h2 className="text-xl font-bold tracking-tight text-foreground mb-4 leading-8">
-         Chi tiết phiếu nhập
+         Chi tiết phiếu kiểm kê
       </h2>
 
       <Card className="space-y-4">
         <CardContent className="space-y-6">
           <div className="flex items-center justify-start gap-2">
-            <h3 className="font-semibold text-lg">Thông tin phiếu nhập</h3>
+            <h3 className="font-semibold text-lg">Thông tin phiếu kiểm kê</h3>
           </div>
 
           <div className="grid grid-cols-12 gap-3">

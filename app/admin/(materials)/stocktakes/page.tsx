@@ -7,24 +7,24 @@ import { DataTable } from './data-table';
 import { useRouter } from 'next/navigation';
 import { MaterialImportFormValues } from '@/schema/index';
 
-const InventoryReceipts = () => {
+const Stocktakes = () => {
   const route = useRouter();
 
   const handleOpenDialog = (data?: Partial<MaterialImportFormValues>) => {
     if (data) {
-      route.push(`/admin/inventory-receipts/${data.id}`)
+      route.push(`/admin/stocktakes/${data.id}`)
     } else {
-      route.push('/admin/inventory-receipts/new')
+      route.push('/admin/stocktakes/new')
     }
   }
   
   return (
     <div>
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-xl font-bold tracking-tight text-foreground">Phiếu nhập vật liệu</h2>
+        <h2 className="text-xl font-bold tracking-tight text-foreground">Phiếu kiểm kê</h2>
 
         <Button onClick={() => handleOpenDialog()}>
-          <Plus />Tạo phiếu nhập kho
+          <Plus />Tạo phiếu kiểm kê
         </Button>
       </div>
 
@@ -41,4 +41,4 @@ const InventoryReceipts = () => {
   )
 }
 
-export default InventoryReceipts
+export default Stocktakes

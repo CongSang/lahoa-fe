@@ -1,9 +1,9 @@
 "use client"
 
-import { Button, Field, FieldError, InputNumber, SelectCustom } from "@/components/index"
+import { Badge, Button, Field, FieldError, InputNumber, SelectCustom } from "@/components/index"
 import { formatNumber } from "@/lib/number-format"
 import { MaterialImportDetailFormValues } from "@/schema/index"
-import { INVENTORY_RECEIPT_DETAIL_FIELD, Option } from "@/types/index"
+import { INVENTORY_RECEIPT_DETAIL_FIELD, Option, StatusCommon } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
 import { PlusCircleIcon, Trash } from "lucide-react"
 import { Control, Controller } from "react-hook-form"
@@ -47,7 +47,14 @@ export const getColumnsMaterialReceipt = (
           />
         )
       } else {
-        return <div>{row.original.materialName}</div>
+        const receipt = row.original
+
+        return <div className="flex items-center gap-2">
+          {receipt.materialName}
+          {receipt.materialStatus === StatusCommon.DELETED && (
+            <Badge variant="destructive">Ngừng kinh doanh</Badge>
+          )}
+        </div>
       }
     }
   },
@@ -64,7 +71,7 @@ export const getColumnsMaterialReceipt = (
             control={control}
             name={`details.${row.index}.quantity`}
             render={({ field, fieldState }) => (
-              <Field>
+              <Field className="w-25 ml-auto">
                 <InputNumber
                   {...field}
                   aria-invalid={fieldState.invalid}

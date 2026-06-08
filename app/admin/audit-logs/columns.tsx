@@ -175,13 +175,13 @@ export const getColumns = (
     cell: ({ row }) => <div className="truncate">{row.original.traceId || ""}</div>
   },
   {
-    accessorKey: "createAt",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={AUDIT_LOG_FIELD[column.id]} />
     ),
     cell: ({ row }) => 
-      <TooltipRender tooltip={formatRelative(row.original.createAt)}>
-        <div className="truncate">{formatDateTime(row.original.createAt) || ""}</div>
+      <TooltipRender tooltip={formatRelative(row.original.createdAt)}>
+        <div className="truncate">{formatDateTime(row.original.createdAt) || ""}</div>
       </TooltipRender>
   },
   {

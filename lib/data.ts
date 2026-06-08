@@ -36,7 +36,7 @@ export const dataNavbar = {
         },
         {
           title: "Phiếu kiểm kê",
-          url: "/admin/inventories",
+          url: "/admin/stocktakes",
         },
         {
           title: "Lịch sử kho",
@@ -126,6 +126,7 @@ export const breadcrumbLabels: Record<string, string> = {
   materials: "Vật liệu",
   "material-categories": "Danh mục vật liệu",
   "inventory-receipts": "Nhập kho",
+  stocktakes: "Kiểm kê",
   orders: "Đơn hàng",
   customers: "Khách hàng",
   promotions: "Khuyến mãi",

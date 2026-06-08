@@ -119,7 +119,7 @@ export const AuditLogDetailDialog = ({
                 label="Thời gian"
                 value={format(
                   new Date(
-                    audit.createAt || ""
+                    audit.createdAt || ""
                   ),
                   'HH:mm:ss dd/MM/yyyy',
                   {

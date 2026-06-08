@@ -6,6 +6,7 @@ export interface InventoryReceipt {
   warehouseName: string
   totalCost: string
   createdAt: string
+  createdBy: string
   itemCount: number
   details: InventoryReceiptDetail[]
 }
@@ -33,13 +34,14 @@ export const INVENTORY_RECEIPT_FIELD: Record<string, string> = {
   note: "Ghi chú",
   warehouseName: "Kho tiếp nhận",
   totalCost: "Tổng tiền",
-  createdAt: "Thời gian tạo",
+  createdAt: "Ngày tạo",
+  createdBy: "Người tạo",
   itemCount: "Số mặt hàng"
 }
 
 export const INVENTORY_RECEIPT_DETAIL_FIELD: Record<string, string> = {
   materialName: "Tên vật liệu",
   quantity: "Số lượng",
-  unitCost: "Giá vốn",
+  unitCost: "Đơn giá",
   subtotal: "Thành tiền",
 }

@@ -8,6 +8,7 @@ export const materialImportDetailSchema = z.object({
     .min(1, "Vật liệu không được để trống"),
 
   materialName: z.string().optional(),
+  materialStatus: z.string().optional(),
 
   quantity: z.coerce
     .number()

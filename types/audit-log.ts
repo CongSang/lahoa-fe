@@ -37,7 +37,7 @@ export interface AuditLog {
 
   traceId?: string | null
 
-  createAt: string
+  createdAt: string
 }
 
 export interface AuditLogFilterRequest {
@@ -71,7 +71,7 @@ export const AUDIT_LOG_FIELD: Record<string, string> = {
 
   traceId: "Trace ID",
 
-  createAt: "Thời gian thực hiện"
+  createdAt: "Thời gian thực hiện"
 }
 
 export const AUDIT_ACTION_LABEL: Record<

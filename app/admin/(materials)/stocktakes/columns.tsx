@@ -1,14 +1,14 @@
 "use client"
 
-import { Checkbox, DataTableColumnHeader, TooltipRender, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Button } from "@/components/index"
-import { formatDateTime, formatNumber, formatRelative } from "@/lib/index"
-import { InventoryReceipt, INVENTORY_RECEIPT_FIELD } from "@/types/index"
+import { Checkbox, DataTableColumnHeader, TooltipRender, DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, Button, InventoryDifferenceBadge } from "@/components/index"
+import { formatDateTime, formatRelative } from "@/lib/index"
+import { STOCK_TAKE_FIELD, StockTake } from "@/types/index"
 import { ColumnDef } from "@tanstack/react-table"
 import { EllipsisIcon, FileDown, FileText, LayoutList } from "lucide-react"
 
 export const getColumns = (
-  onDetail?: (receipt: InventoryReceipt) => void,
-): ColumnDef<InventoryReceipt>[] => [
+  onDetail?: (stocktake: StockTake) => void,
+): ColumnDef<StockTake>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -35,14 +35,14 @@ export const getColumns = (
   {
     accessorKey: "code",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
     cell: ({ row }) => <div className="w-50 truncate">{row.original?.code || ""}</div>,
   },
   {
     accessorKey: "createdAt",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
     cell: ({ row }) => 
       <TooltipRender tooltip={formatRelative(row.original.createdAt)}>
@@ -52,38 +52,31 @@ export const getColumns = (
   {
     accessorKey: "warehouseName",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
     cell: ({ row }) => <div className="w-50 truncate">{row.original?.warehouseName || ""}</div>,
   },
   {
-    accessorKey: "supplier",
+    accessorKey: "totalItems",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.supplier || ""}</div>,
+    cell: ({ row }) => <div className="w-50 truncate">{row.original?.totalItems || 0} loại</div>,
   },
   {
-    accessorKey: "itemCount",
+    accessorKey: "totalDifference",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.itemCount || 0} loại</div>,
-  },
-  {
-    accessorKey: "totalCost",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} side="right" />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} side="right" />
     ),
     cell: ({ row }) => 
-      <div className="text-right">
-        {formatNumber(row.original.totalCost || 0, { style: "currency", currency: "VND" })}
-      </div>
+      <div className="w-50 truncate text-right">
+        <InventoryDifferenceBadge value={Number(row.original.totalDifference) || 0} />
+      </div>,
   },
   {
     accessorKey: "note",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
     cell: ({ row }) => 
       <div className="w-60 line-clamp-2 whitespace-normal">
@@ -93,14 +86,14 @@ export const getColumns = (
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={INVENTORY_RECEIPT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} />
     ),
     cell: ({ row }) => <div className="w-50 truncate">{row.original?.createdBy || ""}</div>,
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const receipt = row.original
+      const stocktake = row.original
  
       return (
         <DropdownMenu>
@@ -115,7 +108,7 @@ export const getColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-32" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={() => onDetail?.(receipt)}>
+            <DropdownMenuItem onClick={() => onDetail?.(stocktake)}>
               <LayoutList />
               Xem chi tiết
             </DropdownMenuItem>

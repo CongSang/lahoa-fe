@@ -53,7 +53,7 @@ export function DataTableCommon<TData, TValue> ({
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            <DataTableSkeleton columns={columns.length} rows={10} />
+            <DataTableSkeleton columns={columns.length} rows={2} />
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow

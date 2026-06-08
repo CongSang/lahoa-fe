@@ -71,7 +71,7 @@ export const getColumns = (
   {
     accessorKey: "variants",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => 
       <div className="w-30 truncate">
@@ -102,7 +102,7 @@ export const getColumns = (
   {
     accessorKey: "properties",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => (
       <div className="space-y-0.5 w-40">
@@ -123,14 +123,14 @@ export const getColumns = (
   {
     accessorKey: "primaryCategory",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => <div className="max-w-50 truncate">{row.original.primaryCategory?.name || ""}</div>,
   },
   {
     accessorKey: "categories",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} />
+      <DataTableColumnHeader column={column} title={PRODUCT_FIELD[column.id]} sort={false} />
     ),
     cell: ({ row }) => (
       <div className="max-w-50 truncate">

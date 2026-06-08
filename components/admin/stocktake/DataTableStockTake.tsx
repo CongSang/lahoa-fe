@@ -2,14 +2,18 @@
 "use client"
 
 import {
+  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
 
 import {
-  DataTableSkeleton,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
   Spinner,
   Table, 
   TableBody, 
@@ -17,25 +21,30 @@ import {
   TableHead, 
   TableHeader, 
   TableRow,
-  getColumnsMaterialReceipt,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  getColumnsStockTake,
 } from "@/components/index"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form"
 import { MaterialImportDetailFormValues } from "@/schema/material-receipt"
-import { formatNumber } from "@/lib/index"
 import { useQuery } from "@tanstack/react-query"
-import { getMaterialDropdownApi } from "@/services/index"
+import { getMaterialsForStocktakeApi } from "@/services/index"
+import { SearchIcon } from "lucide-react"
+import { StockTakeDetailFormValues } from "@/schema/index"
 
-interface DataTableMaterialReceiptProps {
+interface DataTableStockTakeProps {
   loading?: boolean
   loadingData: boolean
   disabledEdit?: boolean 
 }
 
-export function DataTableMaterialReceipt({ loading, loadingData, disabledEdit }: DataTableMaterialReceiptProps) {
+export function DataTableStockTake({ loading, loadingData, disabledEdit }: DataTableStockTakeProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const { control, formState } = useFormContext();
+  const { control, formState, setValue } = useFormContext();
 
   const detailsError = formState.errors.details;
 
@@ -47,55 +56,72 @@ export function DataTableMaterialReceipt({ loading, loadingData, disabledEdit }:
 
   const {
     fields,
-    append,
-    remove,
   } = useFieldArray({
     control,
     name: "details",
   });
 
-  const { data: materialDropdown } = useQuery({
-    queryKey: ["material-dropdown"],
-    queryFn: getMaterialDropdownApi,
-    enabled: !disabledEdit
+  const warehouseId = useWatch({
+    control,
+    name: "warehouseId",
   });
 
-  const columns = useMemo(() => getColumnsMaterialReceipt(
+  const { data: materials = [], isLoading } = useQuery({
+    queryKey: [
+      "stocktake-materials",
+      warehouseId,
+    ],
+    queryFn: () => getMaterialsForStocktakeApi(warehouseId!),
+    enabled: !!warehouseId && !disabledEdit,
+  });
+
+  const columns = useMemo(() => getColumnsStockTake(
     loading,
     disabledEdit,
-    materialDropdown,
     control,
-    (index) => remove(index),
-    () => append({ materialId: "", quantity: "", unitCost: "" }),
-  ), [append, control, disabledEdit, loading, materialDropdown, remove]);
+  ), [control, disabledEdit, loading]);
 
   const table = useReactTable({
-    data: fields as MaterialImportDetailFormValues[],
+    data: details as MaterialImportDetailFormValues[],
     columns,
     enableRowSelection: false,
+    onColumnFiltersChange: setColumnFilters,
     getRowId: (row: any) => row.id?.toString(),
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility,
+      columnFilters
     },
   })
 
-  const totalCost = useMemo(() => {
-    return (details ?? []).reduce(
-      (sum: number, item: MaterialImportDetailFormValues) =>
-        sum +
-        Number(item.quantity ?? 0) *
-        Number(item.unitCost ?? 0),
-      0
-    );
-  }, [details]);
+  useEffect(() => {
+    if (!materials?.length) return;
+
+    setValue("details", materials);
+
+  }, [setValue, materials]);
 
   return (
     <>
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className={disabledEdit ? "text-muted-foreground text-xs" : "font-medium"}>Danh sách vật liệu</div>
       </div>
+
+      {!disabledEdit && (
+        <InputGroup className="max-w-sm">
+          <InputGroupInput
+            placeholder="Tìm kiếm theo tên vật liệu..."
+            onChange={event => table.getColumn("materialName")?.setFilterValue(event.target.value)}
+            autoComplete="off"
+            value={(table.getColumn("materialName")?.getFilterValue() as string) ?? ""}
+          />
+          <InputGroupAddon align="inline-start">
+            <SearchIcon className="text-muted-foreground" />
+          </InputGroupAddon>
+        </InputGroup>
+      )}
 
       <div className="rounded-sm border mb-2">
         <Table>
@@ -118,7 +144,7 @@ export function DataTableMaterialReceipt({ loading, loadingData, disabledEdit }:
             ))}
           </TableHeader>
           <TableBody>
-            {loadingData ? (
+            {(isLoading || loadingData) ? (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-8 text-center">
                     <div className="flex flex-col items-center gap-2 py-2">
@@ -156,16 +182,6 @@ export function DataTableMaterialReceipt({ loading, loadingData, disabledEdit }:
           {(detailsError?.message  || detailsError.root?.message) as string }
         </div>
       )}
-
-      <div className="font-semibold flex justify-end gap-1">
-        Tổng tiền:
-        <span className="text-destructive">
-          {formatNumber(totalCost ?? 0, {
-            style: "currency",
-            currency: "VND",
-          })}
-        </span>
-      </div>
     </>
   )
 }

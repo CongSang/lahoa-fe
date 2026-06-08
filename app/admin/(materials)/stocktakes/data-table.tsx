@@ -24,8 +24,8 @@ import {
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { INVENTORY_RECEIPT_FIELD, InventoryReceipt, InventoryReceiptFilterRequest } from "@/types/index"
-import { getMaterialCategoryDropdownApi, getMaterialReceiptsApi, getWarehouseDropdownApi } from "@/services/index"
+import { STOCK_TAKE_FIELD, StockTake, StockTakeFilterRequest } from "@/types/index"
+import { getStockTakesApi, getWarehouseDropdownApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { getColumns } from "./columns"
 import { MaterialImportFormValues } from "@/schema/index"
@@ -42,13 +42,12 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
   const [rowSelection, setRowSelection] = useState({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const { data: apiResponse, tableState, form, isLoading } = useDataTable<InventoryReceipt, InventoryReceiptFilterRequest>(
-    "material-receipts", 
-    getMaterialReceiptsApi, 
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<StockTake, StockTakeFilterRequest>(
+    "stocktakes", 
+    getStockTakesApi, 
     {
       defaultFilter: { 
         keyword: "",
-        categoryId: undefined,
         warehouseId: undefined,
         fromDate: "",
         toDate: "",
@@ -57,7 +56,7 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
   )
 
   const columns = useMemo(() => getColumns(
-    (receipt) => handleOpenDialog({ id: receipt.id })
+    (stocktake) => handleOpenDialog({ id: stocktake.id })
   ), [handleOpenDialog]);
 
   const data = useMemo(() => {
@@ -84,11 +83,6 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
       pagination: tableState.pagination
     },
   })
-
-  const { data: categoryDropdown } = useQuery({
-    queryKey: ["material-category-dropdown"],
-    queryFn: getMaterialCategoryDropdownApi,
-  });
 
   const { data: warehouseDropdown } = useQuery({
     queryKey: ["warehouse-dropdown"],
@@ -144,7 +138,7 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} fieldName={INVENTORY_RECEIPT_FIELD} />
+            <DataTableViewOptions table={table} fieldName={STOCK_TAKE_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -190,22 +184,6 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
               />
           </Field>
           <Field>
-            <FieldLabel>Danh mục vật liệu</FieldLabel>
-            <Controller
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <SelectCustom
-                  selection="single"
-                  options={categoryDropdown}
-                  value={field.value || ""}
-                  fieldValue="id"
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          </Field>
-          <Field>
             <FieldLabel>Kho</FieldLabel>
             <Controller
               control={form.control}
@@ -227,7 +205,7 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có phiếu nhập vật liệu nào"
+          emptyLabel="Chưa có phiếu kiểm kê nào"
           isLoading={isLoading} 
           onReset={handleReset}
           handleOpenDialog={handleOpenDialog}
