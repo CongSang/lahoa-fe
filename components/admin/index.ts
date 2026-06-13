@@ -8,6 +8,7 @@ export * from './material/index'
 export * from './warehouse/index'
 export * from './inventory-receipt/index'
 export * from './stocktake/index'
+export * from './inventory-log/index'
 
 export * from './HeaderAdmin'
 export * from './SidebarAdmin'

@@ -11,6 +11,7 @@ interface DataTableProps<TData, TValue> {
   isLoading: boolean
   emptyLabel: string
   hideImportExcel?: boolean
+  hideEmptyAction?: boolean
   isFiltering: () => boolean
   onReset: () => void
   handleOpenDialog: (data?: Partial<TValue>) => void
@@ -24,7 +25,8 @@ export function DataTableCommon<TData, TValue> ({
   emptyLabel,
   onReset,
   handleOpenDialog,
-  hideImportExcel = false 
+  hideImportExcel = false,
+  hideEmptyAction = false
 }: DataTableProps<TData, TValue>) {
   const clickTimeout = useRef<NodeJS.Timeout | null>(null)
 
@@ -104,10 +106,12 @@ export function DataTableCommon<TData, TValue> ({
                       </EmptyMedia>
                       <EmptyTitle>{emptyLabel}</EmptyTitle>
                     </EmptyHeader>
-                    <EmptyContent className="flex-row justify-center gap-2">
-                      <Button type='button' onClick={() => handleOpenDialog()}><Plus />Tạo mới</Button>
-                      {!hideImportExcel && <Button type='button' variant="outline"><Download />Nhập excel</Button>}
-                    </EmptyContent>
+                    {!hideEmptyAction && (
+                      <EmptyContent className="flex-row justify-center gap-2">
+                        <Button type='button' onClick={() => handleOpenDialog()}><Plus />Tạo mới</Button>
+                        {!hideImportExcel && <Button type='button' variant="outline"><Download />Nhập excel</Button>}
+                      </EmptyContent>
+                    )}
                   </Empty>
                 )}
               </TableCell>

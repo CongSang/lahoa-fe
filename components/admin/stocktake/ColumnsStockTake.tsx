@@ -21,7 +21,7 @@ export const getColumnsStockTake = (
     cell: ({ row }) => {
       const receipt = row.original
 
-      return <div className="flex items-center gap-2">
+      return <div className="flex items-center gap-1">
         {receipt.materialName}
         {receipt.materialStatus === StatusCommon.DELETED && (
           <Badge variant="destructive">Ngừng kinh doanh</Badge>

@@ -29,6 +29,7 @@ export interface AuditLog {
   changedFields?: string | null
 
   userId: number
+  userName: string
   userEmail: string
 
   ipAddress?: string | null
@@ -51,27 +52,19 @@ export interface AuditLogFilterRequest {
 
 export const AUDIT_LOG_FIELD: Record<string, string> = {
   id: "ID",
-
   entityName: "Đối tượng",
   entityId: "ID đối tượng",
   entityLabel: "Tên đối tượng",
-
   action: "Hành động",
-
   oldData: "Dữ liệu cũ",
   newData: "Dữ liệu mới",
   changedFields: "Trường thay đổi",
-
-  userId: "ID người thực hiện",
-  userEmail: "Người thực hiện",
-
+  userName: "Người thực hiện",
   ipAddress: "Địa chỉ IP",
   endpoint: "API",
   method: "Phương thức",
-
   traceId: "Trace ID",
-
-  createdAt: "Thời gian thực hiện"
+  createdAt: "Thời gian"
 }
 
 export const AUDIT_ACTION_LABEL: Record<

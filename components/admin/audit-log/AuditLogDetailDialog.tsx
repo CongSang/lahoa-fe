@@ -58,10 +58,7 @@ export const AuditLogDetailDialog = ({
         </DialogHeader>
 
         <div className="-mx-4 no-scrollbar max-h-[80vh] overflow-y-auto px-4 py-1 flex flex-col gap-4">
-
           <div className="space-y-6">
-
-            {/* metadata */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 
               <Item
@@ -72,7 +69,7 @@ export const AuditLogDetailDialog = ({
               <Item
                 label="Người thực hiện"
                 value={
-                  audit.userEmail
+                  audit.userName + " (" + audit.userEmail + ")"
                 }
               />
 
@@ -154,13 +151,9 @@ export const AuditLogDetailDialog = ({
                   audit.newData
                 )}
               />
-
             </div>
-
           </div>
-
         </div>
-
       </DialogContent>
     </Dialog>
   )

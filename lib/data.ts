@@ -126,6 +126,7 @@ export const breadcrumbLabels: Record<string, string> = {
   materials: "Vật liệu",
   "material-categories": "Danh mục vật liệu",
   "inventory-receipts": "Nhập kho",
+  "inventory-logs": "Nhật kí biến động kho",
   stocktakes: "Kiểm kê",
   orders: "Đơn hàng",
   customers: "Khách hàng",

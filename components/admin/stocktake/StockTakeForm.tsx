@@ -126,7 +126,7 @@ export const StockTakeForm = ({ stocktakeId, mode }: StockTakeFormProps) => {
                   Kho tiếp nhận
                 </label>
 
-                <div className="font-medium flex items-center gap-2">
+                <div className="font-medium flex items-center gap-1">
                   {stocktake?.warehouseName || '-'}
                   {stocktake.warehouseStatus === StatusCommon.DELETED && (
                     <Badge variant="destructive">Đã đóng cửa</Badge>

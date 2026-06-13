@@ -69,7 +69,7 @@ export const getColumns = (
       <DataTableColumnHeader column={column} title={STOCK_TAKE_FIELD[column.id]} side="right" />
     ),
     cell: ({ row }) => 
-      <div className="w-50 truncate text-right">
+      <div className="text-right">
         <InventoryDifferenceBadge value={Number(row.original.totalDifference) || 0} />
       </div>,
   },

@@ -21,7 +21,6 @@ export interface InventoryReceiptDetail {
 
 export interface InventoryReceiptFilterRequest {
   keyword?: string
-  categoryId?: string
   warehouseId?: string
   fromDate?: string
   toDate?: string

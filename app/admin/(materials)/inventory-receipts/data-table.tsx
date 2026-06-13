@@ -25,7 +25,7 @@ import {
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
 import { INVENTORY_RECEIPT_FIELD, InventoryReceipt, InventoryReceiptFilterRequest } from "@/types/index"
-import { getMaterialCategoryDropdownApi, getMaterialReceiptsApi, getWarehouseDropdownApi } from "@/services/index"
+import { getMaterialReceiptsApi, getWarehouseDropdownApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { getColumns } from "./columns"
 import { MaterialImportFormValues } from "@/schema/index"
@@ -48,7 +48,6 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
     {
       defaultFilter: { 
         keyword: "",
-        categoryId: undefined,
         warehouseId: undefined,
         fromDate: "",
         toDate: "",
@@ -84,11 +83,6 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
       pagination: tableState.pagination
     },
   })
-
-  const { data: categoryDropdown } = useQuery({
-    queryKey: ["material-category-dropdown"],
-    queryFn: getMaterialCategoryDropdownApi,
-  });
 
   const { data: warehouseDropdown } = useQuery({
     queryKey: ["warehouse-dropdown"],
@@ -188,22 +182,6 @@ export function DataTable({ handleOpenDialog }: DataTableProps) {
                 captionLayout="dropdown"
                 disableFuture
               />
-          </Field>
-          <Field>
-            <FieldLabel>Danh mục vật liệu</FieldLabel>
-            <Controller
-              control={form.control}
-              name="categoryId"
-              render={({ field }) => (
-                <SelectCustom
-                  selection="single"
-                  options={categoryDropdown}
-                  value={field.value || ""}
-                  fieldValue="id"
-                  onChange={field.onChange}
-                />
-              )}
-            />
           </Field>
           <Field>
             <FieldLabel>Kho</FieldLabel>

@@ -130,18 +130,14 @@ export const getColumns = (
       </div>,
   },
   {
-    accessorKey: "userId",
+    accessorKey: "userName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={AUDIT_LOG_FIELD[column.id]} />
     ),
-    cell: ({ row }) => <div className="truncate">{row.original?.userId || ""}</div>,
-  },
-  {
-    accessorKey: "userEmail",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={AUDIT_LOG_FIELD[column.id]} />
-    ),
-    cell: ({ row }) => <div className="w-50 truncate">{row.original?.userEmail || ""}</div>,
+    cell: ({ row }) => 
+      <div className="w-50 truncate">
+        {row.original?.userName + " (" + row.original.userEmail + ") " || ""}
+      </div>,
   },
   {
     accessorKey: "ipAddress",

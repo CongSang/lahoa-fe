@@ -19,40 +19,41 @@ import {
   InputGroupAddon,
   Field,
   FieldLabel,
-  SelectCustom,
-  AuditLogDetailDialog,
   DatePicker,
+  SelectCustom,
+  InventoryLogDetailDialog
 } from "@/components/index"
 import { useMemo, useState } from "react"
 import { Download, ListFilter, RefreshCcw, SearchIcon, Upload } from "lucide-react"
-import { AuditLog, AuditLogFilterRequest, AUDIT_LOG_FIELD, AUDIT_ENTITY_OPTIONS, AUDIT_ACTION_OPTIONS } from "@/types/index"
-import { useQuery } from "@tanstack/react-query"
-import { getAuditLogsApi, getUserByKeywordApi } from "@/services/index"
+import { InventoryLog, InventoryLogFilterRequest, INVENTORY_LOG_FIELD, INVENTORY_MOVEMENT_TYPE_OPTIONS, INVENTORY_REFERENCE_TYPE_OPTIONS } from "@/types/index"
+import { getInventoryLogsApi, getMaterialDropdownApi, getWarehouseDropdownApi } from "@/services/index"
 import { useDataTable } from "@/hooks/index"
 import { getColumns } from "./columns"
-import { Controller } from "react-hook-form"
 import { getDateRangeValue, setDateRangeValue } from "@/lib/index"
+import { Controller } from "react-hook-form"
+import { useQuery } from "@tanstack/react-query"
 
 interface DataTableProps {
-  initialData?: Partial<AuditLog>
+  initialData?: Partial<InventoryLog>
   openDialog: boolean
   setOpenDialog: (value: boolean) => void
-  handleOpenDialog: (data?: Partial<AuditLog>) => void
+  handleOpenDialog: (data?: Partial<InventoryLog>) => void
 }
 
 export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDialog }: DataTableProps) {
   const [columnVisibility, setColumnVisibility] =useState<VisibilityState>({})
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const { data: apiResponse, tableState, form, isLoading } = useDataTable<AuditLog, AuditLogFilterRequest>(
-    "audit-logs", 
-    getAuditLogsApi, 
+  const { data: apiResponse, tableState, form, isLoading } = useDataTable<InventoryLog, InventoryLogFilterRequest>(
+    "inventory-logs", 
+    getInventoryLogsApi, 
     {
       defaultFilter: { 
         keyword: "",
-        entityName: undefined,
-        action: undefined,
-        userId: "",
+        materialId: undefined,
+        warehouseId: undefined,
+        type: undefined,
+        referenceType: undefined,
         fromDate: "",
         toDate: ""
       }
@@ -86,6 +87,16 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
     },
   })
 
+  const { data: warehouseDropdown } = useQuery({
+    queryKey: ["warehouse-dropdown"],
+    queryFn: getWarehouseDropdownApi,
+  });
+
+  const { data: materialDropdown } = useQuery({
+    queryKey: ["material-dropdown"],
+    queryFn: getMaterialDropdownApi,
+  });
+
   const handleSearch = () => {
     setIsFilterOpen(false)
     setTimeout(() => {
@@ -99,17 +110,6 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
       form.onReset()
     }, 250)
   }
-
-  const {
-    data: users = []
-  } = useQuery({
-    queryKey: [
-      'users-dropdown',
-      ""
-    ],
-    queryFn: () =>
-      getUserByKeywordApi("")
-  })
 
   return (
     <>
@@ -146,7 +146,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           </div>
 
           <div className="flex items-center gap-2">
-            <DataTableViewOptions table={table} fieldName={AUDIT_LOG_FIELD} />
+            <DataTableViewOptions table={table} fieldName={INVENTORY_LOG_FIELD} />
             <TooltipRender tooltip="Xuất Excel">
               <Button variant="outline" size="icon">
                 <Upload />
@@ -168,44 +168,38 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         >
           <Field>
             <FieldLabel>Từ ngày - Đến ngày</FieldLabel>
-            <Controller
-              control={form.control}
-              name="userId"
-              render={() => (
-                <DatePicker 
-                  mode="range"
-                  value={getDateRangeValue(
-                    form,
-                    {
-                      from: "fromDate",
-                      to: "toDate"
-                    }, 
-                  )}
-                  onChange={(range) => 
-                    setDateRangeValue(
-                      form, 
-                      {
-                        from: "fromDate",
-                        to: "toDate"
-                      }, 
-                      range
-                    )}
-                  numberOfMonths={2}
-                  captionLayout="dropdown"
-                  disableFuture
-                />
+            <DatePicker 
+              mode="range"
+              value={getDateRangeValue(
+                form,
+                {
+                  from: "fromDate",
+                  to: "toDate"
+                }, 
               )}
+              onChange={(range) => 
+                setDateRangeValue(
+                  form, 
+                  {
+                    from: "fromDate",
+                    to: "toDate"
+                  }, 
+                  range
+                )}
+              numberOfMonths={2}
+              captionLayout="dropdown"
+              disableFuture
             />
           </Field>
           <Field>
-            <FieldLabel>Đối tượng</FieldLabel>
+            <FieldLabel>Loại biến động</FieldLabel>
             <Controller
               control={form.control}
-              name="entityName"
+              name="type"
               render={({ field }) => (
                 <SelectCustom
                   selection="single"
-                  options={AUDIT_ENTITY_OPTIONS}
+                  options={INVENTORY_MOVEMENT_TYPE_OPTIONS}
                   value={String(field.value || "")}
                   onChange={field.onChange}
                 />
@@ -213,14 +207,14 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
             />
           </Field>
           <Field>
-            <FieldLabel>Hành động</FieldLabel>
+            <FieldLabel>Loại chứng từ</FieldLabel>
             <Controller
               control={form.control}
-              name="action"
+              name="referenceType"
               render={({ field }) => (
                 <SelectCustom
                   selection="single"
-                  options={AUDIT_ACTION_OPTIONS}
+                  options={INVENTORY_REFERENCE_TYPE_OPTIONS}
                   value={String(field.value || "")}
                   onChange={field.onChange}
                 />
@@ -228,15 +222,32 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
             />
           </Field>
           <Field>
-            <FieldLabel>Người thực hiện</FieldLabel>
+            <FieldLabel>Vật liệu</FieldLabel>
             <Controller
               control={form.control}
-              name="userId"
+              name="materialId"
               render={({ field }) => (
                 <SelectCustom
                   selection="single"
-                  options={users}
-                  value={String(field.value || "")}
+                  options={materialDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
+                  onChange={field.onChange}
+                />
+              )}
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Kho</FieldLabel>
+            <Controller
+              control={form.control}
+              name="warehouseId"
+              render={({ field }) => (
+                <SelectCustom
+                  selection="single"
+                  options={warehouseDropdown}
+                  value={field.value || ""}
+                  fieldValue="id"
                   onChange={field.onChange}
                 />
               )}
@@ -248,7 +259,7 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
           table={table} 
           columns={columns}
           isFiltering={tableState.isFiltering}
-          emptyLabel="Chưa có thay đổi nào"
+          emptyLabel="Chưa có biến động nào"
           hideEmptyAction
           isLoading={isLoading} 
           onReset={handleReset}
@@ -258,10 +269,10 @@ export function DataTable({ openDialog, setOpenDialog, initialData, handleOpenDi
         <DataTablePagination table={table} prefetchNextPage={tableState.prefetchNextPage} />
       </Card>
 
-      <AuditLogDetailDialog 
+      <InventoryLogDetailDialog 
         open={openDialog}
         onOpenChange={setOpenDialog}
-        audit={initialData}
+        inventory={initialData}
       />
     </>
   )
